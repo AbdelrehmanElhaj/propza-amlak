@@ -1,0 +1,7 @@
+ Container odoo17-db Running 
+ Container odoo17-db Waiting 
+ Container odoo17-db Healthy 
+ Container propza-amlak-web-run-b66a1374648a Creating 
+ Container propza-amlak-web-run-b66a1374648a Created 
+<string>:38: (ERROR/3) Unexpected indentation.
+<string>:43: (WARNING/2) Block quote ends without a blank line; unexpected unindent.

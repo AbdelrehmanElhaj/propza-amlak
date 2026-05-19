@@ -1,0 +1,947 @@
+2026-05-19 12:09:23,415 1 INFO ? odoo: Odoo version 17.0-20260513 
+2026-05-19 12:09:23,415 1 INFO ? odoo: Using configuration file at /etc/odoo/odoo.conf 
+2026-05-19 12:09:23,415 1 INFO ? odoo: addons paths: ['/usr/lib/python3/dist-packages/odoo/addons', '/var/lib/odoo/addons/17.0', '/mnt/extra-addons'] 
+2026-05-19 12:09:23,415 1 INFO ? odoo: database: odoo17@db:5432 
+2026-05-19 12:09:23,536 1 INFO ? odoo.addons.base.models.ir_actions_report: Will use the Wkhtmltopdf binary at /usr/local/bin/wkhtmltopdf 
+2026-05-19 12:09:23,791 1 INFO ? odoo.service.server: HTTP service (werkzeug) running on 1663be2f1f44:8069 
+2026-05-19 12:13:11,154 1 INFO ? odoo: Odoo version 17.0-20260513 
+2026-05-19 12:13:11,154 1 INFO ? odoo: Using configuration file at /etc/odoo/odoo.conf 
+2026-05-19 12:13:11,154 1 INFO ? odoo: addons paths: ['/usr/lib/python3/dist-packages/odoo/addons', '/var/lib/odoo/addons/17.0', '/mnt/extra-addons'] 
+2026-05-19 12:13:11,155 1 INFO ? odoo: database: odoo17@db:5432 
+2026-05-19 12:13:11,371 1 INFO ? odoo.addons.base.models.ir_actions_report: Will use the Wkhtmltopdf binary at /usr/local/bin/wkhtmltopdf 
+2026-05-19 12:13:11,552 1 INFO demodb odoo.modules.loading: init db 
+2026-05-19 12:13:12,970 1 INFO demodb odoo.modules.loading: loading 1 modules... 
+2026-05-19 12:13:12,970 1 INFO demodb odoo.modules.loading: Loading module base (1/1) 
+2026-05-19 12:13:13,000 1 INFO demodb odoo.modules.registry: module base: creating or updating database tables 
+2026-05-19 12:13:13,667 1 INFO demodb odoo.models: Prepare computation of ir.module.module.menus_by_module 
+2026-05-19 12:13:13,668 1 INFO demodb odoo.models: Prepare computation of ir.module.module.reports_by_module 
+2026-05-19 12:13:13,668 1 INFO demodb odoo.models: Prepare computation of ir.module.module.views_by_module 
+2026-05-19 12:13:13,920 1 INFO demodb odoo.models: Prepare computation of res.partner.user_id 
+2026-05-19 12:13:13,921 1 INFO demodb odoo.models: Prepare computation of res.partner.commercial_partner_id 
+2026-05-19 12:13:13,921 1 INFO demodb odoo.models: Prepare computation of res.partner.complete_name 
+2026-05-19 12:13:13,921 1 INFO demodb odoo.models: Prepare computation of res.partner.company_registry 
+2026-05-19 12:13:13,921 1 INFO demodb odoo.models: Prepare computation of res.partner.commercial_company_name 
+2026-05-19 12:13:13,921 1 INFO demodb odoo.models: Prepare computation of res.partner.partner_share 
+2026-05-19 12:13:14,003 1 INFO demodb odoo.models: Prepare computation of res.currency.decimal_places 
+2026-05-19 12:13:14,053 1 INFO demodb odoo.models: Prepare computation of res.company.uses_default_logo 
+2026-05-19 12:13:14,053 1 INFO demodb odoo.models: Prepare computation of res.company.logo_web 
+2026-05-19 12:13:14,058 1 INFO demodb odoo.models: Computing parent_path for table res_company... 
+2026-05-19 12:13:14,110 1 INFO demodb odoo.models: Prepare computation of res.users.signature 
+2026-05-19 12:13:14,110 1 INFO demodb odoo.models: Prepare computation of res.users.share 
+2026-05-19 12:13:16,023 1 INFO demodb odoo.modules.loading: loading base/data/res_bank.xml 
+2026-05-19 12:13:16,030 1 INFO demodb odoo.modules.loading: loading base/data/res.lang.csv 
+2026-05-19 12:13:16,083 1 INFO demodb odoo.modules.loading: loading base/data/res_lang_data.xml 
+2026-05-19 12:13:16,118 1 INFO demodb odoo.modules.loading: loading base/data/res_partner_data.xml 
+2026-05-19 12:13:16,190 1 INFO demodb odoo.modules.loading: loading base/data/res_currency_data.xml 
+2026-05-19 12:13:16,776 1 INFO demodb odoo.modules.loading: loading base/data/res_company_data.xml 
+2026-05-19 12:13:16,788 1 INFO demodb odoo.modules.loading: loading base/data/res_users_data.xml 
+2026-05-19 12:13:18,128 1 INFO demodb odoo.modules.loading: loading base/data/report_paperformat_data.xml 
+2026-05-19 12:13:18,137 1 INFO demodb odoo.modules.loading: loading base/data/res_country_data.xml 
+2026-05-19 12:13:18,578 1 INFO demodb odoo.modules.loading: loading base/data/ir_demo_data.xml 
+2026-05-19 12:13:18,590 1 INFO demodb odoo.modules.loading: loading base/security/base_groups.xml 
+2026-05-19 12:13:19,525 1 INFO demodb odoo.modules.loading: loading base/security/base_security.xml 
+2026-05-19 12:13:19,664 1 INFO demodb odoo.modules.loading: loading base/views/base_menus.xml 
+2026-05-19 12:13:19,734 1 INFO demodb odoo.modules.loading: loading base/views/decimal_precision_views.xml 
+2026-05-19 12:13:19,751 1 INFO demodb odoo.modules.loading: loading base/views/res_config_views.xml 
+2026-05-19 12:13:19,763 1 INFO demodb odoo.modules.loading: loading base/data/res.country.state.csv 
+2026-05-19 12:13:20,921 1 INFO demodb odoo.modules.loading: loading base/views/ir_actions_views.xml 
+2026-05-19 12:13:21,043 1 INFO demodb odoo.modules.loading: loading base/views/ir_asset_views.xml 
+2026-05-19 12:13:21,062 1 INFO demodb odoo.modules.loading: loading base/views/ir_config_parameter_views.xml 
+2026-05-19 12:13:21,082 1 INFO demodb odoo.modules.loading: loading base/views/ir_cron_views.xml 
+2026-05-19 12:13:21,114 1 INFO demodb odoo.modules.loading: loading base/views/ir_cron_trigger_views.xml 
+2026-05-19 12:13:21,131 1 INFO demodb odoo.modules.loading: loading base/views/ir_filters_views.xml 
+2026-05-19 12:13:21,149 1 INFO demodb odoo.modules.loading: loading base/views/ir_mail_server_views.xml 
+2026-05-19 12:13:21,170 1 INFO demodb odoo.modules.loading: loading base/views/ir_model_views.xml 
+2026-05-19 12:13:21,317 1 INFO demodb odoo.modules.loading: loading base/views/ir_attachment_views.xml 
+2026-05-19 12:13:21,338 1 INFO demodb odoo.modules.loading: loading base/views/ir_rule_views.xml 
+2026-05-19 12:13:21,365 1 INFO demodb odoo.modules.loading: loading base/views/ir_sequence_views.xml 
+2026-05-19 12:13:21,384 1 INFO demodb odoo.modules.loading: loading base/views/ir_ui_menu_views.xml 
+2026-05-19 12:13:21,403 1 INFO demodb odoo.modules.loading: loading base/views/ir_ui_view_views.xml 
+2026-05-19 12:13:21,449 1 INFO demodb odoo.modules.loading: loading base/views/ir_default_views.xml 
+2026-05-19 12:13:21,467 1 INFO demodb odoo.modules.loading: loading base/data/ir_cron_data.xml 
+2026-05-19 12:13:21,479 1 INFO demodb odoo.modules.loading: loading base/report/ir_model_report.xml 
+2026-05-19 12:13:21,483 1 INFO demodb odoo.modules.loading: loading base/report/ir_model_templates.xml 
+2026-05-19 12:13:21,491 1 INFO demodb odoo.modules.loading: loading base/views/ir_logging_views.xml 
+2026-05-19 12:13:21,510 1 INFO demodb odoo.modules.loading: loading base/views/ir_qweb_widget_templates.xml 
+2026-05-19 12:13:21,522 1 INFO demodb odoo.modules.loading: loading base/views/ir_module_views.xml 
+2026-05-19 12:13:21,571 1 INFO demodb odoo.modules.loading: loading base/data/ir_module_category_data.xml 
+2026-05-19 12:13:21,645 1 INFO demodb odoo.modules.loading: loading base/data/ir_module_module.xml 
+2026-05-19 12:13:21,713 1 INFO demodb odoo.modules.loading: loading base/report/ir_module_reports.xml 
+2026-05-19 12:13:21,717 1 INFO demodb odoo.modules.loading: loading base/report/ir_module_report_templates.xml 
+2026-05-19 12:13:21,723 1 INFO demodb odoo.modules.loading: loading base/wizard/base_module_update_views.xml 
+2026-05-19 12:13:21,735 1 INFO demodb odoo.modules.loading: loading base/wizard/base_language_install_views.xml 
+2026-05-19 12:13:21,746 1 INFO demodb odoo.modules.loading: loading base/wizard/base_import_language_views.xml 
+2026-05-19 12:13:21,758 1 INFO demodb odoo.modules.loading: loading base/wizard/base_module_upgrade_views.xml 
+2026-05-19 12:13:21,776 1 INFO demodb odoo.modules.loading: loading base/wizard/base_module_uninstall_views.xml 
+2026-05-19 12:13:21,783 1 INFO demodb odoo.modules.loading: loading base/wizard/base_export_language_views.xml 
+2026-05-19 12:13:21,795 1 INFO demodb odoo.modules.loading: loading base/wizard/base_partner_merge_views.xml 
+2026-05-19 12:13:21,808 1 INFO demodb odoo.modules.loading: loading base/data/ir_demo_failure_data.xml 
+2026-05-19 12:13:21,822 1 INFO demodb odoo.modules.loading: loading base/views/ir_profile_views.xml 
+2026-05-19 12:13:21,843 1 INFO demodb odoo.modules.loading: loading base/views/res_company_views.xml 
+2026-05-19 12:13:21,864 1 INFO demodb odoo.modules.loading: loading base/views/res_lang_views.xml 
+2026-05-19 12:13:21,886 1 INFO demodb odoo.modules.loading: loading base/views/res_partner_views.xml 
+2026-05-19 12:13:21,989 1 INFO demodb odoo.modules.loading: loading base/views/res_bank_views.xml 
+2026-05-19 12:13:22,020 1 INFO demodb odoo.modules.loading: loading base/views/res_country_views.xml 
+2026-05-19 12:13:22,058 1 INFO demodb odoo.modules.loading: loading base/views/res_currency_views.xml 
+2026-05-19 12:13:22,091 1 INFO demodb odoo.modules.loading: loading base/views/res_users_views.xml 
+2026-05-19 12:13:22,206 1 INFO demodb odoo.modules.loading: loading base/views/res_users_identitycheck_views.xml 
+2026-05-19 12:13:22,220 1 INFO demodb odoo.modules.loading: loading base/views/ir_property_views.xml 
+2026-05-19 12:13:22,245 1 INFO demodb odoo.modules.loading: loading base/views/res_config_settings_views.xml 
+2026-05-19 12:13:22,254 1 INFO demodb odoo.modules.loading: loading base/views/report_paperformat_views.xml 
+2026-05-19 12:13:22,288 1 INFO demodb odoo.modules.loading: loading base/security/ir.model.access.csv 
+2026-05-19 12:13:22,452 1 INFO demodb odoo.addons.base.models.ir_module: module base: loading translation file /usr/lib/python3/dist-packages/odoo/addons/base/i18n/ar.po for language ar_001 
+2026-05-19 12:13:22,452 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/base/i18n/ar.po for language ar_001 
+2026-05-19 12:13:23,420 1 INFO demodb odoo.modules.loading: Module base loaded in 10.45s, 7977 queries (+7977 other) 
+2026-05-19 12:13:23,420 1 INFO demodb odoo.modules.loading: 1 modules loaded in 10.45s, 7977 queries (+7977 extra) 
+2026-05-19 12:13:23,454 1 INFO demodb odoo.addons.base.models.ir_module: module base: loading translation file /usr/lib/python3/dist-packages/odoo/addons/base/i18n/ar.po for language ar_001 
+2026-05-19 12:13:23,454 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/base/i18n/ar.po for language ar_001 
+2026-05-19 12:13:24,346 1 INFO demodb odoo.modules.loading: updating modules list 
+2026-05-19 12:13:24,348 1 INFO demodb odoo.addons.base.models.ir_module: ALLOW access to module.update_list on [] to user __system__ #1 via n/a 
+2026-05-19 12:13:25,060 1 INFO demodb odoo.addons.base.models.ir_module: ALLOW access to module.button_install on ['Saudi Property Base', 'Saudi Arabia - Ejar Integration', 'عمولات الوسطاء العقاريين', 'لوحة تحكم إدارة العقارات', 'إدارة الصيانة', 'تطبيق الفني الميداني', 'نظام التنبيهات لإدارة العقارات', 'بوابة المستأجر', 'نظام العقارات السعودي', 'دورة الإيجار السعودية الكاملة', 'محاكاة SADAD للدفع', 'الأمن والصلاحيات لإدارة العقارات', 'ملف المستخدم — User Profile'] to user __system__ #1 via n/a 
+2026-05-19 12:13:25,307 1 INFO demodb odoo.modules.loading: loading 57 modules... 
+2026-05-19 12:13:25,307 1 INFO demodb odoo.modules.loading: Loading module uom (2/57) 
+2026-05-19 12:13:25,328 1 INFO demodb odoo.modules.registry: module uom: creating or updating database tables 
+2026-05-19 12:13:25,409 1 INFO demodb odoo.modules.loading: loading uom/data/uom_data.xml 
+2026-05-19 12:13:25,490 1 INFO demodb odoo.modules.loading: loading uom/security/uom_security.xml 
+2026-05-19 12:13:25,506 1 INFO demodb odoo.modules.loading: loading uom/security/ir.model.access.csv 
+2026-05-19 12:13:25,519 1 INFO demodb odoo.modules.loading: loading uom/views/uom_uom_views.xml 
+2026-05-19 12:13:25,557 1 INFO demodb odoo.addons.base.models.ir_module: module uom: loading translation file /usr/lib/python3/dist-packages/odoo/addons/uom/i18n/ar.po for language ar_001 
+2026-05-19 12:13:25,557 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/uom/i18n/ar.po for language ar_001 
+2026-05-19 12:13:25,585 1 INFO demodb odoo.modules.loading: Module uom loaded in 0.28s, 301 queries (+301 other) 
+2026-05-19 12:13:25,585 1 INFO demodb odoo.modules.loading: Loading module web (3/57) 
+2026-05-19 12:13:25,611 1 INFO demodb odoo.modules.registry: module web: creating or updating database tables 
+2026-05-19 12:13:26,149 1 INFO demodb odoo.modules.loading: loading web/security/ir.model.access.csv 
+2026-05-19 12:13:26,159 1 INFO demodb odoo.modules.loading: loading web/views/webclient_templates.xml 
+2026-05-19 12:13:26,207 1 INFO demodb odoo.modules.loading: loading web/views/report_templates.xml 
+2026-05-19 12:13:26,284 1 INFO demodb odoo.modules.loading: loading web/views/base_document_layout_views.xml 
+2026-05-19 12:13:26,308 1 INFO demodb odoo.modules.loading: loading web/views/partner_view.xml 
+2026-05-19 12:13:26,315 1 INFO demodb odoo.modules.loading: loading web/views/speedscope_template.xml 
+2026-05-19 12:13:26,321 1 INFO demodb odoo.modules.loading: loading web/views/neutralize_views.xml 
+2026-05-19 12:13:26,327 1 INFO demodb odoo.modules.loading: loading web/data/ir_attachment.xml 
+2026-05-19 12:13:26,332 1 INFO demodb odoo.modules.loading: loading web/data/report_layout.xml 
+2026-05-19 12:13:26,367 1 INFO demodb odoo.addons.base.models.ir_module: module web: loading translation file /usr/lib/python3/dist-packages/odoo/addons/web/i18n/ar.po for language ar_001 
+2026-05-19 12:13:26,367 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/web/i18n/ar.po for language ar_001 
+2026-05-19 12:13:26,743 1 INFO demodb odoo.modules.loading: Module web loaded in 1.16s, 1027 queries (+1027 other) 
+2026-05-19 12:13:26,743 1 INFO demodb odoo.modules.loading: Loading module auth_totp (4/57) 
+2026-05-19 12:13:26,788 1 INFO demodb odoo.modules.registry: module auth_totp: creating or updating database tables 
+2026-05-19 12:13:26,866 1 INFO demodb odoo.modules.loading: loading auth_totp/security/security.xml 
+2026-05-19 12:13:26,894 1 INFO demodb odoo.modules.loading: loading auth_totp/security/ir.model.access.csv 
+2026-05-19 12:13:26,905 1 INFO demodb odoo.modules.loading: loading auth_totp/data/ir_action_data.xml 
+2026-05-19 12:13:26,913 1 INFO demodb odoo.modules.loading: loading auth_totp/views/res_users_views.xml 
+2026-05-19 12:13:26,939 1 INFO demodb odoo.modules.loading: loading auth_totp/views/templates.xml 
+2026-05-19 12:13:26,945 1 INFO demodb odoo.modules.loading: loading auth_totp/wizard/auth_totp_wizard_views.xml 
+2026-05-19 12:13:26,957 1 INFO demodb odoo.addons.base.models.ir_module: module auth_totp: loading translation file /usr/lib/python3/dist-packages/odoo/addons/auth_totp/i18n/ar.po for language ar_001 
+2026-05-19 12:13:26,957 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/auth_totp/i18n/ar.po for language ar_001 
+2026-05-19 12:13:26,986 1 INFO demodb odoo.modules.loading: Module auth_totp loaded in 0.24s, 185 queries (+185 other) 
+2026-05-19 12:13:26,986 1 INFO demodb odoo.modules.loading: Loading module base_import (5/57) 
+2026-05-19 12:13:27,056 1 INFO demodb odoo.modules.registry: module base_import: creating or updating database tables 
+2026-05-19 12:13:27,597 1 INFO demodb odoo.modules.loading: loading base_import/security/ir.model.access.csv 
+2026-05-19 12:13:27,613 1 INFO demodb odoo.addons.base.models.ir_module: module base_import: loading translation file /usr/lib/python3/dist-packages/odoo/addons/base_import/i18n/ar.po for language ar_001 
+2026-05-19 12:13:27,613 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/base_import/i18n/ar.po for language ar_001 
+2026-05-19 12:13:27,646 1 INFO demodb odoo.modules.loading: Module base_import loaded in 0.66s, 834 queries (+834 other) 
+2026-05-19 12:13:27,646 1 INFO demodb odoo.modules.loading: Loading module base_import_module (6/57) 
+2026-05-19 12:13:27,696 1 INFO demodb odoo.modules.registry: module base_import_module: creating or updating database tables 
+2026-05-19 12:13:27,794 1 INFO demodb odoo.modules.loading: loading base_import_module/security/ir.model.access.csv 
+2026-05-19 12:13:27,805 1 INFO demodb odoo.modules.loading: loading base_import_module/views/base_import_module_view.xml 
+2026-05-19 12:13:27,823 1 INFO demodb odoo.modules.loading: loading base_import_module/views/ir_module_views.xml 
+2026-05-19 12:13:27,864 1 INFO demodb odoo.addons.base.models.ir_module: module base_import_module: loading translation file /usr/lib/python3/dist-packages/odoo/addons/base_import_module/i18n/ar.po for language ar_001 
+2026-05-19 12:13:27,864 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/base_import_module/i18n/ar.po for language ar_001 
+2026-05-19 12:13:27,891 1 INFO demodb odoo.modules.loading: Module base_import_module loaded in 0.25s, 163 queries (+163 other) 
+2026-05-19 12:13:27,891 1 INFO demodb odoo.modules.loading: Loading module base_setup (7/57) 
+2026-05-19 12:13:27,920 1 INFO demodb odoo.modules.registry: module base_setup: creating or updating database tables 
+2026-05-19 12:13:27,977 1 INFO demodb odoo.modules.loading: loading base_setup/data/base_setup_data.xml 
+2026-05-19 12:13:27,983 1 INFO demodb odoo.modules.loading: loading base_setup/views/res_config_settings_views.xml 
+2026-05-19 12:13:28,017 1 INFO demodb odoo.modules.loading: loading base_setup/views/res_partner_views.xml 
+2026-05-19 12:13:28,035 1 INFO demodb odoo.addons.base.models.ir_module: module base_setup: loading translation file /usr/lib/python3/dist-packages/odoo/addons/base_setup/i18n/ar.po for language ar_001 
+2026-05-19 12:13:28,035 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/base_setup/i18n/ar.po for language ar_001 
+2026-05-19 12:13:28,067 1 INFO demodb odoo.modules.loading: Module base_setup loaded in 0.18s, 151 queries (+151 other) 
+2026-05-19 12:13:28,068 1 INFO demodb odoo.modules.loading: Loading module bus (8/57) 
+2026-05-19 12:13:28,113 1 INFO demodb odoo.modules.registry: module bus: creating or updating database tables 
+2026-05-19 12:13:28,205 1 INFO demodb odoo.modules.loading: loading bus/security/ir.model.access.csv 
+2026-05-19 12:13:28,221 1 INFO demodb odoo.addons.base.models.ir_module: module bus: loading translation file /usr/lib/python3/dist-packages/odoo/addons/bus/i18n/ar.po for language ar_001 
+2026-05-19 12:13:28,221 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/bus/i18n/ar.po for language ar_001 
+2026-05-19 12:13:28,237 1 INFO demodb odoo.modules.loading: Module bus loaded in 0.17s, 123 queries (+123 other) 
+2026-05-19 12:13:28,237 1 INFO demodb odoo.modules.loading: Loading module http_routing (9/57) 
+2026-05-19 12:13:28,270 1 INFO demodb odoo.modules.registry: module http_routing: creating or updating database tables 
+2026-05-19 12:13:28,280 1 INFO demodb odoo.modules.loading: loading http_routing/views/http_routing_template.xml 
+2026-05-19 12:13:28,313 1 INFO demodb odoo.modules.loading: loading http_routing/views/res_lang_views.xml 
+2026-05-19 12:13:28,329 1 INFO demodb odoo.addons.base.models.ir_module: module http_routing: loading translation file /usr/lib/python3/dist-packages/odoo/addons/http_routing/i18n/ar.po for language ar_001 
+2026-05-19 12:13:28,329 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/http_routing/i18n/ar.po for language ar_001 
+2026-05-19 12:13:28,346 1 INFO demodb odoo.modules.loading: Module http_routing loaded in 0.11s, 75 queries (+75 other) 
+2026-05-19 12:13:28,346 1 INFO demodb odoo.modules.loading: Loading module onboarding (10/57) 
+2026-05-19 12:13:28,370 1 INFO demodb odoo.modules.registry: module onboarding: creating or updating database tables 
+2026-05-19 12:13:28,638 1 INFO demodb odoo.modules.loading: loading onboarding/views/onboarding_templates.xml 
+2026-05-19 12:13:28,654 1 INFO demodb odoo.modules.loading: loading onboarding/views/onboarding_views.xml 
+2026-05-19 12:13:28,676 1 INFO demodb odoo.modules.loading: loading onboarding/views/onboarding_menus.xml 
+2026-05-19 12:13:28,688 1 INFO demodb odoo.modules.loading: loading onboarding/security/ir.model.access.csv 
+2026-05-19 12:13:28,719 1 INFO demodb odoo.addons.base.models.ir_module: module onboarding: loading translation file /usr/lib/python3/dist-packages/odoo/addons/onboarding/i18n/ar.po for language ar_001 
+2026-05-19 12:13:28,719 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/onboarding/i18n/ar.po for language ar_001 
+2026-05-19 12:13:28,751 1 INFO demodb odoo.modules.loading: Module onboarding loaded in 0.40s, 247 queries (+247 other) 
+2026-05-19 12:13:28,751 1 INFO demodb odoo.modules.loading: Loading module resource (11/57) 
+2026-05-19 12:13:28,782 1 INFO demodb odoo.modules.registry: module resource: creating or updating database tables 
+2026-05-19 12:13:28,994 1 INFO demodb odoo.modules.loading: loading resource/data/resource_data.xml 
+2026-05-19 12:13:29,027 1 INFO demodb odoo.modules.loading: loading resource/security/ir.model.access.csv 
+2026-05-19 12:13:29,040 1 INFO demodb odoo.modules.loading: loading resource/security/resource_security.xml 
+2026-05-19 12:13:29,067 1 INFO demodb odoo.modules.loading: loading resource/views/resource_resource_views.xml 
+2026-05-19 12:13:29,090 1 INFO demodb odoo.modules.loading: loading resource/views/resource_calendar_leaves_views.xml 
+2026-05-19 12:13:29,120 1 INFO demodb odoo.modules.loading: loading resource/views/resource_calendar_attendance_views.xml 
+2026-05-19 12:13:29,134 1 INFO demodb odoo.modules.loading: loading resource/views/resource_calendar_views.xml 
+2026-05-19 12:13:29,158 1 INFO demodb odoo.modules.loading: loading resource/views/menuitems.xml 
+2026-05-19 12:13:29,180 1 INFO demodb odoo.addons.base.models.ir_module: module resource: loading translation file /usr/lib/python3/dist-packages/odoo/addons/resource/i18n/ar.po for language ar_001 
+2026-05-19 12:13:29,180 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/resource/i18n/ar.po for language ar_001 
+2026-05-19 12:13:29,221 1 INFO demodb odoo.modules.loading: Module resource loaded in 0.47s, 419 queries (+419 other) 
+2026-05-19 12:13:29,221 1 INFO demodb odoo.modules.loading: Loading module web_tour (12/57) 
+2026-05-19 12:13:29,245 1 INFO demodb odoo.modules.registry: module web_tour: creating or updating database tables 
+2026-05-19 12:13:29,285 1 INFO demodb odoo.modules.loading: loading web_tour/security/ir.model.access.csv 
+2026-05-19 12:13:29,296 1 INFO demodb odoo.modules.loading: loading web_tour/security/ir.rule.csv 
+2026-05-19 12:13:29,306 1 INFO demodb odoo.modules.loading: loading web_tour/views/tour_views.xml 
+2026-05-19 12:13:29,330 1 INFO demodb odoo.addons.base.models.ir_module: module web_tour: loading translation file /usr/lib/python3/dist-packages/odoo/addons/web_tour/i18n/ar.po for language ar_001 
+2026-05-19 12:13:29,330 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/web_tour/i18n/ar.po for language ar_001 
+2026-05-19 12:13:29,348 1 INFO demodb odoo.modules.loading: Module web_tour loaded in 0.13s, 111 queries (+111 other) 
+2026-05-19 12:13:29,348 1 INFO demodb odoo.modules.loading: Loading module iap (13/57) 
+2026-05-19 12:13:29,382 1 INFO demodb odoo.modules.registry: module iap: creating or updating database tables 
+2026-05-19 12:13:29,468 1 INFO demodb odoo.modules.loading: loading iap/security/ir.model.access.csv 
+2026-05-19 12:13:29,481 1 INFO demodb odoo.modules.loading: loading iap/security/ir_rule.xml 
+2026-05-19 12:13:29,488 1 INFO demodb odoo.modules.loading: loading iap/views/iap_views.xml 
+2026-05-19 12:13:29,510 1 INFO demodb odoo.modules.loading: loading iap/views/res_config_settings.xml 
+2026-05-19 12:13:29,525 1 INFO demodb odoo.addons.base.models.ir_module: module iap: loading translation file /usr/lib/python3/dist-packages/odoo/addons/iap/i18n/ar.po for language ar_001 
+2026-05-19 12:13:29,526 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/iap/i18n/ar.po for language ar_001 
+2026-05-19 12:13:29,548 1 INFO demodb odoo.modules.loading: Module iap loaded in 0.20s, 159 queries (+159 other) 
+2026-05-19 12:13:29,548 1 INFO demodb odoo.modules.loading: Loading module mail (14/57) 
+2026-05-19 12:13:29,665 1 INFO demodb odoo.modules.registry: module mail: creating or updating database tables 
+2026-05-19 12:13:30,152 1 INFO demodb odoo.models: Prepare computation of ir.actions.server.partner_ids 
+2026-05-19 12:13:30,152 1 INFO demodb odoo.models: Prepare computation of ir.actions.server.template_id 
+2026-05-19 12:13:30,152 1 INFO demodb odoo.models: Prepare computation of ir.actions.server.activity_type_id 
+2026-05-19 12:13:30,152 1 INFO demodb odoo.models: Prepare computation of ir.actions.server.activity_date_deadline_range 
+2026-05-19 12:13:30,153 1 INFO demodb odoo.models: Prepare computation of ir.actions.server.activity_user_id 
+2026-05-19 12:13:30,153 1 INFO demodb odoo.models: Prepare computation of ir.actions.server.mail_post_method 
+2026-05-19 12:13:30,153 1 INFO demodb odoo.models: Prepare computation of ir.actions.server.activity_summary 
+2026-05-19 12:13:30,153 1 INFO demodb odoo.models: Prepare computation of ir.actions.server.activity_date_deadline_range_type 
+2026-05-19 12:13:30,153 1 INFO demodb odoo.models: Prepare computation of ir.actions.server.activity_user_type 
+2026-05-19 12:13:30,153 1 INFO demodb odoo.models: Prepare computation of ir.actions.server.activity_user_field_name 
+2026-05-19 12:13:30,153 1 INFO demodb odoo.models: Prepare computation of ir.actions.server.activity_note 
+2026-05-19 12:13:30,153 1 INFO demodb odoo.models: Prepare computation of ir.actions.server.mail_post_autofollow 
+2026-05-19 12:13:30,193 1 INFO demodb odoo.models: Prepare computation of res.company.email_primary_color 
+2026-05-19 12:13:30,193 1 INFO demodb odoo.models: Prepare computation of res.company.email_secondary_color 
+2026-05-19 12:13:30,208 1 INFO demodb odoo.models: Prepare computation of res.users.notification_type 
+2026-05-19 12:13:30,353 1 INFO demodb odoo.models: Prepare computation of res.partner.email_normalized 
+2026-05-19 12:13:32,084 1 INFO demodb odoo.modules.loading: loading mail/data/mail_groups.xml 
+2026-05-19 12:13:32,195 1 INFO demodb odoo.modules.loading: loading mail/wizard/mail_activity_schedule_views.xml 
+2026-05-19 12:13:32,203 1 INFO demodb odoo.modules.loading: loading mail/wizard/mail_blacklist_remove_views.xml 
+2026-05-19 12:13:32,209 1 INFO demodb odoo.modules.loading: loading mail/wizard/mail_compose_message_views.xml 
+2026-05-19 12:13:32,226 1 INFO demodb odoo.modules.loading: loading mail/wizard/mail_resend_message_views.xml 
+2026-05-19 12:13:32,236 1 INFO demodb odoo.modules.loading: loading mail/wizard/mail_resend_partner_views.xml 
+2026-05-19 12:13:32,245 1 INFO demodb odoo.modules.loading: loading mail/wizard/mail_template_preview_views.xml 
+2026-05-19 12:13:32,253 1 INFO demodb odoo.modules.loading: loading mail/wizard/mail_wizard_invite_views.xml 
+2026-05-19 12:13:32,260 1 INFO demodb odoo.modules.loading: loading mail/wizard/mail_template_reset_views.xml 
+2026-05-19 12:13:32,268 1 INFO demodb odoo.modules.loading: loading mail/views/fetchmail_views.xml 
+2026-05-19 12:13:32,286 1 INFO demodb odoo.modules.loading: loading mail/views/mail_message_subtype_views.xml 
+2026-05-19 12:13:32,297 1 INFO demodb odoo.modules.loading: loading mail/views/mail_tracking_value_views.xml 
+2026-05-19 12:13:32,308 1 INFO demodb odoo.modules.loading: loading mail/views/mail_notification_views.xml 
+2026-05-19 12:13:32,321 1 INFO demodb odoo.modules.loading: loading mail/views/mail_message_views.xml 
+2026-05-19 12:13:32,347 1 INFO demodb odoo.modules.loading: loading mail/views/mail_message_schedule_views.xml 
+2026-05-19 12:13:32,362 1 INFO demodb odoo.modules.loading: loading mail/views/mail_mail_views.xml 
+2026-05-19 12:13:32,387 1 INFO demodb odoo.modules.loading: loading mail/views/mail_followers_views.xml 
+2026-05-19 12:13:32,399 1 INFO demodb odoo.modules.loading: loading mail/views/mail_ice_server_views.xml 
+2026-05-19 12:13:32,410 1 INFO demodb odoo.modules.loading: loading mail/views/discuss_channel_member_views.xml 
+2026-05-19 12:13:32,422 1 INFO demodb odoo.modules.loading: loading mail/views/discuss_channel_rtc_session_views.xml 
+2026-05-19 12:13:32,437 1 INFO demodb odoo.modules.loading: loading mail/views/mail_link_preview_views.xml 
+2026-05-19 12:13:32,449 1 INFO demodb odoo.modules.loading: loading mail/views/discuss/discuss_gif_favorite_views.xml 
+2026-05-19 12:13:32,461 1 INFO demodb odoo.modules.loading: loading mail/views/discuss_channel_views.xml 
+2026-05-19 12:13:32,485 1 INFO demodb odoo.modules.loading: loading mail/views/mail_shortcode_views.xml 
+2026-05-19 12:13:32,501 1 INFO demodb odoo.modules.loading: loading mail/views/mail_activity_views.xml 
+2026-05-19 12:13:32,582 1 INFO demodb odoo.modules.loading: loading mail/views/mail_activity_plan_views.xml 
+2026-05-19 12:13:32,608 1 INFO demodb odoo.modules.loading: loading mail/views/mail_activity_plan_template_views.xml 
+2026-05-19 12:13:32,618 1 INFO demodb odoo.modules.loading: loading mail/views/res_config_settings_views.xml 
+2026-05-19 12:13:32,642 1 INFO demodb odoo.modules.loading: loading mail/data/ir_config_parameter_data.xml 
+2026-05-19 12:13:32,646 1 INFO demodb odoo.modules.loading: loading mail/data/res_partner_data.xml 
+2026-05-19 12:13:32,722 1 INFO demodb odoo.modules.loading: loading mail/data/mail_message_subtype_data.xml 
+2026-05-19 12:13:32,733 1 INFO demodb odoo.modules.loading: loading mail/data/mail_templates_chatter.xml 
+2026-05-19 12:13:32,756 1 INFO demodb odoo.modules.loading: loading mail/data/mail_templates_email_layouts.xml 
+2026-05-19 12:13:32,799 1 INFO demodb odoo.modules.loading: loading mail/data/mail_templates_mailgateway.xml 
+2026-05-19 12:13:32,855 1 INFO demodb odoo.modules.loading: loading mail/data/discuss_channel_data.xml 
+2026-05-19 12:13:32,987 1 INFO demodb odoo.modules.loading: loading mail/data/mail_activity_data.xml 
+2026-05-19 12:13:33,006 1 INFO demodb odoo.modules.loading: loading mail/data/security_notifications_templates.xml 
+2026-05-19 12:13:33,012 1 INFO demodb odoo.modules.loading: loading mail/data/ir_cron_data.xml 
+2026-05-19 12:13:33,054 1 INFO demodb odoo.modules.loading: loading mail/security/mail_security.xml 
+2026-05-19 12:13:33,185 1 INFO demodb odoo.modules.loading: loading mail/security/ir.model.access.csv 
+2026-05-19 12:13:33,258 1 INFO demodb odoo.modules.loading: loading mail/views/discuss_public_templates.xml 
+2026-05-19 12:13:33,264 1 INFO demodb odoo.modules.loading: loading mail/views/mail_alias_domain_views.xml 
+2026-05-19 12:13:33,281 1 INFO demodb odoo.modules.loading: loading mail/views/mail_alias_views.xml 
+2026-05-19 12:13:33,299 1 INFO demodb odoo.modules.loading: loading mail/views/mail_gateway_allowed_views.xml 
+2026-05-19 12:13:33,310 1 INFO demodb odoo.modules.loading: loading mail/views/mail_guest_views.xml 
+2026-05-19 12:13:33,321 1 INFO demodb odoo.modules.loading: loading mail/views/mail_message_reaction_views.xml 
+2026-05-19 12:13:33,333 1 INFO demodb odoo.modules.loading: loading mail/views/mail_templates_public.xml 
+2026-05-19 12:13:33,344 1 INFO demodb odoo.modules.loading: loading mail/views/res_users_views.xml 
+2026-05-19 12:13:33,365 1 INFO demodb odoo.modules.loading: loading mail/views/res_users_settings_views.xml 
+2026-05-19 12:13:33,380 1 INFO demodb odoo.modules.loading: loading mail/views/mail_template_views.xml 
+2026-05-19 12:13:33,411 1 INFO demodb odoo.modules.loading: loading mail/views/ir_actions_server_views.xml 
+2026-05-19 12:13:33,428 1 INFO demodb odoo.modules.loading: loading mail/views/ir_model_views.xml 
+2026-05-19 12:13:33,450 1 INFO demodb odoo.modules.loading: loading mail/views/res_partner_views.xml 
+2026-05-19 12:13:33,497 1 INFO demodb odoo.modules.loading: loading mail/views/mail_blacklist_views.xml 
+2026-05-19 12:13:33,513 1 INFO demodb odoo.modules.loading: loading mail/views/mail_menus.xml 
+2026-05-19 12:13:33,645 1 INFO demodb odoo.modules.loading: loading mail/views/res_company_views.xml 
+2026-05-19 12:13:33,660 1 INFO demodb odoo.addons.base.models.ir_module: module mail: loading translation file /usr/lib/python3/dist-packages/odoo/addons/mail/i18n/ar.po for language ar_001 
+2026-05-19 12:13:33,661 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/mail/i18n/ar.po for language ar_001 
+2026-05-19 12:13:33,962 1 INFO demodb odoo.modules.loading: Module mail loaded in 4.41s, 4164 queries (+4165 other) 
+2026-05-19 12:13:33,962 1 INFO demodb odoo.modules.loading: Loading module web_editor (15/57) 
+2026-05-19 12:13:34,059 1 INFO demodb odoo.modules.registry: module web_editor: creating or updating database tables 
+2026-05-19 12:13:34,918 1 INFO demodb odoo.modules.loading: loading web_editor/security/ir.model.access.csv 
+2026-05-19 12:13:34,938 1 INFO demodb odoo.modules.loading: loading web_editor/data/editor_assets.xml 
+2026-05-19 12:13:34,946 1 INFO demodb odoo.modules.loading: loading web_editor/views/editor.xml 
+2026-05-19 12:13:34,967 1 INFO demodb odoo.modules.loading: loading web_editor/views/snippets.xml 
+2026-05-19 12:13:35,014 1 INFO demodb odoo.addons.base.models.ir_module: module web_editor: loading translation file /usr/lib/python3/dist-packages/odoo/addons/web_editor/i18n/ar.po for language ar_001 
+2026-05-19 12:13:35,014 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/web_editor/i18n/ar.po for language ar_001 
+2026-05-19 12:13:35,096 1 INFO demodb odoo.modules.loading: Module web_editor loaded in 1.13s, 1361 queries (+1361 other) 
+2026-05-19 12:13:35,097 1 INFO demodb odoo.modules.loading: Loading module analytic (16/57) 
+2026-05-19 12:13:35,155 1 INFO demodb odoo.modules.registry: module analytic: creating or updating database tables 
+2026-05-19 12:13:35,401 1 INFO demodb odoo.modules.loading: loading analytic/security/analytic_security.xml 
+2026-05-19 12:13:35,443 1 INFO demodb odoo.modules.loading: loading analytic/security/ir.model.access.csv 
+2026-05-19 12:13:35,462 1 INFO demodb odoo.modules.loading: loading analytic/views/analytic_line_views.xml 
+2026-05-19 12:13:35,502 1 INFO demodb odoo.modules.loading: loading analytic/views/analytic_account_views.xml 
+2026-05-19 12:13:35,535 1 INFO demodb odoo.modules.loading: loading analytic/views/analytic_plan_views.xml 
+2026-05-19 12:13:35,553 1 INFO demodb odoo.modules.loading: loading analytic/views/analytic_distribution_model_views.xml 
+2026-05-19 12:13:35,567 1 INFO demodb odoo.modules.loading: loading analytic/data/analytic_data.xml 
+2026-05-19 12:13:35,628 1 INFO demodb odoo.addons.base.models.ir_module: module analytic: loading translation file /usr/lib/python3/dist-packages/odoo/addons/analytic/i18n/ar.po for language ar_001 
+2026-05-19 12:13:35,628 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/analytic/i18n/ar.po for language ar_001 
+2026-05-19 12:13:35,682 1 INFO demodb odoo.modules.loading: Module analytic loaded in 0.58s, 423 queries (+423 other) 
+2026-05-19 12:13:35,682 1 INFO demodb odoo.modules.loading: Loading module auth_signup (17/57) 
+2026-05-19 12:13:35,805 1 INFO demodb odoo.modules.registry: module auth_signup: creating or updating database tables 
+2026-05-19 12:13:35,881 1 INFO demodb odoo.modules.loading: loading auth_signup/data/ir_config_parameter_data.xml 
+2026-05-19 12:13:35,888 1 INFO demodb odoo.modules.loading: loading auth_signup/data/ir_cron_data.xml 
+2026-05-19 12:13:35,900 1 INFO demodb odoo.modules.loading: loading auth_signup/data/mail_template_data.xml 
+2026-05-19 12:13:35,914 1 INFO demodb odoo.modules.loading: loading auth_signup/views/res_config_settings_views.xml 
+2026-05-19 12:13:35,930 1 INFO demodb odoo.modules.loading: loading auth_signup/views/res_users_views.xml 
+2026-05-19 12:13:35,952 1 INFO demodb odoo.modules.loading: loading auth_signup/views/auth_signup_login_templates.xml 
+2026-05-19 12:13:35,972 1 INFO demodb odoo.modules.loading: loading auth_signup/views/auth_signup_templates_email.xml 
+2026-05-19 12:13:35,984 1 INFO demodb odoo.modules.loading: loading auth_signup/views/webclient_templates.xml 
+2026-05-19 12:13:35,995 1 INFO demodb odoo.addons.base.models.ir_module: module auth_signup: loading translation file /usr/lib/python3/dist-packages/odoo/addons/auth_signup/i18n/ar.po for language ar_001 
+2026-05-19 12:13:35,995 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/auth_signup/i18n/ar.po for language ar_001 
+2026-05-19 12:13:36,048 1 INFO demodb odoo.modules.loading: Module auth_signup loaded in 0.37s, 213 queries (+213 other) 
+2026-05-19 12:13:36,048 1 INFO demodb odoo.modules.loading: Loading module auth_totp_mail (18/57) 
+2026-05-19 12:13:36,093 1 INFO demodb odoo.modules.registry: module auth_totp_mail: creating or updating database tables 
+2026-05-19 12:13:36,129 1 INFO demodb odoo.modules.loading: loading auth_totp_mail/data/ir_action_data.xml 
+2026-05-19 12:13:36,151 1 INFO demodb odoo.modules.loading: loading auth_totp_mail/data/mail_template_data.xml 
+2026-05-19 12:13:36,159 1 INFO demodb odoo.modules.loading: loading auth_totp_mail/data/security_notifications_template.xml 
+2026-05-19 12:13:36,170 1 INFO demodb odoo.modules.loading: loading auth_totp_mail/views/res_users_views.xml 
+2026-05-19 12:13:36,214 1 INFO demodb odoo.addons.base.models.ir_module: module auth_totp_mail: loading translation file /usr/lib/python3/dist-packages/odoo/addons/auth_totp_mail/i18n/ar.po for language ar_001 
+2026-05-19 12:13:36,214 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/auth_totp_mail/i18n/ar.po for language ar_001 
+2026-05-19 12:13:36,244 1 INFO demodb odoo.modules.loading: Module auth_totp_mail loaded in 0.20s, 120 queries (+120 other) 
+2026-05-19 12:13:36,244 1 INFO demodb odoo.modules.loading: Loading module base_install_request (19/57) 
+2026-05-19 12:13:36,290 1 INFO demodb odoo.modules.registry: module base_install_request: creating or updating database tables 
+2026-05-19 12:13:36,374 1 INFO demodb odoo.modules.loading: loading base_install_request/security/ir.model.access.csv 
+2026-05-19 12:13:36,391 1 INFO demodb odoo.modules.loading: loading base_install_request/wizard/base_module_install_request_views.xml 
+2026-05-19 12:13:36,406 1 INFO demodb odoo.modules.loading: loading base_install_request/data/mail_template_data.xml 
+2026-05-19 12:13:36,413 1 INFO demodb odoo.modules.loading: loading base_install_request/data/mail_templates_module_install.xml 
+2026-05-19 12:13:36,420 1 INFO demodb odoo.modules.loading: loading base_install_request/views/ir_module_module_views.xml 
+2026-05-19 12:13:36,439 1 INFO demodb odoo.addons.base.models.ir_module: module base_install_request: loading translation file /usr/lib/python3/dist-packages/odoo/addons/base_install_request/i18n/ar.po for language ar_001 
+2026-05-19 12:13:36,439 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/base_install_request/i18n/ar.po for language ar_001 
+2026-05-19 12:13:36,475 1 INFO demodb odoo.modules.loading: Module base_install_request loaded in 0.23s, 153 queries (+153 other) 
+2026-05-19 12:13:36,475 1 INFO demodb odoo.modules.loading: Loading module contacts (20/57) 
+2026-05-19 12:13:36,518 1 INFO demodb odoo.modules.registry: module contacts: creating or updating database tables 
+2026-05-19 12:13:36,553 1 INFO demodb odoo.modules.loading: loading contacts/views/contact_views.xml 
+2026-05-19 12:13:36,641 1 INFO demodb odoo.addons.base.models.ir_module: module contacts: loading translation file /usr/lib/python3/dist-packages/odoo/addons/contacts/i18n/ar.po for language ar_001 
+2026-05-19 12:13:36,641 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/contacts/i18n/ar.po for language ar_001 
+2026-05-19 12:13:36,657 1 INFO demodb odoo.modules.loading: Module contacts loaded in 0.18s, 227 queries (+227 other) 
+2026-05-19 12:13:36,657 1 INFO demodb odoo.modules.loading: Loading module google_gmail (21/57) 
+2026-05-19 12:13:36,711 1 INFO demodb odoo.modules.registry: module google_gmail: creating or updating database tables 
+2026-05-19 12:13:36,771 1 INFO demodb odoo.modules.loading: loading google_gmail/views/fetchmail_server_views.xml 
+2026-05-19 12:13:36,785 1 INFO demodb odoo.modules.loading: loading google_gmail/views/ir_mail_server_views.xml 
+2026-05-19 12:13:36,796 1 INFO demodb odoo.modules.loading: loading google_gmail/views/res_config_settings_views.xml 
+2026-05-19 12:13:36,824 1 INFO demodb odoo.addons.base.models.ir_module: module google_gmail: loading translation file /usr/lib/python3/dist-packages/odoo/addons/google_gmail/i18n/ar.po for language ar_001 
+2026-05-19 12:13:36,824 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/google_gmail/i18n/ar.po for language ar_001 
+2026-05-19 12:13:36,846 1 INFO demodb odoo.modules.loading: Module google_gmail loaded in 0.19s, 125 queries (+125 other) 
+2026-05-19 12:13:36,846 1 INFO demodb odoo.modules.loading: Loading module iap_mail (22/57) 
+2026-05-19 12:13:36,887 1 INFO demodb odoo.modules.registry: module iap_mail: creating or updating database tables 
+2026-05-19 12:13:36,906 1 INFO demodb odoo.modules.loading: loading iap_mail/data/mail_templates.xml 
+2026-05-19 12:13:36,934 1 INFO demodb odoo.addons.base.models.ir_module: module iap_mail: loading translation file /usr/lib/python3/dist-packages/odoo/addons/iap_mail/i18n/ar.po for language ar_001 
+2026-05-19 12:13:36,934 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/iap_mail/i18n/ar.po for language ar_001 
+2026-05-19 12:13:36,953 1 INFO demodb odoo.modules.loading: Module iap_mail loaded in 0.11s, 44 queries (+44 other) 
+2026-05-19 12:13:36,953 1 INFO demodb odoo.modules.loading: Loading module mail_bot (23/57) 
+2026-05-19 12:13:37,009 1 INFO demodb odoo.modules.registry: module mail_bot: creating or updating database tables 
+2026-05-19 12:13:37,120 1 INFO demodb odoo.modules.loading: loading mail_bot/views/res_users_views.xml 
+2026-05-19 12:13:37,143 1 INFO demodb odoo.modules.loading: loading mail_bot/data/mailbot_data.xml 
+2026-05-19 12:13:37,151 1 INFO demodb odoo.addons.base.models.ir_module: module mail_bot: loading translation file /usr/lib/python3/dist-packages/odoo/addons/mail_bot/i18n/ar.po for language ar_001 
+2026-05-19 12:13:37,151 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/mail_bot/i18n/ar.po for language ar_001 
+2026-05-19 12:13:37,168 1 INFO demodb odoo.modules.loading: Module mail_bot loaded in 0.21s, 161 queries (+161 other) 
+2026-05-19 12:13:37,168 1 INFO demodb odoo.modules.loading: Loading module phone_validation (24/57) 
+2026-05-19 12:13:37,298 1 INFO demodb odoo.modules.registry: module phone_validation: creating or updating database tables 
+2026-05-19 12:13:38,255 1 INFO demodb odoo.modules.loading: loading phone_validation/security/ir.model.access.csv 
+2026-05-19 12:13:38,272 1 INFO demodb odoo.modules.loading: loading phone_validation/views/phone_blacklist_views.xml 
+2026-05-19 12:13:38,299 1 INFO demodb odoo.modules.loading: loading phone_validation/wizard/phone_blacklist_remove_view.xml 
+2026-05-19 12:13:38,310 1 INFO demodb odoo.addons.base.models.ir_module: module phone_validation: loading translation file /usr/lib/python3/dist-packages/odoo/addons/phone_validation/i18n/ar.po for language ar_001 
+2026-05-19 12:13:38,310 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/phone_validation/i18n/ar.po for language ar_001 
+2026-05-19 12:13:38,339 1 INFO demodb odoo.modules.loading: Module phone_validation loaded in 1.17s, 1435 queries (+1435 other) 
+2026-05-19 12:13:38,339 1 INFO demodb odoo.modules.loading: Loading module privacy_lookup (25/57) 
+2026-05-19 12:13:38,457 1 INFO demodb odoo.modules.registry: module privacy_lookup: creating or updating database tables 
+2026-05-19 12:13:38,596 1 INFO demodb odoo.modules.loading: loading privacy_lookup/wizard/privacy_lookup_wizard_views.xml 
+2026-05-19 12:13:38,630 1 INFO demodb odoo.modules.loading: loading privacy_lookup/views/privacy_log_views.xml 
+2026-05-19 12:13:38,653 1 INFO demodb odoo.modules.loading: loading privacy_lookup/security/ir.model.access.csv 
+2026-05-19 12:13:38,671 1 INFO demodb odoo.modules.loading: loading privacy_lookup/data/ir_actions_server_data.xml 
+2026-05-19 12:13:38,684 1 INFO demodb odoo.addons.base.models.ir_module: module privacy_lookup: loading translation file /usr/lib/python3/dist-packages/odoo/addons/privacy_lookup/i18n/ar.po for language ar_001 
+2026-05-19 12:13:38,684 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/privacy_lookup/i18n/ar.po for language ar_001 
+2026-05-19 12:13:38,712 1 INFO demodb odoo.modules.loading: Module privacy_lookup loaded in 0.37s, 253 queries (+253 other) 
+2026-05-19 12:13:38,712 1 INFO demodb odoo.modules.loading: Loading module product (26/57) 
+2026-05-19 12:13:38,847 1 INFO demodb odoo.modules.registry: module product: creating or updating database tables 
+2026-05-19 12:13:39,762 1 INFO demodb odoo.modules.loading: loading product/data/product_data.xml 
+2026-05-19 12:13:39,788 1 INFO demodb odoo.modules.loading: loading product/security/product_security.xml 
+2026-05-19 12:13:39,905 1 INFO demodb odoo.modules.loading: loading product/security/ir.model.access.csv 
+2026-05-19 12:13:39,941 1 INFO demodb odoo.modules.loading: loading product/wizard/product_label_layout_views.xml 
+2026-05-19 12:13:39,953 1 INFO demodb odoo.modules.loading: loading product/views/product_tag_views.xml 
+2026-05-19 12:13:39,966 1 INFO demodb odoo.modules.loading: loading product/views/product_views.xml 
+2026-05-19 12:13:40,073 1 INFO demodb odoo.modules.loading: loading product/views/res_config_settings_views.xml 
+2026-05-19 12:13:40,097 1 INFO demodb odoo.modules.loading: loading product/views/product_attribute_views.xml 
+2026-05-19 12:13:40,127 1 INFO demodb odoo.modules.loading: loading product/views/product_attribute_value_views.xml 
+2026-05-19 12:13:40,132 1 INFO demodb odoo.modules.loading: loading product/views/product_category_views.xml 
+2026-05-19 12:13:40,147 1 INFO demodb odoo.modules.loading: loading product/views/product_document_views.xml 
+2026-05-19 12:13:40,166 1 INFO demodb odoo.modules.loading: loading product/views/product_packaging_views.xml 
+2026-05-19 12:13:40,189 1 INFO demodb odoo.modules.loading: loading product/views/product_pricelist_item_views.xml 
+2026-05-19 12:13:40,212 1 INFO demodb odoo.modules.loading: loading product/views/product_pricelist_views.xml 
+2026-05-19 12:13:40,239 1 INFO demodb odoo.modules.loading: loading product/views/product_supplierinfo_views.xml 
+2026-05-19 12:13:40,263 1 INFO demodb odoo.modules.loading: loading product/views/product_template_views.xml 
+2026-05-19 12:13:40,299 1 INFO demodb odoo.modules.loading: loading product/views/res_country_group_views.xml 
+2026-05-19 12:13:40,306 1 INFO demodb odoo.modules.loading: loading product/views/res_partner_views.xml 
+2026-05-19 12:13:40,317 1 INFO demodb odoo.modules.loading: loading product/report/product_reports.xml 
+2026-05-19 12:13:40,342 1 INFO demodb odoo.modules.loading: loading product/report/product_product_templates.xml 
+2026-05-19 12:13:40,372 1 INFO demodb odoo.modules.loading: loading product/report/product_template_templates.xml 
+2026-05-19 12:13:40,392 1 INFO demodb odoo.modules.loading: loading product/report/product_packaging.xml 
+2026-05-19 12:13:40,398 1 INFO demodb odoo.modules.loading: loading product/report/product_pricelist_report_templates.xml 
+2026-05-19 12:13:40,413 1 INFO demodb odoo.addons.base.models.ir_module: module product: loading translation file /usr/lib/python3/dist-packages/odoo/addons/product/i18n/ar.po for language ar_001 
+2026-05-19 12:13:40,413 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/product/i18n/ar.po for language ar_001 
+2026-05-19 12:13:40,559 1 INFO demodb odoo.modules.loading: Module product loaded in 1.85s, 1511 queries (+1511 other) 
+2026-05-19 12:13:40,559 1 INFO demodb odoo.modules.loading: Loading module web_unsplash (27/57) 
+2026-05-19 12:13:40,612 1 INFO demodb odoo.modules.registry: module web_unsplash: creating or updating database tables 
+2026-05-19 12:13:40,667 1 INFO demodb odoo.modules.loading: loading web_unsplash/views/res_config_settings_view.xml 
+2026-05-19 12:13:40,699 1 INFO demodb odoo.addons.base.models.ir_module: module web_unsplash: loading translation file /usr/lib/python3/dist-packages/odoo/addons/web_unsplash/i18n/ar.po for language ar_001 
+2026-05-19 12:13:40,699 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/web_unsplash/i18n/ar.po for language ar_001 
+2026-05-19 12:13:40,715 1 INFO demodb odoo.modules.loading: Module web_unsplash loaded in 0.16s, 103 queries (+103 other) 
+2026-05-19 12:13:40,715 1 INFO demodb odoo.modules.loading: Loading module partner_autocomplete (28/57) 
+2026-05-19 12:13:40,770 1 INFO demodb odoo.modules.registry: module partner_autocomplete: creating or updating database tables 
+2026-05-19 12:13:40,879 1 INFO demodb odoo.modules.loading: loading partner_autocomplete/security/ir.model.access.csv 
+2026-05-19 12:13:40,892 1 INFO demodb odoo.modules.loading: loading partner_autocomplete/views/res_partner_views.xml 
+2026-05-19 12:13:40,912 1 INFO demodb odoo.modules.loading: loading partner_autocomplete/views/res_company_views.xml 
+2026-05-19 12:13:40,921 1 INFO demodb odoo.modules.loading: loading partner_autocomplete/views/res_config_settings_views.xml 
+2026-05-19 12:13:40,934 1 INFO demodb odoo.modules.loading: loading partner_autocomplete/data/cron.xml 
+2026-05-19 12:13:40,948 1 INFO demodb odoo.addons.base.models.ir_module: module partner_autocomplete: loading translation file /usr/lib/python3/dist-packages/odoo/addons/partner_autocomplete/i18n/ar.po for language ar_001 
+2026-05-19 12:13:40,949 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/partner_autocomplete/i18n/ar.po for language ar_001 
+2026-05-19 12:13:40,969 1 INFO demodb odoo.modules.loading: Module partner_autocomplete loaded in 0.25s, 200 queries (+200 other) 
+2026-05-19 12:13:40,970 1 INFO demodb odoo.modules.loading: Loading module portal (29/57) 
+2026-05-19 12:13:41,042 1 INFO demodb odoo.modules.registry: module portal: creating or updating database tables 
+2026-05-19 12:13:41,431 1 INFO demodb odoo.modules.loading: loading portal/security/ir.model.access.csv 
+2026-05-19 12:13:41,444 1 INFO demodb odoo.modules.loading: loading portal/data/mail_template_data.xml 
+2026-05-19 12:13:41,453 1 INFO demodb odoo.modules.loading: loading portal/data/mail_templates.xml 
+2026-05-19 12:13:41,463 1 INFO demodb odoo.modules.loading: loading portal/views/mail_templates_public.xml 
+2026-05-19 12:13:41,472 1 INFO demodb odoo.modules.loading: loading portal/views/portal_templates.xml 
+2026-05-19 12:13:41,582 1 INFO demodb odoo.modules.loading: loading portal/views/res_config_settings_views.xml 
+2026-05-19 12:13:41,596 1 INFO demodb odoo.modules.loading: loading portal/wizard/portal_share_views.xml 
+2026-05-19 12:13:41,606 1 INFO demodb odoo.modules.loading: loading portal/wizard/portal_wizard_views.xml 
+2026-05-19 12:13:41,626 1 INFO demodb odoo.addons.base.models.ir_module: module portal: loading translation file /usr/lib/python3/dist-packages/odoo/addons/portal/i18n/ar.po for language ar_001 
+2026-05-19 12:13:41,626 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/portal/i18n/ar.po for language ar_001 
+2026-05-19 12:13:41,690 1 INFO demodb odoo.modules.loading: Module portal loaded in 0.72s, 503 queries (+503 other) 
+2026-05-19 12:13:41,691 1 INFO demodb odoo.modules.loading: Loading module sms (30/57) 
+2026-05-19 12:13:41,780 1 INFO demodb odoo.modules.registry: module sms: creating or updating database tables 
+2026-05-19 12:13:41,788 1 INFO demodb odoo.models: Prepare computation of ir.actions.server.sms_template_id 
+2026-05-19 12:13:41,788 1 INFO demodb odoo.models: Prepare computation of ir.actions.server.sms_method 
+2026-05-19 12:13:41,821 1 INFO demodb odoo.models: Prepare computation of res.partner.phone_sanitized 
+2026-05-19 12:13:43,106 1 INFO demodb odoo.modules.loading: loading sms/data/ir_cron_data.xml 
+2026-05-19 12:13:43,118 1 INFO demodb odoo.modules.loading: loading sms/wizard/sms_composer_views.xml 
+2026-05-19 12:13:43,135 1 INFO demodb odoo.modules.loading: loading sms/wizard/sms_template_preview_views.xml 
+2026-05-19 12:13:43,148 1 INFO demodb odoo.modules.loading: loading sms/wizard/sms_resend_views.xml 
+2026-05-19 12:13:43,162 1 INFO demodb odoo.modules.loading: loading sms/wizard/sms_template_reset_views.xml 
+2026-05-19 12:13:43,175 1 INFO demodb odoo.modules.loading: loading sms/views/ir_actions_server_views.xml 
+2026-05-19 12:13:43,191 1 INFO demodb odoo.modules.loading: loading sms/views/mail_notification_views.xml 
+2026-05-19 12:13:43,208 1 INFO demodb odoo.modules.loading: loading sms/views/res_config_settings_views.xml 
+2026-05-19 12:13:43,237 1 INFO demodb odoo.modules.loading: loading sms/views/res_partner_views.xml 
+2026-05-19 12:13:43,270 1 INFO demodb odoo.modules.loading: loading sms/views/sms_sms_views.xml 
+2026-05-19 12:13:43,297 1 INFO demodb odoo.modules.loading: loading sms/views/sms_template_views.xml 
+2026-05-19 12:13:43,324 1 INFO demodb odoo.modules.loading: loading sms/security/ir.model.access.csv 
+2026-05-19 12:13:43,367 1 INFO demodb odoo.modules.loading: loading sms/security/sms_security.xml 
+2026-05-19 12:13:43,383 1 INFO demodb odoo.addons.base.models.ir_module: module sms: loading translation file /usr/lib/python3/dist-packages/odoo/addons/sms/i18n/ar.po for language ar_001 
+2026-05-19 12:13:43,384 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/sms/i18n/ar.po for language ar_001 
+2026-05-19 12:13:43,472 1 INFO demodb odoo.modules.loading: Module sms loaded in 1.78s, 2003 queries (+2003 other) 
+2026-05-19 12:13:43,472 1 INFO demodb odoo.modules.loading: Loading module snailmail (31/57) 
+2026-05-19 12:13:43,535 1 INFO demodb odoo.modules.registry: module snailmail: creating or updating database tables 
+2026-05-19 12:13:43,835 1 INFO demodb odoo.modules.loading: loading snailmail/data/snailmail_data.xml 
+2026-05-19 12:13:43,846 1 INFO demodb odoo.modules.loading: loading snailmail/views/report_assets.xml 
+2026-05-19 12:13:43,860 1 INFO demodb odoo.modules.loading: loading snailmail/views/snailmail_views.xml 
+2026-05-19 12:13:43,880 1 INFO demodb odoo.modules.loading: loading snailmail/wizard/snailmail_letter_format_error_views.xml 
+2026-05-19 12:13:43,890 1 INFO demodb odoo.modules.loading: loading snailmail/wizard/snailmail_letter_missing_required_fields_views.xml 
+2026-05-19 12:13:43,899 1 INFO demodb odoo.modules.loading: loading snailmail/security/ir.model.access.csv 
+2026-05-19 12:13:43,922 1 INFO demodb odoo.addons.base.models.ir_module: module snailmail: loading translation file /usr/lib/python3/dist-packages/odoo/addons/snailmail/i18n/ar.po for language ar_001 
+2026-05-19 12:13:43,922 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/snailmail/i18n/ar.po for language ar_001 
+2026-05-19 12:13:43,957 1 INFO demodb odoo.modules.loading: Module snailmail loaded in 0.49s, 441 queries (+441 other) 
+2026-05-19 12:13:43,957 1 INFO demodb odoo.modules.loading: Loading module auth_totp_portal (32/57) 
+2026-05-19 12:13:44,016 1 INFO demodb odoo.modules.registry: module auth_totp_portal: creating or updating database tables 
+2026-05-19 12:13:44,053 1 INFO demodb odoo.modules.loading: loading auth_totp_portal/security/security.xml 
+2026-05-19 12:13:44,072 1 INFO demodb odoo.modules.loading: loading auth_totp_portal/views/templates.xml 
+2026-05-19 12:13:44,089 1 INFO demodb odoo.addons.base.models.ir_module: module auth_totp_portal: loading translation file /usr/lib/python3/dist-packages/odoo/addons/auth_totp_portal/i18n/ar.po for language ar_001 
+2026-05-19 12:13:44,090 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/auth_totp_portal/i18n/ar.po for language ar_001 
+2026-05-19 12:13:44,106 1 INFO demodb odoo.modules.loading: Module auth_totp_portal loaded in 0.15s, 70 queries (+70 other) 
+2026-05-19 12:13:44,106 1 INFO demodb odoo.modules.loading: Loading module digest (33/57) 
+2026-05-19 12:13:44,174 1 INFO demodb odoo.modules.registry: module digest: creating or updating database tables 
+2026-05-19 12:13:44,402 1 INFO demodb odoo.modules.loading: loading digest/security/ir.model.access.csv 
+2026-05-19 12:13:44,421 1 INFO demodb odoo.modules.loading: loading digest/data/digest_data.xml 
+2026-05-19 12:13:44,461 1 INFO demodb odoo.modules.loading: loading digest/data/digest_tips_data.xml 
+2026-05-19 12:13:44,485 1 INFO demodb odoo.modules.loading: loading digest/data/ir_cron_data.xml 
+2026-05-19 12:13:44,496 1 INFO demodb odoo.modules.loading: loading digest/data/res_config_settings_data.xml 
+2026-05-19 12:13:44,503 1 INFO demodb odoo.modules.loading: loading digest/views/digest_views.xml 
+2026-05-19 12:13:44,548 1 INFO demodb odoo.modules.loading: loading digest/views/digest_templates.xml 
+2026-05-19 12:13:44,555 1 INFO demodb odoo.modules.loading: loading digest/views/res_config_settings_views.xml 
+2026-05-19 12:13:44,577 1 INFO demodb odoo.addons.base.models.ir_module: module digest: loading translation file /usr/lib/python3/dist-packages/odoo/addons/digest/i18n/ar.po for language ar_001 
+2026-05-19 12:13:44,577 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/digest/i18n/ar.po for language ar_001 
+2026-05-19 12:13:44,629 1 INFO demodb odoo.modules.loading: Module digest loaded in 0.52s, 310 queries (+310 other) 
+2026-05-19 12:13:44,629 1 INFO demodb odoo.modules.loading: Loading module payment (34/57) 
+2026-05-19 12:13:44,703 1 INFO demodb odoo.modules.registry: module payment: creating or updating database tables 
+2026-05-19 12:13:45,195 1 INFO demodb odoo.modules.loading: loading payment/data/onboarding_data.xml 
+2026-05-19 12:13:45,202 1 INFO demodb odoo.modules.loading: loading payment/data/payment_method_data.xml 
+2026-05-19 12:13:47,027 1 INFO demodb odoo.modules.loading: loading payment/data/payment_provider_data.xml 
+2026-05-19 12:13:47,189 1 INFO demodb odoo.modules.loading: loading payment/data/payment_cron.xml 
+2026-05-19 12:13:47,833 1 INFO demodb odoo.modules.loading: loading payment/views/express_checkout_templates.xml 
+2026-05-19 12:13:47,841 1 INFO demodb odoo.modules.loading: loading payment/views/payment_form_templates.xml 
+2026-05-19 12:13:47,869 1 INFO demodb odoo.modules.loading: loading payment/views/portal_templates.xml 
+2026-05-19 12:13:47,916 1 INFO demodb odoo.modules.loading: loading payment/views/payment_provider_views.xml 
+2026-05-19 12:13:47,947 1 INFO demodb odoo.modules.loading: loading payment/views/payment_method_views.xml 
+2026-05-19 12:13:47,971 1 INFO demodb odoo.modules.loading: loading payment/views/payment_transaction_views.xml 
+2026-05-19 12:13:47,998 1 INFO demodb odoo.modules.loading: loading payment/views/payment_token_views.xml 
+2026-05-19 12:13:48,019 1 INFO demodb odoo.modules.loading: loading payment/views/res_partner_views.xml 
+2026-05-19 12:13:48,033 1 INFO demodb odoo.modules.loading: loading payment/security/ir.model.access.csv 
+2026-05-19 12:13:48,053 1 INFO demodb odoo.modules.loading: loading payment/security/payment_security.xml 
+2026-05-19 12:13:48,082 1 INFO demodb odoo.modules.loading: loading payment/wizards/payment_capture_wizard_views.xml 
+2026-05-19 12:13:48,091 1 INFO demodb odoo.modules.loading: loading payment/wizards/payment_link_wizard_views.xml 
+2026-05-19 12:13:48,102 1 INFO demodb odoo.modules.loading: loading payment/wizards/payment_onboarding_views.xml 
+2026-05-19 12:13:48,120 1 INFO demodb odoo.addons.base.models.ir_module: module payment: loading translation file /usr/lib/python3/dist-packages/odoo/addons/payment/i18n/ar.po for language ar_001 
+2026-05-19 12:13:48,120 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/payment/i18n/ar.po for language ar_001 
+2026-05-19 12:13:48,275 1 INFO demodb odoo.modules.loading: Module payment loaded in 3.65s, 2247 queries (+2247 other) 
+2026-05-19 12:13:48,275 1 INFO demodb odoo.modules.loading: Loading module spreadsheet (35/57) 
+2026-05-19 12:13:48,379 1 INFO demodb odoo.modules.registry: module spreadsheet: creating or updating database tables 
+2026-05-19 12:13:48,442 1 INFO demodb odoo.modules.loading: loading spreadsheet/views/public_readonly_spreadsheet_templates.xml 
+2026-05-19 12:13:48,454 1 INFO demodb odoo.addons.base.models.ir_module: module spreadsheet: loading translation file /usr/lib/python3/dist-packages/odoo/addons/spreadsheet/i18n/ar.po for language ar_001 
+2026-05-19 12:13:48,454 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/spreadsheet/i18n/ar.po for language ar_001 
+2026-05-19 12:13:48,574 1 INFO demodb odoo.modules.loading: Module spreadsheet loaded in 0.30s, 88 queries (+88 other) 
+2026-05-19 12:13:48,574 1 INFO demodb odoo.modules.loading: Loading module account (36/57) 
+2026-05-19 12:13:48,887 1 INFO demodb odoo.modules.registry: module account: creating or updating database tables 
+2026-05-19 12:13:49,554 1 INFO demodb odoo.models: Prepare computation of res.company.account_fiscal_country_id 
+2026-05-19 12:13:49,554 1 INFO demodb odoo.models: Prepare computation of res.company.invoice_terms_html 
+2026-05-19 12:13:51,715 1 INFO demodb odoo.modules.loading: loading account/security/account_security.xml 
+2026-05-19 12:13:52,173 1 INFO demodb odoo.modules.loading: loading account/security/ir.model.access.csv 
+2026-05-19 12:13:52,276 1 INFO demodb odoo.modules.loading: loading account/data/account_data.xml 
+2026-05-19 12:13:52,352 1 INFO demodb odoo.modules.loading: loading account/data/digest_data.xml 
+2026-05-19 12:13:52,361 1 INFO demodb odoo.modules.loading: loading account/views/account_report.xml 
+2026-05-19 12:13:52,383 1 INFO demodb odoo.modules.loading: loading account/data/mail_template_data.xml 
+2026-05-19 12:13:52,399 1 INFO demodb odoo.modules.loading: loading account/data/onboarding_data.xml 
+2026-05-19 12:13:52,451 1 INFO demodb odoo.modules.loading: loading account/views/account_payment_view.xml 
+2026-05-19 12:13:52,529 1 INFO demodb odoo.modules.loading: loading account/wizard/account_automatic_entry_wizard_views.xml 
+2026-05-19 12:13:52,540 1 INFO demodb odoo.modules.loading: loading account/wizard/account_unreconcile_view.xml 
+2026-05-19 12:13:52,551 1 INFO demodb odoo.modules.loading: loading account/wizard/account_move_reversal_view.xml 
+2026-05-19 12:13:52,564 1 INFO demodb odoo.modules.loading: loading account/wizard/account_resequence_views.xml 
+2026-05-19 12:13:52,575 1 INFO demodb odoo.modules.loading: loading account/wizard/account_payment_register_views.xml 
+2026-05-19 12:13:52,587 1 INFO demodb odoo.modules.loading: loading account/views/account_move_views.xml 
+2026-05-19 12:13:52,991 1 INFO demodb odoo.modules.loading: loading account/wizard/setup_wizards_view.xml 
+2026-05-19 12:13:53,015 1 INFO demodb odoo.modules.loading: loading account/views/account_account_views.xml 
+2026-05-19 12:13:53,056 1 INFO demodb odoo.modules.loading: loading account/views/account_group_views.xml 
+2026-05-19 12:13:53,076 1 INFO demodb odoo.modules.loading: loading account/views/account_journal_views.xml 
+2026-05-19 12:13:53,134 1 INFO demodb odoo.modules.loading: loading account/views/account_account_tag_views.xml 
+2026-05-19 12:13:53,149 1 INFO demodb odoo.modules.loading: loading account/views/account_bank_statement_views.xml 
+2026-05-19 12:13:53,178 1 INFO demodb odoo.modules.loading: loading account/views/account_reconcile_model_views.xml 
+2026-05-19 12:13:53,213 1 INFO demodb odoo.modules.loading: loading account/views/account_tax_views.xml 
+2026-05-19 12:13:53,307 1 INFO demodb odoo.modules.loading: loading account/views/account_full_reconcile_views.xml 
+2026-05-19 12:13:53,317 1 INFO demodb odoo.modules.loading: loading account/views/account_payment_term_views.xml 
+2026-05-19 12:13:53,357 1 INFO demodb odoo.modules.loading: loading account/views/account_payment_method.xml 
+2026-05-19 12:13:53,368 1 INFO demodb odoo.modules.loading: loading account/views/res_partner_bank_views.xml 
+2026-05-19 12:13:53,401 1 INFO demodb odoo.modules.loading: loading account/views/report_statement.xml 
+2026-05-19 12:13:53,421 1 INFO demodb odoo.modules.loading: loading account/views/terms_template.xml 
+2026-05-19 12:13:53,446 1 INFO demodb odoo.modules.loading: loading account/wizard/account_validate_move_view.xml 
+2026-05-19 12:13:53,463 1 INFO demodb odoo.modules.loading: loading account/views/res_company_views.xml 
+2026-05-19 12:13:53,491 1 INFO demodb odoo.modules.loading: loading account/views/product_view.xml 
+2026-05-19 12:13:53,522 1 INFO demodb odoo.modules.loading: loading account/views/account_analytic_plan_views.xml 
+2026-05-19 12:13:53,532 1 INFO demodb odoo.modules.loading: loading account/views/account_analytic_account_views.xml 
+2026-05-19 12:13:53,553 1 INFO demodb odoo.modules.loading: loading account/views/account_analytic_distribution_model_views.xml 
+2026-05-19 12:13:53,572 1 INFO demodb odoo.modules.loading: loading account/views/account_analytic_line_views.xml 
+2026-05-19 12:13:53,606 1 INFO demodb odoo.modules.loading: loading account/views/report_invoice.xml 
+2026-05-19 12:13:53,651 1 INFO demodb odoo.modules.loading: loading account/report/account_invoice_report_view.xml 
+2026-05-19 12:13:53,698 1 INFO demodb odoo.modules.loading: loading account/views/account_cash_rounding_view.xml 
+2026-05-19 12:13:53,719 1 INFO demodb odoo.modules.loading: loading account/views/ir_module_views.xml 
+2026-05-19 12:13:53,729 1 INFO demodb odoo.modules.loading: loading account/views/res_config_settings_views.xml 
+2026-05-19 12:13:53,767 1 INFO demodb odoo.modules.loading: loading account/views/partner_view.xml 
+2026-05-19 12:13:53,837 1 INFO demodb odoo.modules.loading: loading account/views/account_journal_dashboard_view.xml 
+2026-05-19 12:13:53,861 1 INFO demodb odoo.modules.loading: loading account/views/account_portal_templates.xml 
+2026-05-19 12:13:53,903 1 INFO demodb odoo.modules.loading: loading account/views/report_payment_receipt_templates.xml 
+2026-05-19 12:13:53,915 1 INFO demodb odoo.modules.loading: loading account/data/service_cron.xml 
+2026-05-19 12:13:53,929 1 INFO demodb odoo.modules.loading: loading account/views/account_incoterms_view.xml 
+2026-05-19 12:13:53,948 1 INFO demodb odoo.modules.loading: loading account/data/account_incoterms_data.xml 
+2026-05-19 12:13:53,969 1 INFO demodb odoo.modules.loading: loading account/views/digest_views.xml 
+2026-05-19 12:13:53,979 1 INFO demodb odoo.modules.loading: loading account/wizard/account_move_send_views.xml 
+2026-05-19 12:13:53,993 1 INFO demodb odoo.modules.loading: loading account/report/account_hash_integrity_templates.xml 
+2026-05-19 12:13:54,007 1 INFO demodb odoo.modules.loading: loading account/views/res_currency.xml 
+2026-05-19 12:13:54,022 1 INFO demodb odoo.modules.loading: loading account/views/account_menuitem.xml 
+2026-05-19 12:13:54,269 1 INFO demodb odoo.modules.loading: loading account/wizard/account_tour_upload_bill.xml 
+2026-05-19 12:13:54,281 1 INFO demodb odoo.modules.loading: loading account/wizard/accrued_orders.xml 
+2026-05-19 12:13:54,289 1 INFO demodb odoo.modules.loading: loading account/views/bill_preview_template.xml 
+2026-05-19 12:13:54,300 1 INFO demodb odoo.modules.loading: loading account/data/account_reports_data.xml 
+2026-05-19 12:13:55,109 1 INFO demodb odoo.modules.loading: loading account/views/uom_uom_views.xml 
+2026-05-19 12:13:55,118 1 INFO demodb odoo.modules.loading: loading account/data/ir_config_parameter_data.xml 
+2026-05-19 12:13:55,126 1 INFO demodb odoo.addons.base.models.ir_module: module account: loading translation file /usr/lib/python3/dist-packages/odoo/addons/account/i18n/ar.po for language ar_001 
+2026-05-19 12:13:55,126 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/account/i18n/ar.po for language ar_001 
+2026-05-19 12:13:55,719 1 INFO demodb odoo.modules.loading: Module account loaded in 7.15s, 5741 queries (+5741 other) 
+2026-05-19 12:13:55,719 1 INFO demodb odoo.modules.loading: Loading module spreadsheet_dashboard (37/57) 
+2026-05-19 12:13:55,815 1 INFO demodb odoo.modules.registry: module spreadsheet_dashboard: creating or updating database tables 
+2026-05-19 12:13:56,063 1 INFO demodb odoo.modules.loading: loading spreadsheet_dashboard/security/security.xml 
+2026-05-19 12:13:56,148 1 INFO demodb odoo.modules.loading: loading spreadsheet_dashboard/security/ir.model.access.csv 
+2026-05-19 12:13:56,172 1 INFO demodb odoo.modules.loading: loading spreadsheet_dashboard/views/spreadsheet_dashboard_views.xml 
+2026-05-19 12:13:56,199 1 INFO demodb odoo.modules.loading: loading spreadsheet_dashboard/views/menu_views.xml 
+2026-05-19 12:13:56,230 1 INFO demodb odoo.modules.loading: loading spreadsheet_dashboard/data/dashboard.xml 
+2026-05-19 12:13:56,246 1 INFO demodb odoo.addons.base.models.ir_module: module spreadsheet_dashboard: loading translation file /usr/lib/python3/dist-packages/odoo/addons/spreadsheet_dashboard/i18n/ar.po for language ar_001 
+2026-05-19 12:13:56,246 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/spreadsheet_dashboard/i18n/ar.po for language ar_001 
+2026-05-19 12:13:56,274 1 INFO demodb odoo.modules.loading: Module spreadsheet_dashboard loaded in 0.55s, 281 queries (+281 other) 
+2026-05-19 12:13:56,274 1 INFO demodb odoo.modules.loading: Loading module account_add_gln (38/57) 
+2026-05-19 12:13:56,371 1 INFO demodb odoo.modules.registry: module account_add_gln: creating or updating database tables 
+2026-05-19 12:13:56,482 1 INFO demodb odoo.modules.loading: loading account_add_gln/views/res_partner_views.xml 
+2026-05-19 12:13:56,505 1 INFO demodb odoo.addons.base.models.ir_module: module account_add_gln: loading translation file /usr/lib/python3/dist-packages/odoo/addons/account_add_gln/i18n/ar.po for language ar_001 
+2026-05-19 12:13:56,505 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/account_add_gln/i18n/ar.po for language ar_001 
+2026-05-19 12:13:56,523 1 INFO demodb odoo.modules.loading: Module account_add_gln loaded in 0.25s, 99 queries (+99 other) 
+2026-05-19 12:13:56,523 1 INFO demodb odoo.modules.loading: Loading module account_edi_ubl_cii (39/57) 
+2026-05-19 12:13:56,701 1 INFO demodb odoo.modules.registry: module account_edi_ubl_cii: creating or updating database tables 
+2026-05-19 12:13:56,722 1 INFO demodb odoo.models: Prepare computation of res.partner.ubl_cii_format 
+2026-05-19 12:13:56,722 1 INFO demodb odoo.models: Prepare computation of res.partner.peppol_endpoint 
+2026-05-19 12:13:56,722 1 INFO demodb odoo.models: Prepare computation of res.partner.peppol_eas 
+2026-05-19 12:13:56,897 1 INFO demodb odoo.modules.loading: loading account_edi_ubl_cii/data/cii_22_templates.xml 
+2026-05-19 12:13:56,925 1 INFO demodb odoo.modules.loading: loading account_edi_ubl_cii/data/ubl_20_templates.xml 
+2026-05-19 12:13:57,029 1 INFO demodb odoo.modules.loading: loading account_edi_ubl_cii/data/ubl_21_templates.xml 
+2026-05-19 12:13:57,066 1 INFO demodb odoo.modules.loading: loading account_edi_ubl_cii/views/account_move_views.xml 
+2026-05-19 12:13:57,075 1 INFO demodb odoo.modules.loading: loading account_edi_ubl_cii/views/res_config_settings_views.xml 
+2026-05-19 12:13:57,094 1 INFO demodb odoo.modules.loading: loading account_edi_ubl_cii/views/res_partner_views.xml 
+2026-05-19 12:13:57,126 1 INFO demodb odoo.modules.loading: loading account_edi_ubl_cii/wizard/account_move_send_views.xml 
+2026-05-19 12:13:57,139 1 INFO demodb odoo.addons.base.models.ir_module: module account_edi_ubl_cii: loading translation file /usr/lib/python3/dist-packages/odoo/addons/account_edi_ubl_cii/i18n/ar.po for language ar_001 
+2026-05-19 12:13:57,139 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/account_edi_ubl_cii/i18n/ar.po for language ar_001 
+2026-05-19 12:13:57,188 1 INFO demodb odoo.modules.loading: Module account_edi_ubl_cii loaded in 0.66s, 446 queries (+446 other) 
+2026-05-19 12:13:57,188 1 INFO demodb odoo.modules.loading: Loading module account_payment (40/57) 
+2026-05-19 12:13:57,304 1 INFO demodb odoo.modules.registry: module account_payment: creating or updating database tables 
+2026-05-19 12:13:57,517 1 INFO demodb odoo.modules.loading: loading account_payment/data/ir_config_parameter.xml 
+2026-05-19 12:13:57,525 1 INFO demodb odoo.modules.loading: loading account_payment/data/onboarding_data.xml 
+2026-05-19 12:13:57,538 1 INFO demodb odoo.modules.loading: loading account_payment/security/ir.model.access.csv 
+2026-05-19 12:13:57,552 1 INFO demodb odoo.modules.loading: loading account_payment/security/ir_rules.xml 
+2026-05-19 12:13:57,561 1 INFO demodb odoo.modules.loading: loading account_payment/views/account_payment_menus.xml 
+2026-05-19 12:13:57,586 1 INFO demodb odoo.modules.loading: loading account_payment/views/account_portal_templates.xml 
+2026-05-19 12:13:57,625 1 INFO demodb odoo.modules.loading: loading account_payment/views/account_move_views.xml 
+2026-05-19 12:13:57,641 1 INFO demodb odoo.modules.loading: loading account_payment/views/account_journal_views.xml 
+2026-05-19 12:13:57,652 1 INFO demodb odoo.modules.loading: loading account_payment/views/account_payment_views.xml 
+2026-05-19 12:13:57,665 1 INFO demodb odoo.modules.loading: loading account_payment/views/payment_provider_views.xml 
+2026-05-19 12:13:57,677 1 INFO demodb odoo.modules.loading: loading account_payment/views/payment_transaction_views.xml 
+2026-05-19 12:13:57,691 1 INFO demodb odoo.modules.loading: loading account_payment/wizards/account_payment_register_views.xml 
+2026-05-19 12:13:57,705 1 INFO demodb odoo.modules.loading: loading account_payment/wizards/payment_link_wizard_views.xml 
+2026-05-19 12:13:57,714 1 INFO demodb odoo.modules.loading: loading account_payment/wizards/payment_refund_wizard_views.xml 
+2026-05-19 12:13:57,726 1 INFO demodb odoo.modules.loading: loading account_payment/wizards/res_config_settings_views.xml 
+2026-05-19 12:13:57,773 1 INFO demodb odoo.addons.base.models.ir_module: module account_payment: loading translation file /usr/lib/python3/dist-packages/odoo/addons/account_payment/i18n/ar.po for language ar_001 
+2026-05-19 12:13:57,773 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/account_payment/i18n/ar.po for language ar_001 
+2026-05-19 12:13:57,820 1 INFO demodb odoo.modules.loading: Module account_payment loaded in 0.63s, 481 queries (+481 other) 
+2026-05-19 12:13:57,821 1 INFO demodb odoo.modules.loading: Loading module account_payment_term (41/57) 
+2026-05-19 12:13:58,028 1 INFO demodb odoo.modules.registry: module account_payment_term: creating or updating database tables 
+2026-05-19 12:13:58,078 1 INFO demodb odoo.modules.loading: loading account_payment_term/views/account_payment_term_views.xml 
+2026-05-19 12:13:58,094 1 INFO demodb odoo.addons.base.models.ir_module: module account_payment_term: loading translation file /usr/lib/python3/dist-packages/odoo/addons/account_payment_term/i18n/ar.po for language ar_001 
+2026-05-19 12:13:58,094 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/account_payment_term/i18n/ar.po for language ar_001 
+2026-05-19 12:13:58,113 1 INFO demodb odoo.modules.loading: Module account_payment_term loaded in 0.29s, 58 queries (+58 other) 
+2026-05-19 12:13:58,113 1 INFO demodb odoo.modules.loading: Loading module sa_property_base (42/57) 
+2026-05-19 12:13:58,251 1 INFO demodb odoo.modules.registry: module sa_property_base: creating or updating database tables 
+2026-05-19 12:13:58,559 1 INFO demodb odoo.modules.loading: loading sa_property_base/security/ir.model.access.csv 
+2026-05-19 12:13:58,578 1 INFO demodb odoo.modules.loading: loading sa_property_base/data/sequence.xml 
+2026-05-19 12:13:58,586 1 INFO demodb odoo.modules.loading: loading sa_property_base/views/menu_root.xml 
+2026-05-19 12:13:58,592 1 INFO demodb odoo.modules.loading: loading sa_property_base/views/property_property_views.xml 
+2026-05-19 12:13:58,614 1 INFO demodb odoo.modules.loading: loading sa_property_base/views/property_tenancy_views.xml 
+2026-05-19 12:13:58,634 1 INFO demodb odoo.modules.loading: loading sa_property_base/views/property_inspection_views.xml 
+2026-05-19 12:13:58,669 1 INFO demodb odoo.modules.loading: loading sa_property_base/views/partner_views.xml 
+2026-05-19 12:13:58,695 1 INFO demodb odoo.modules.loading: loading sa_property_base/views/menu.xml 
+2026-05-19 12:13:58,707 1 INFO demodb odoo.modules.loading: loading sa_property_base/data/hide_unused_menus.xml 
+2026-05-19 12:13:58,712 1 INFO demodb odoo.modules.loading: loading sa_property_base/report/inspection_report.xml 
+2026-05-19 12:13:58,724 1 INFO demodb odoo.modules.loading: loading sa_property_base/report/lease_contract_report.xml 
+2026-05-19 12:13:58,740 1 INFO demodb odoo.addons.base.models.ir_module: module sa_property_base: no translation for language ar_001 
+2026-05-19 12:13:58,755 1 INFO demodb odoo.modules.loading: Module sa_property_base loaded in 0.64s, 418 queries (+418 other) 
+2026-05-19 12:13:58,755 1 INFO demodb odoo.modules.loading: Loading module snailmail_account (43/57) 
+2026-05-19 12:13:58,854 1 INFO demodb odoo.modules.registry: module snailmail_account: creating or updating database tables 
+2026-05-19 12:13:58,977 1 INFO demodb odoo.modules.loading: loading snailmail_account/views/res_config_settings_views.xml 
+2026-05-19 12:13:59,000 1 INFO demodb odoo.modules.loading: loading snailmail_account/wizard/account_move_send_views.xml 
+2026-05-19 12:13:59,015 1 INFO demodb odoo.addons.base.models.ir_module: module snailmail_account: loading translation file /usr/lib/python3/dist-packages/odoo/addons/snailmail_account/i18n/ar.po for language ar_001 
+2026-05-19 12:13:59,015 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/snailmail_account/i18n/ar.po for language ar_001 
+2026-05-19 12:13:59,034 1 INFO demodb odoo.modules.loading: Module snailmail_account loaded in 0.28s, 137 queries (+137 other) 
+2026-05-19 12:13:59,034 1 INFO demodb odoo.modules.loading: Loading module spreadsheet_account (44/57) 
+2026-05-19 12:13:59,132 1 INFO demodb odoo.modules.registry: module spreadsheet_account: creating or updating database tables 
+2026-05-19 12:13:59,207 1 INFO demodb odoo.addons.base.models.ir_module: module spreadsheet_account: loading translation file /usr/lib/python3/dist-packages/odoo/addons/spreadsheet_account/i18n/ar.po for language ar_001 
+2026-05-19 12:13:59,207 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/spreadsheet_account/i18n/ar.po for language ar_001 
+2026-05-19 12:13:59,246 1 INFO demodb odoo.modules.loading: Module spreadsheet_account loaded in 0.21s, 57 queries (+57 other) 
+2026-05-19 12:13:59,247 1 INFO demodb odoo.modules.loading: Loading module spreadsheet_dashboard_account (45/57) 
+2026-05-19 12:13:59,356 1 INFO demodb odoo.modules.loading: loading spreadsheet_dashboard_account/data/dashboards.xml 
+2026-05-19 12:13:59,521 1 INFO demodb odoo.addons.base.models.ir_module: module spreadsheet_dashboard_account: loading translation file /usr/lib/python3/dist-packages/odoo/addons/spreadsheet_dashboard_account/i18n/ar.po for language ar_001 
+2026-05-19 12:13:59,521 1 INFO demodb odoo.tools.translate: loading base translation file /usr/lib/python3/dist-packages/odoo/addons/spreadsheet_dashboard_account/i18n/ar.po for language ar_001 
+2026-05-19 12:13:59,535 1 INFO demodb odoo.modules.loading: Module spreadsheet_dashboard_account loaded in 0.29s, 31 queries (+31 other) 
+2026-05-19 12:13:59,535 1 INFO demodb odoo.modules.loading: Loading module l10n_sa_ejar (46/57) 
+2026-05-19 12:13:59,657 1 INFO demodb odoo.modules.registry: module l10n_sa_ejar: creating or updating database tables 
+2026-05-19 12:13:59,918 1 INFO demodb odoo.modules.loading: loading l10n_sa_ejar/security/ir.model.access.csv 
+2026-05-19 12:13:59,935 1 INFO demodb odoo.modules.loading: loading l10n_sa_ejar/data/sa_regions_data.xml 
+2026-05-19 12:13:59,989 1 INFO demodb odoo.modules.loading: loading l10n_sa_ejar/data/ejar_sequence.xml 
+2026-05-19 12:13:59,995 1 INFO demodb odoo.modules.loading: loading l10n_sa_ejar/views/sa_region_views.xml 
+2026-05-19 12:14:00,029 1 INFO demodb odoo.modules.loading: loading l10n_sa_ejar/views/property_property_views.xml 
+2026-05-19 12:14:00,051 1 INFO demodb odoo.modules.loading: loading l10n_sa_ejar/views/property_tenancy_views.xml 
+2026-05-19 12:14:00,069 1 INFO demodb odoo.modules.loading: loading l10n_sa_ejar/views/res_partner_views.xml 
+2026-05-19 12:14:00,101 1 INFO demodb odoo.modules.loading: loading l10n_sa_ejar/views/ejar_contract_views.xml 
+2026-05-19 12:14:00,127 1 INFO demodb odoo.modules.loading: loading l10n_sa_ejar/views/menu.xml 
+2026-05-19 12:14:00,179 1 INFO demodb odoo.modules.loading: loading l10n_sa_ejar/wizard/ejar_sync_wizard_views.xml 
+2026-05-19 12:14:00,219 1 INFO demodb odoo.addons.base.models.ir_module: module l10n_sa_ejar: no translation for language ar_001 
+2026-05-19 12:14:00,230 1 WARNING demodb odoo.modules.loading: The models ['ejar.sync.wizard'] have no access rules in module l10n_sa_ejar, consider adding some, like:
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+l10n_sa_ejar.access_ejar_sync_wizard,access_ejar_sync_wizard,l10n_sa_ejar.model_ejar_sync_wizard,base.group_user,1,0,0,0 
+2026-05-19 12:14:00,266 1 INFO demodb odoo.modules.loading: Module l10n_sa_ejar loaded in 0.73s, 447 queries (+447 other) 
+2026-05-19 12:14:00,266 1 INFO demodb odoo.modules.loading: Loading module sa_maintenance (47/57) 
+2026-05-19 12:14:00,419 1 INFO demodb odoo.modules.registry: module sa_maintenance: creating or updating database tables 
+2026-05-19 12:14:00,755 1 INFO demodb odoo.modules.loading: loading sa_maintenance/security/ir.model.access.csv 
+2026-05-19 12:14:00,774 1 INFO demodb odoo.modules.loading: loading sa_maintenance/data/maintenance_skills_data.xml 
+2026-05-19 12:14:00,805 1 INFO demodb odoo.modules.loading: loading sa_maintenance/views/menu_root.xml 
+2026-05-19 12:14:00,810 1 INFO demodb odoo.modules.loading: loading sa_maintenance/views/maintenance_skill_views.xml 
+2026-05-19 12:14:00,821 1 INFO demodb odoo.modules.loading: loading sa_maintenance/views/res_partner_views.xml 
+2026-05-19 12:14:00,842 1 INFO demodb odoo.modules.loading: loading sa_maintenance/views/maintenance_contract_views.xml 
+2026-05-19 12:14:00,864 1 INFO demodb odoo.modules.loading: loading sa_maintenance/views/maintenance_work_order_views.xml 
+2026-05-19 12:14:00,882 1 INFO demodb odoo.modules.loading: loading sa_maintenance/views/maintenance_request_views.xml 
+2026-05-19 12:14:00,921 1 INFO demodb odoo.modules.loading: loading sa_maintenance/views/menu.xml 
+2026-05-19 12:14:00,951 1 INFO demodb odoo.addons.base.models.ir_module: module sa_maintenance: no translation for language ar_001 
+2026-05-19 12:14:00,973 1 INFO demodb odoo.modules.loading: Module sa_maintenance loaded in 0.71s, 478 queries (+478 other) 
+2026-05-19 12:14:00,974 1 INFO demodb odoo.modules.loading: Loading module sa_property (48/57) 
+2026-05-19 12:14:01,083 1 INFO demodb odoo.modules.registry: module sa_property: creating or updating database tables 
+2026-05-19 12:14:01,108 1 WARNING demodb odoo.addons.base.models.ir_model: Two fields (sa_deed_number, deed_number) of property.property() have the same label: رقم الصك. [Modules: sa_property and l10n_sa_ejar] 
+2026-05-19 12:14:01,108 1 WARNING demodb odoo.addons.base.models.ir_model: Two fields (sa_deed_type, deed_type) of property.property() have the same label: نوع الصك. [Modules: sa_property and l10n_sa_ejar] 
+2026-05-19 12:14:01,108 1 WARNING demodb odoo.addons.base.models.ir_model: Two fields (sa_plan_number, plan_number) of property.property() have the same label: رقم المخطط. [Modules: sa_property and l10n_sa_ejar] 
+2026-05-19 12:14:01,108 1 WARNING demodb odoo.addons.base.models.ir_model: Two fields (sa_plot_number, plot_number) of property.property() have the same label: رقم القطعة. [Modules: sa_property and l10n_sa_ejar] 
+2026-05-19 12:14:01,108 1 WARNING demodb odoo.addons.base.models.ir_model: Two fields (sa_municipality_number, municipality_number) of property.property() have the same label: رقم البلدية. [Modules: sa_property and l10n_sa_ejar] 
+2026-05-19 12:14:01,108 1 WARNING demodb odoo.addons.base.models.ir_model: Two fields (sa_national_address, national_address_code) of property.property() have the same label: رقم العنوان الوطني. [Modules: sa_property and l10n_sa_ejar] 
+2026-05-19 12:14:01,108 1 WARNING demodb odoo.addons.base.models.ir_model: Two fields (sa_district, district) of property.property() have the same label: الحي. [Modules: sa_property and l10n_sa_ejar] 
+2026-05-19 12:14:01,108 1 WARNING demodb odoo.addons.base.models.ir_model: Two fields (sa_building_no, building_number) of property.property() have the same label: رقم المبنى. [Modules: sa_property and l10n_sa_ejar] 
+2026-05-19 12:14:01,109 1 WARNING demodb odoo.addons.base.models.ir_model: Two fields (sa_postal_code, postal_code) of property.property() have the same label: الرمز البريدي. [Modules: sa_property and l10n_sa_ejar] 
+2026-05-19 12:14:01,109 1 WARNING demodb odoo.addons.base.models.ir_model: Two fields (sa_ejar_unit_id, ejar_unit_id) of property.property() have the same label: رقم الوحدة في إيجار. [Modules: sa_property and l10n_sa_ejar] 
+2026-05-19 12:14:01,109 1 WARNING demodb odoo.addons.base.models.ir_model: Two fields (sa_ejar_registered, ejar_registered) of property.property() have the same label: مسجل في إيجار. [Modules: sa_property and l10n_sa_ejar] 
+2026-05-19 12:14:01,187 1 INFO demodb odoo.modules.loading: loading sa_property/security/ir.model.access.csv 
+2026-05-19 12:14:01,189 1 INFO demodb odoo.modules.loading: loading sa_property/data/sa_property_types.xml 
+2026-05-19 12:14:01,190 1 INFO demodb odoo.modules.loading: loading sa_property/views/sa_property_views.xml 
+2026-05-19 12:14:01,210 1 INFO demodb odoo.modules.loading: loading sa_property/views/sa_tenancy_views.xml 
+2026-05-19 12:14:01,224 1 INFO demodb odoo.modules.loading: loading sa_property/views/menu.xml 
+2026-05-19 12:14:01,229 1 INFO demodb odoo.addons.base.models.ir_module: module sa_property: no translation for language ar_001 
+2026-05-19 12:14:01,247 1 INFO demodb odoo.modules.loading: Module sa_property loaded in 0.27s, 132 queries (+132 other) 
+2026-05-19 12:14:01,247 1 INFO demodb odoo.modules.loading: Loading module sa_rental_cycle (49/57) 
+2026-05-19 12:14:01,395 1 INFO demodb odoo.modules.registry: module sa_rental_cycle: creating or updating database tables 
+2026-05-19 12:14:02,239 1 INFO demodb odoo.modules.loading: loading sa_rental_cycle/security/ir.model.access.csv 
+2026-05-19 12:14:02,261 1 INFO demodb odoo.modules.loading: loading sa_rental_cycle/data/sa_rental_cron.xml 
+2026-05-19 12:14:02,283 1 INFO demodb odoo.modules.loading: loading sa_rental_cycle/views/sa_rent_payment_views.xml 
+2026-05-19 12:14:02,331 1 INFO demodb odoo.modules.loading: loading sa_rental_cycle/views/sa_tenancy_cycle_views.xml 
+2026-05-19 12:14:02,363 1 INFO demodb odoo.modules.loading: loading sa_rental_cycle/views/owner_dashboard_views.xml 
+2026-05-19 12:14:02,399 1 INFO demodb odoo.modules.loading: loading sa_rental_cycle/views/compliance_reports.xml 
+2026-05-19 12:14:02,462 1 INFO demodb odoo.modules.loading: loading sa_rental_cycle/wizard/sa_end_tenancy_wizard_views.xml 
+2026-05-19 12:14:02,476 1 INFO demodb odoo.modules.loading: loading sa_rental_cycle/wizard/sa_payment_wizard_views.xml 
+2026-05-19 12:14:02,487 1 INFO demodb odoo.modules.loading: loading sa_rental_cycle/wizard/sa_tenancy_renewal_wizard_views.xml 
+2026-05-19 12:14:02,496 1 INFO demodb odoo.modules.loading: loading sa_rental_cycle/views/menu.xml 
+2026-05-19 12:14:02,509 1 INFO demodb odoo.modules.loading: loading sa_rental_cycle/report/tenant_statement_report.xml 
+2026-05-19 12:14:02,529 1 INFO demodb odoo.addons.base.models.ir_module: module sa_rental_cycle: no translation for language ar_001 
+2026-05-19 12:14:02,556 1 INFO demodb odoo.modules.loading: Module sa_rental_cycle loaded in 1.31s, 530 queries (+530 other) 
+2026-05-19 12:14:02,556 1 INFO demodb odoo.modules.loading: Loading module sa_security (50/57) 
+2026-05-19 12:14:02,686 1 INFO demodb odoo.modules.registry: module sa_security: creating or updating database tables 
+2026-05-19 12:14:02,842 1 INFO demodb odoo.modules.loading: loading sa_security/data/res_groups_data.xml 
+2026-05-19 12:14:03,004 1 INFO demodb odoo.modules.loading: loading sa_security/security/ir.model.access.csv 
+2026-05-19 12:14:03,025 1 INFO demodb odoo.modules.loading: loading sa_security/data/ir_rule_data.xml 
+2026-05-19 12:14:03,109 1 INFO demodb odoo.modules.loading: loading sa_security/views/res_partner_views.xml 
+2026-05-19 12:14:03,136 1 INFO demodb odoo.modules.loading: loading sa_security/views/role_admin_views.xml 
+2026-05-19 12:14:03,215 1 INFO demodb odoo.modules.loading: loading sa_security/views/field_security_views.xml 
+2026-05-19 12:14:03,271 1 INFO demodb odoo.modules.loading: loading sa_security/views/audit_log_views.xml 
+2026-05-19 12:14:03,306 1 INFO demodb odoo.modules.loading: loading sa_security/data/menu_overrides.xml 
+2026-05-19 12:14:03,376 1 INFO demodb odoo.addons.base.models.ir_module: module sa_security: no translation for language ar_001 
+2026-05-19 12:14:03,391 1 INFO demodb odoo.modules.loading: Module sa_security loaded in 0.84s, 866 queries (+866 other) 
+2026-05-19 12:14:03,391 1 INFO demodb odoo.modules.loading: Loading module sa_broker_commission (51/57) 
+2026-05-19 12:14:03,556 1 INFO demodb odoo.modules.registry: module sa_broker_commission: creating or updating database tables 
+2026-05-19 12:14:03,767 1 INFO demodb odoo.modules.loading: loading sa_broker_commission/security/ir.model.access.csv 
+2026-05-19 12:14:03,787 1 INFO demodb odoo.modules.loading: loading sa_broker_commission/data/sequence.xml 
+2026-05-19 12:14:03,794 1 INFO demodb odoo.modules.loading: loading sa_broker_commission/views/sa_broker_commission_views.xml 
+2026-05-19 12:14:03,842 1 INFO demodb odoo.modules.loading: loading sa_broker_commission/views/property_tenancy_views.xml 
+2026-05-19 12:14:03,857 1 INFO demodb odoo.modules.loading: loading sa_broker_commission/views/res_partner_views.xml 
+2026-05-19 12:14:03,875 1 INFO demodb odoo.modules.loading: loading sa_broker_commission/views/menu.xml 
+2026-05-19 12:14:03,888 1 INFO demodb odoo.addons.base.models.ir_module: module sa_broker_commission: no translation for language ar_001 
+2026-05-19 12:14:03,901 1 INFO demodb odoo.modules.loading: Module sa_broker_commission loaded in 0.51s, 247 queries (+247 other) 
+2026-05-19 12:14:03,901 1 INFO demodb odoo.modules.loading: Loading module sa_mobile_tech (52/57) 
+2026-05-19 12:14:04,024 1 INFO demodb odoo.modules.registry: module sa_mobile_tech: creating or updating database tables 
+2026-05-19 12:14:04,089 1 INFO demodb odoo.modules.loading: loading sa_mobile_tech/views/work_order_mobile_views.xml 
+2026-05-19 12:14:04,124 1 INFO demodb odoo.modules.loading: loading sa_mobile_tech/views/menu.xml 
+2026-05-19 12:14:04,137 1 INFO demodb odoo.addons.base.models.ir_module: module sa_mobile_tech: no translation for language ar_001 
+2026-05-19 12:14:04,149 1 INFO demodb odoo.modules.loading: Module sa_mobile_tech loaded in 0.25s, 81 queries (+81 other) 
+2026-05-19 12:14:04,149 1 INFO demodb odoo.modules.loading: Loading module sa_notifications (53/57) 
+2026-05-19 12:14:04,386 1 INFO demodb odoo.modules.registry: module sa_notifications: creating or updating database tables 
+2026-05-19 12:14:04,487 1 INFO demodb odoo.modules.loading: loading sa_notifications/data/mail_templates.xml 
+2026-05-19 12:14:04,525 1 INFO demodb odoo.modules.loading: loading sa_notifications/data/ir_cron_data.xml 
+2026-05-19 12:14:04,556 1 INFO demodb odoo.modules.loading: loading sa_notifications/data/notification_config.xml 
+2026-05-19 12:14:04,583 1 INFO demodb odoo.modules.loading: loading sa_notifications/views/res_config_settings_views.xml 
+2026-05-19 12:14:04,619 1 INFO demodb odoo.addons.base.models.ir_module: module sa_notifications: no translation for language ar_001 
+2026-05-19 12:14:04,644 1 INFO demodb odoo.modules.loading: Module sa_notifications loaded in 0.49s, 213 queries (+213 other) 
+2026-05-19 12:14:04,645 1 INFO demodb odoo.modules.loading: Loading module sa_portal (54/57) 
+2026-05-19 12:14:04,768 1 INFO demodb odoo.modules.loading: loading sa_portal/views/portal_templates.xml 
+2026-05-19 12:14:04,851 1 INFO demodb odoo.addons.base.models.ir_module: module sa_portal: no translation for language ar_001 
+2026-05-19 12:14:04,862 1 INFO demodb odoo.modules.loading: Module sa_portal loaded in 0.22s, 69 queries (+69 other) 
+2026-05-19 12:14:04,862 1 INFO demodb odoo.modules.loading: Loading module sa_sadad (55/57) 
+2026-05-19 12:14:04,979 1 INFO demodb odoo.modules.registry: module sa_sadad: creating or updating database tables 
+2026-05-19 12:14:05,099 1 INFO demodb odoo.modules.loading: loading sa_sadad/security/ir.model.access.csv 
+2026-05-19 12:14:05,114 1 INFO demodb odoo.modules.loading: loading sa_sadad/data/sequence.xml 
+2026-05-19 12:14:05,127 1 INFO demodb odoo.modules.loading: loading sa_sadad/data/ir_config.xml 
+2026-05-19 12:14:05,137 1 INFO demodb odoo.modules.loading: loading sa_sadad/views/sa_sadad_invoice_views.xml 
+2026-05-19 12:14:05,173 1 INFO demodb odoo.modules.loading: loading sa_sadad/views/sa_rent_payment_views.xml 
+2026-05-19 12:14:05,183 1 INFO demodb odoo.modules.loading: loading sa_sadad/views/res_config_settings_views.xml 
+2026-05-19 12:14:05,213 1 INFO demodb odoo.modules.loading: loading sa_sadad/views/menu.xml 
+2026-05-19 12:14:05,223 1 INFO demodb odoo.modules.loading: loading sa_sadad/report/sadad_receipt.xml 
+2026-05-19 12:14:05,245 1 INFO demodb odoo.addons.base.models.ir_module: module sa_sadad: no translation for language ar_001 
+2026-05-19 12:14:05,272 1 INFO demodb odoo.modules.loading: Module sa_sadad loaded in 0.41s, 211 queries (+211 other) 
+2026-05-19 12:14:05,272 1 INFO demodb odoo.modules.loading: Loading module sa_user_profile (56/57) 
+2026-05-19 12:14:05,362 1 WARNING demodb odoo.fields: Field sa.user.verification.state: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it 
+2026-05-19 12:14:05,389 1 INFO demodb odoo.modules.registry: module sa_user_profile: creating or updating database tables 
+2026-05-19 12:14:05,402 1 INFO demodb odoo.models: Prepare computation of res.partner.verification_state 
+2026-05-19 12:14:05,574 1 INFO demodb odoo.modules.loading: loading sa_user_profile/security/ir.model.access.csv 
+2026-05-19 12:14:05,592 1 INFO demodb odoo.modules.loading: loading sa_user_profile/views/sa_user_verification_views.xml 
+2026-05-19 12:14:05,614 1 INFO demodb odoo.modules.loading: loading sa_user_profile/views/sa_user_document_views.xml 
+2026-05-19 12:14:05,636 1 INFO demodb odoo.modules.loading: loading sa_user_profile/views/res_partner_profile_views.xml 
+2026-05-19 12:14:05,782 1 INFO demodb odoo.modules.loading: loading sa_user_profile/views/portal_profile_templates.xml 
+2026-05-19 12:14:05,806 1 INFO demodb odoo.modules.loading: loading sa_user_profile/views/menu.xml 
+2026-05-19 12:14:05,848 1 INFO demodb odoo.addons.base.models.ir_module: module sa_user_profile: no translation for language ar_001 
+2026-05-19 12:14:05,863 1 INFO demodb odoo.modules.loading: Module sa_user_profile loaded in 0.59s, 331 queries (+331 other) 
+2026-05-19 12:14:05,863 1 INFO demodb odoo.modules.loading: Loading module sa_dashboard (57/57) 
+2026-05-19 12:14:05,949 1 WARNING demodb odoo.fields: Field sa.user.verification.state: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it 
+2026-05-19 12:14:05,989 1 INFO demodb odoo.modules.loading: loading sa_dashboard/views/dashboard_template.xml 
+2026-05-19 12:14:06,027 1 INFO demodb odoo.modules.loading: loading sa_dashboard/views/menu.xml 
+2026-05-19 12:14:06,042 1 INFO demodb odoo.addons.base.models.ir_module: module sa_dashboard: no translation for language ar_001 
+2026-05-19 12:14:06,054 1 INFO demodb odoo.modules.loading: Module sa_dashboard loaded in 0.19s, 42 queries (+42 other) 
+2026-05-19 12:14:06,054 1 INFO demodb odoo.modules.loading: 57 modules loaded in 40.75s, 31346 queries (+31347 extra) 
+2026-05-19 12:14:06,138 1 WARNING demodb odoo.fields: Field sa.user.verification.state: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it 
+2026-05-19 12:14:06,247 1 WARNING demodb odoo.fields: Field sa.user.verification.state: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it 
+2026-05-19 12:14:06,982 1 INFO demodb odoo.modules.loading: Modules loaded. 
+2026-05-19 12:14:07,978 1 INFO demodb odoo.modules.registry: Registry loaded in 56.435s 
+2026-05-19 12:14:07,978 1 INFO demodb odoo.service.server: Initiating shutdown 
+2026-05-19 12:14:07,978 1 INFO demodb odoo.service.server: Hit CTRL-C again or send a second signal to force the shutdown. 
+2026-05-19 12:14:07,978 1 INFO demodb odoo.sql_db: ConnectionPool(used=0/count=0/max=64): Closed 1 connections  
+2026-05-19 12:14:11,394 1 INFO ? odoo: Odoo version 17.0-20260513 
+2026-05-19 12:14:11,394 1 INFO ? odoo: Using configuration file at /etc/odoo/odoo.conf 
+2026-05-19 12:14:11,394 1 INFO ? odoo: addons paths: ['/usr/lib/python3/dist-packages/odoo/addons', '/var/lib/odoo/addons/17.0', '/mnt/extra-addons'] 
+2026-05-19 12:14:11,394 1 INFO ? odoo: database: odoo17@db:5432 
+2026-05-19 12:14:11,520 1 INFO ? odoo.addons.base.models.ir_actions_report: Will use the Wkhtmltopdf binary at /usr/local/bin/wkhtmltopdf 
+2026-05-19 12:14:11,912 1 INFO ? odoo.service.server: Initiating shutdown 
+2026-05-19 12:14:11,912 1 INFO ? odoo.service.server: Hit CTRL-C again or send a second signal to force the shutdown. 
+2026-05-19 12:14:11,933 1 INFO demodb odoo.modules.loading: loading 1 modules... 
+2026-05-19 12:14:11,940 1 INFO demodb odoo.modules.loading: 1 modules loaded in 0.01s, 0 queries (+0 extra) 
+2026-05-19 12:14:11,981 1 INFO demodb odoo.modules.loading: loading 57 modules... 
+2026-05-19 12:14:12,514 1 INFO demodb odoo.modules.loading: 57 modules loaded in 0.53s, 0 queries (+0 extra) 
+2026-05-19 12:14:12,623 1 WARNING demodb odoo.fields: Field sa.user.verification.state: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it 
+2026-05-19 12:14:12,651 1 INFO demodb odoo.modules.loading: Modules loaded. 
+2026-05-19 12:14:12,655 1 INFO demodb odoo.modules.registry: Registry loaded in 0.742s 
+2026-05-19 12:14:14,598 1 INFO ? odoo.service.server: Initiating shutdown 
+2026-05-19 12:14:14,598 1 INFO ? odoo.service.server: Hit CTRL-C again or send a second signal to force the shutdown. 
+2026-05-19 12:14:14,653 1 INFO ? odoo.sql_db: ConnectionPool(used=0/count=0/max=64): Closed 1 connections  
+2026-05-19 12:14:15,965 1 INFO ? odoo: Odoo version 17.0-20260513 
+2026-05-19 12:14:15,966 1 INFO ? odoo: Using configuration file at /etc/odoo/odoo.conf 
+2026-05-19 12:14:15,966 1 INFO ? odoo: addons paths: ['/usr/lib/python3/dist-packages/odoo/addons', '/var/lib/odoo/addons/17.0', '/mnt/extra-addons'] 
+2026-05-19 12:14:15,966 1 INFO ? odoo: database: odoo17@db:5432 
+2026-05-19 12:14:16,081 1 INFO ? odoo.addons.base.models.ir_actions_report: Will use the Wkhtmltopdf binary at /usr/local/bin/wkhtmltopdf 
+2026-05-19 12:14:16,251 1 INFO ? odoo.service.server: HTTP service (werkzeug) running on 1663be2f1f44:8069 
+2026-05-19 12:17:00,453 1 INFO ? odoo.modules.loading: loading 1 modules... 
+2026-05-19 12:17:00,460 1 INFO ? odoo.modules.loading: 1 modules loaded in 0.01s, 0 queries (+0 extra) 
+2026-05-19 12:17:00,486 1 INFO ? odoo.modules.loading: loading 57 modules... 
+2026-05-19 12:17:01,047 1 INFO ? odoo.modules.loading: 57 modules loaded in 0.56s, 0 queries (+0 extra) 
+2026-05-19 12:17:01,155 1 WARNING ? odoo.fields: Field sa.user.verification.state: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it 
+2026-05-19 12:17:01,183 1 INFO ? odoo.modules.loading: Modules loaded. 
+2026-05-19 12:17:01,188 1 INFO ? odoo.modules.registry: Registry loaded in 0.755s 
+2026-05-19 12:17:01,189 1 INFO demodb odoo.addons.base.models.ir_http: Generating routing map for key None 
+2026-05-19 12:17:01,258 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:01] "GET / HTTP/1.1" 303 - 26 0.021 0.823
+2026-05-19 12:17:01,472 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:01] "GET /web HTTP/1.1" 303 - 5 0.004 0.021
+2026-05-19 12:17:02,402 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:02] "GET /web/login HTTP/1.1" 200 - 60 0.027 0.614
+2026-05-19 12:17:02,974 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:02] "GET /web/binary/company_logo HTTP/1.1" 200 - 6 0.021 0.101
+2026-05-19 12:17:04,188 1 INFO ? werkzeug: 151.254.10.222 - - [19/May/2026 12:17:04] "GET /web/static/src/libs/fontawesome/fonts/fontawesome-webfont.woff2?v=4.7.0 HTTP/1.1" 200 - 1 0.003 1.335
+2026-05-19 12:17:05,003 1 INFO demodb odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/5ec42d9/web.assets_frontend_minimal.min.js (id:451) 
+2026-05-19 12:17:05,009 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:05] "GET /web/assets/5ec42d9/web.assets_frontend_minimal.min.js HTTP/1.1" 200 - 16 0.030 0.181
+2026-05-19 12:17:05,531 1 INFO demodb odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/91663ce/web.assets_frontend.rtl.min.css (id:452) 
+2026-05-19 12:17:05,535 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:05] "GET /web/assets/91663ce/web.assets_frontend.rtl.min.css HTTP/1.1" 200 - 14 0.032 2.653
+2026-05-19 12:17:07,306 1 INFO ? werkzeug: 151.254.10.222 - - [19/May/2026 12:17:07] "GET /web/static/img/favicon.ico HTTP/1.1" 200 - 1 0.004 0.043
+2026-05-19 12:17:07,835 1 INFO demodb odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/a09cb2d/web.assets_frontend_lazy.min.js (id:453) 
+2026-05-19 12:17:07,838 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:07] "GET /web/assets/a09cb2d/web.assets_frontend_lazy.min.js HTTP/1.1" 200 - 13 0.011 0.573
+2026-05-19 12:17:12,845 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:12] "GET /website/translations/b806c595700591b0a2a785f3d4886c668d8c2ef1 HTTP/1.1" 200 - 16 0.008 0.039
+2026-05-19 12:17:16,382 1 INFO demodb odoo.addons.base.models.ir_cron: Starting job `Base: Auto-vacuum internal data`. 
+2026-05-19 12:17:16,505 1 INFO demodb odoo.addons.base.models.ir_attachment: filestore gc 384 checked, 0 removed 
+2026-05-19 12:17:16,574 1 INFO demodb odoo.addons.base.models.res_users: GC'd 0 user log entries 
+2026-05-19 12:17:16,609 1 INFO demodb odoo.addons.auth_totp.models.auth_totp: GC'd 0 totp devices entries 
+2026-05-19 12:17:16,624 1 INFO demodb odoo.models.unlink: User #1 deleted bus.bus records with IDs: [1] 
+2026-05-19 12:17:16,717 1 INFO demodb odoo.addons.sms.models.sms_sms: GC'd 0 sms marked for deletion 
+2026-05-19 12:17:16,808 1 INFO demodb odoo.addons.base.models.ir_cron: Job done: `Base: Auto-vacuum internal data` (0.426s). 
+2026-05-19 12:17:16,816 1 INFO demodb odoo.addons.base.models.ir_cron: Starting job `Base: Portal Users Deletion`. 
+2026-05-19 12:17:16,820 1 INFO demodb odoo.addons.base.models.ir_cron: Job done: `Base: Portal Users Deletion` (0.003s). 
+2026-05-19 12:17:16,827 1 INFO demodb odoo.addons.base.models.ir_cron: Starting job `Mail: Email Queue Manager`. 
+2026-05-19 12:17:16,842 1 INFO demodb odoo.addons.base.models.ir_cron: Job done: `Mail: Email Queue Manager` (0.014s). 
+2026-05-19 12:17:16,851 1 INFO demodb odoo.addons.base.models.ir_cron: Starting job `Notification: Delete Notifications older than 6 Month`. 
+2026-05-19 12:17:16,856 1 INFO demodb odoo.addons.base.models.ir_cron: Job done: `Notification: Delete Notifications older than 6 Month` (0.005s). 
+2026-05-19 12:17:16,864 1 INFO demodb odoo.addons.base.models.ir_cron: Starting job `Notification: Send scheduled message notifications`. 
+2026-05-19 12:17:16,867 1 INFO demodb odoo.addons.base.models.ir_cron: Job done: `Notification: Send scheduled message notifications` (0.004s). 
+2026-05-19 12:17:16,875 1 INFO demodb odoo.addons.base.models.ir_cron: Starting job `Mail: send web push notification`. 
+2026-05-19 12:17:16,878 1 INFO demodb odoo.addons.base.models.ir_cron: Job done: `Mail: send web push notification` (0.003s). 
+2026-05-19 12:17:16,886 1 INFO demodb odoo.addons.base.models.ir_cron: Starting job `Discuss: channel member unmute`. 
+2026-05-19 12:17:16,890 1 INFO demodb odoo.addons.base.models.ir_cron: Job done: `Discuss: channel member unmute` (0.004s). 
+2026-05-19 12:17:16,897 1 INFO demodb odoo.addons.base.models.ir_cron: Starting job `Users: Notify About Unregistered Users`. 
+2026-05-19 12:17:16,903 1 INFO demodb odoo.addons.base.models.ir_cron: Job done: `Users: Notify About Unregistered Users` (0.006s). 
+2026-05-19 12:17:16,910 1 INFO demodb odoo.addons.base.models.ir_cron: Starting job `Partner Autocomplete: Sync with remote DB`. 
+2026-05-19 12:17:16,913 1 INFO demodb odoo.addons.base.models.ir_cron: Job done: `Partner Autocomplete: Sync with remote DB` (0.003s). 
+2026-05-19 12:17:16,921 1 INFO demodb odoo.addons.base.models.ir_cron: Starting job `SMS: SMS Queue Manager`. 
+2026-05-19 12:17:16,924 1 INFO demodb odoo.addons.base.models.ir_cron: Job done: `SMS: SMS Queue Manager` (0.004s). 
+2026-05-19 12:17:16,932 1 INFO demodb odoo.addons.base.models.ir_cron: Starting job `Snailmail: process letters queue`. 
+2026-05-19 12:17:16,936 1 INFO demodb odoo.addons.base.models.ir_cron: Job done: `Snailmail: process letters queue` (0.004s). 
+2026-05-19 12:17:16,944 1 INFO demodb odoo.addons.base.models.ir_cron: Starting job `Send invoices automatically`. 
+2026-05-19 12:17:16,948 1 INFO demodb odoo.addons.base.models.ir_cron: Job done: `Send invoices automatically` (0.004s). 
+2026-05-19 12:17:16,955 1 INFO demodb odoo.addons.base.models.ir_cron: Starting job `صيانة دورية: توليد طلبات تلقائياً`. 
+2026-05-19 12:17:16,959 1 INFO demodb odoo.addons.base.models.ir_cron: Job done: `صيانة دورية: توليد طلبات تلقائياً` (0.004s). 
+2026-05-19 12:17:16,968 1 INFO demodb odoo.addons.base.models.ir_cron: Starting job `فحص انتهاء عقود الإيجار`. 
+2026-05-19 12:17:16,972 1 INFO demodb odoo.addons.base.models.ir_cron: Job done: `فحص انتهاء عقود الإيجار` (0.005s). 
+2026-05-19 12:17:16,980 1 INFO demodb odoo.addons.base.models.ir_cron: Starting job `تجديد عقود الإيجار التلقائي`. 
+2026-05-19 12:17:16,984 1 INFO demodb odoo.addons.base.models.ir_cron: Job done: `تجديد عقود الإيجار التلقائي` (0.003s). 
+2026-05-19 12:17:16,991 1 INFO demodb odoo.addons.base.models.ir_cron: Starting job `PMS: تذكير الدفعات المستحقة قريباً`. 
+2026-05-19 12:17:16,995 1 INFO demodb odoo.addons.base.models.ir_cron: Job done: `PMS: تذكير الدفعات المستحقة قريباً` (0.004s). 
+2026-05-19 12:17:17,003 1 INFO demodb odoo.addons.base.models.ir_cron: Starting job `PMS: تنبيه الدفعات المتأخرة`. 
+2026-05-19 12:17:17,008 1 INFO demodb odoo.addons.base.models.ir_cron: Job done: `PMS: تنبيه الدفعات المتأخرة` (0.005s). 
+2026-05-19 12:17:17,015 1 INFO demodb odoo.addons.base.models.ir_cron: Starting job `PMS: تنبيه عقود تنتهي قريباً`. 
+2026-05-19 12:17:17,019 1 INFO demodb odoo.addons.base.models.ir_cron: Job done: `PMS: تنبيه عقود تنتهي قريباً` (0.004s). 
+2026-05-19 12:17:17,026 1 INFO demodb odoo.addons.base.models.ir_cron: Starting job `SADAD: تحديث الفواتير منتهية الصلاحية`. 
+2026-05-19 12:17:17,030 1 INFO demodb odoo.addons.base.models.ir_cron: Job done: `SADAD: تحديث الفواتير منتهية الصلاحية` (0.004s). 
+2026-05-19 12:17:33,804 1 INFO demodb odoo.addons.base.models.res_users: Login successful for db:demodb login:admin@propza.sa from 151.254.10.222 
+2026-05-19 12:17:33,851 1 INFO demodb odoo.modules.registry: Caches invalidated, signaling through the database: ['default'] 
+2026-05-19 12:17:33,853 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:33] "POST /web/login HTTP/1.1" 303 - 81 0.039 0.660
+2026-05-19 12:17:35,484 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:35] "GET /web HTTP/1.1" 200 - 75 0.032 1.447
+2026-05-19 12:17:36,000 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:36] "GET /web/webclient/load_menus/96b7a781778c89c7e91660a75037a2cc75b29138f91947a24e204930fad9dde2 HTTP/1.1" 200 - 2 0.005 0.058
+2026-05-19 12:17:36,054 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:36] "GET /web/webclient/translations/6b357b57c793c956f5feb56104fd065f338a94b5?lang=ar_001 HTTP/1.1" 200 - 2 0.035 0.078
+2026-05-19 12:17:36,064 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:36] "GET /web/manifest.webmanifest HTTP/1.1" 200 - 8 0.064 0.052
+2026-05-19 12:17:39,531 1 INFO demodb odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/6a31933/web.assets_web.rtl.min.css (id:454) 
+2026-05-19 12:17:39,564 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:39] "GET /web/assets/6a31933/web.assets_web.rtl.min.css HTTP/1.1" 200 - 15 0.057 3.580
+2026-05-19 12:17:40,133 1 INFO demodb odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/12cdf95/web.assets_web.min.js (id:455) 
+2026-05-19 12:17:40,156 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:40] "GET /web/assets/12cdf95/web.assets_web.min.js HTTP/1.1" 200 - 11 0.010 4.219
+2026-05-19 12:17:47,405 1 INFO ? werkzeug: 151.254.10.222 - - [19/May/2026 12:17:47] "GET /web/static/lib/odoo_ui_icons/fonts/odoo_ui_icons.woff2 HTTP/1.1" 200 - 0 0.000 0.004
+2026-05-19 12:17:47,427 1 INFO demodb odoo.addons.partner_autocomplete.models.res_company: Starting enrich of company My Company (1) 
+2026-05-19 12:17:47,457 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:47] "POST /web/dataset/call_kw/res.users/systray_get_activities HTTP/1.1" 200 - 4 0.031 0.016
+2026-05-19 12:17:47,498 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:47] "POST /web/dataset/call_kw/res.company/iap_enrich_auto HTTP/1.1" 200 - 14 0.063 0.032
+2026-05-19 12:17:47,532 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:47] "GET /web/image?model=res.users&field=avatar_128&id=2 HTTP/1.1" 200 - 15 0.093 0.026
+2026-05-19 12:17:47,596 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:47] "POST /web/action/load HTTP/1.1" 200 - 10 0.040 0.156
+2026-05-19 12:17:47,705 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:47] "POST /mail/init_messaging HTTP/1.1" 200 - 90 0.205 0.101
+2026-05-19 12:17:47,766 1 INFO demodb odoo.addons.base.models.assetsbundle: Generating a new asset bundle attachment /web/assets/ba037c6/bus.websocket_worker_assets.min.js (id:456) 
+2026-05-19 12:17:47,769 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:47] "GET /bus/websocket_worker_bundle?v=17.0-3 HTTP/1.1" 200 - 8 0.003 0.018
+2026-05-19 12:17:48,044 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:48] "POST /web/dataset/call_kw/res.partner/get_views HTTP/1.1" 200 - 87 0.033 0.098
+2026-05-19 12:17:48,126 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:48] "POST /mail/load_message_failures HTTP/1.1" 200 - 3 0.001 0.004
+2026-05-19 12:17:48,329 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:48] "GET /websocket?version=17.0-3 HTTP/1.1" 101 - 1 0.000 0.003
+2026-05-19 12:17:48,731 1 INFO ? odoo.addons.bus.models.bus: Bus.loop listen imbus on db postgres 
+2026-05-19 12:17:49,081 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:49] "POST /web/dataset/call_kw/res.partner/web_search_read HTTP/1.1" 200 - 13 0.018 0.035
+2026-05-19 12:17:49,564 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:49] "GET /web/image?model=res.partner&field=avatar_128&id=3&unique=1779193053000 HTTP/1.1" 200 - 7 0.005 0.013
+2026-05-19 12:17:49,571 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:17:49] "GET /web/image?model=res.partner&field=avatar_128&id=1&unique=1779192852000 HTTP/1.1" 200 - 7 0.004 0.012
+2026-05-19 12:18:02,335 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:18:02] "POST /web/action/load HTTP/1.1" 200 - 6 0.003 0.012
+2026-05-19 12:18:02,740 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:18:02] "GET /pms/dashboard HTTP/1.1" 200 - 30 0.010 0.031
+2026-05-19 12:18:03,170 1 INFO ? werkzeug: 151.254.10.222 - - [19/May/2026 12:18:03] "GET /web/static/lib/bootstrap/dist/css/bootstrap.css HTTP/1.1" 200 - 0 0.000 0.002
+2026-05-19 12:18:08,832 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:18:08] "POST /web/action/load HTTP/1.1" 200 - 9 0.003 0.008
+2026-05-19 12:18:09,224 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:18:09] "POST /web/dataset/call_kw/res.partner/get_views HTTP/1.1" 200 - 13 0.006 0.025
+2026-05-19 12:18:10,237 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:18:10] "POST /web/dataset/call_kw/res.partner/web_search_read HTTP/1.1" 200 - 3 0.002 0.005
+2026-05-19 12:18:10,539 1 INFO ? werkzeug: 151.254.10.222 - - [19/May/2026 12:18:10] "GET /web/static/img/smiling_face.svg HTTP/1.1" 200 - 0 0.000 0.001
+2026-05-19 12:18:14,140 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:18:14] "POST /web/action/load HTTP/1.1" 200 - 8 0.003 0.008
+2026-05-19 12:18:14,455 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:18:14] "POST /web/dataset/call_kw/res.partner/get_views HTTP/1.1" 200 - 9 0.005 0.037
+2026-05-19 12:18:15,382 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:18:15] "POST /web/dataset/call_kw/res.partner/onchange HTTP/1.1" 200 - 25 0.009 0.024
+2026-05-19 12:18:15,971 1 INFO ? werkzeug: 151.254.10.222 - - [19/May/2026 12:18:15] "GET /web/static/img/placeholder.png HTTP/1.1" 200 - 0 0.000 0.003
+2026-05-19 12:18:15,984 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:18:15] "GET /web/image?field=avatar_128&id=3&model=res.partner&unique=2026-05-19%2012%3A17%3A33 HTTP/1.1" 200 - 7 0.004 0.011
+2026-05-19 12:18:22,232 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:18:22] "POST /web/action/load HTTP/1.1" 200 - 8 0.003 0.008
+2026-05-19 12:18:22,668 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:18:22] "POST /web/dataset/call_kw/sa.rent.payment/get_views HTTP/1.1" 200 - 34 0.012 0.031
+2026-05-19 12:18:23,179 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:18:23] "POST /web/dataset/call_kw/res.users/has_group HTTP/1.1" 200 - 2 0.002 0.004
+2026-05-19 12:18:23,181 1 INFO demodb werkzeug: 151.254.10.222 - - [19/May/2026 12:18:23] "POST /web/dataset/call_kw/sa.rent.payment/web_search_read HTTP/1.1" 200 - 3 0.003 0.003
