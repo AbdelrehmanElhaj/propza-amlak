@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_sa_maintenance_tree" model="ir.ui.view">
+        <field name="name">sa.maintenance.request.tree</field>
+        <field name="model">sa.maintenance.request</field>
+        <field name="arch" type="xml">
+            <tree string="طلبات الصيانة"
+                  decoration-danger="priority == 'urgent'"
+                  decoration-warning="priority == 'high'">
+                <field name="name"/>
+                <field name="property_id"/>
+                <field name="tenant_id"/>
+                <field name="category"/>
+                <field name="priority" widget="priority"/>
+                <field name="request_date"/>
+                <field name="scheduled_date"/>
+                <field name="cost" string="التكلفة (ريال)"/>
+                <field name="cost_bearer"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-warning="state == 'in_progress'"
+                       decoration-muted="state == 'cancelled'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_sa_maintenance_form" model="ir.ui.view">
+        <field name="name">sa.maintenance.request.form</field>
+        <field name="model">sa.maintenance.request</field>
+        <field name="arch" type="xml">
+            <form string="طلب صيانة">
+                <header>
+                    <button name="action_schedule" string="جدولة"
+                            type="object" invisible="state != 'new'"/>
+                    <button name="action_start" string="بدء التنفيذ"
+                            type="object" class="btn-primary"
+                            invisible="state != 'scheduled'"/>
+                    <button name="action_done" string="إنجاز"
+                            type="object" class="btn-primary"
+                            invisible="state != 'in_progress'"/>
+                    <button name="action_cancel" string="إلغاء"
+                            type="object" class="btn-danger"
+                            invisible="state in ('done','cancelled')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="new,scheduled,in_progress,done"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="tenancy_id"/>
+                            <field name="category"/>
+                            <field name="priority" widget="priority"/>
+                        </group>
+                        <group>
+                            <field name="request_date"/>
+                            <field name="scheduled_date"/>
+                            <field name="completion_date" readonly="1"/>
+                            <field name="cost"/>
+                            <field name="cost_bearer"/>
+                        </group>
+                    </group>
+                    <group string="وصف المشكلة">
+                        <field name="description" nolabel="1"
+                               placeholder="صف المشكلة بالتفصيل..."/>
+                    </group>
+                    <group string="ملاحظات">
+                        <field name="notes" nolabel="1"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_sa_maintenance" model="ir.actions.act_window">
+        <field name="name">طلبات الصيانة</field>
+        <field name="res_model">sa.maintenance.request</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

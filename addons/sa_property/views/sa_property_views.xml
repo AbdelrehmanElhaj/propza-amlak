@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══════════════════════════════════════════════════════
+         النموذج السعودي الرئيسي للعقار
+         يرث النموذج الأساسي ويُعيد تنظيم الحقول سعودياً
+    ════════════════════════════════════════════════════════ -->
+
+    <record id="view_sa_property_form" model="ir.ui.view">
+        <field name="name">sa.property.form</field>
+        <field name="model">property.property</field>
+        <field name="inherit_id" ref="sa_property_base.view_property_property_form"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+
+            <!-- ── 1. إضافة نوع العقار السعودي التفصيلي بعد property_type ── -->
+            <xpath expr="//field[@name='property_type']" position="after">
+                <field name="sa_property_subtype"/>
+            </xpath>
+
+            <!-- ── 2. إضافة tab "هوية العقار" كأول tab ── -->
+            <xpath expr="//notebook/page[1]" position="before">
+                <page string="هوية العقار" name="sa_identity">
+
+                    <!-- تحذير تجميد الرياض -->
+                    <div class="alert alert-warning o_form_label" role="alert"
+                         invisible="not sa_rent_freeze">
+                        <strong>تنبيه — تجميد إيجار الرياض:</strong>
+                        لا يُسمح برفع الإيجار لمدة 5 سنوات من سبتمبر 2025 وفق قرار هيئة العقار
+                    </div>
+
+                    <!-- حالة إيجار -->
+                    <div class="o_row" style="margin-bottom: 8px;">
+                        <span class="badge rounded-pill text-bg-success"
+                              invisible="not sa_ejar_registered">مسجل في إيجار</span>
+                        <span class="badge rounded-pill text-bg-secondary"
+                              invisible="sa_ejar_registered">غير مسجل في إيجار</span>
+                        <field name="sa_ejar_registered" invisible="1"/>
+                        <field name="sa_rent_freeze" invisible="1"/>
+                        <field name="sa_ejar_unit_id" invisible="1"/>
+                    </div>
+
+                    <group string="الصك والهوية القانونية">
+                        <group>
+                            <field name="sa_deed_number"
+                                   placeholder="رقم الصك من وزارة العدل"/>
+                            <field name="sa_deed_type"/>
+                            <field name="sa_deed_date"/>
+                            <field name="sa_deed_area" string="مساحة الصك (م²)"/>
+                        </group>
+                        <group>
+                            <field name="sa_plan_number" placeholder="رقم المخطط"/>
+                            <field name="sa_plot_number" placeholder="رقم القطعة"/>
+                            <field name="sa_municipality_number"/>
+                        </group>
+                    </group>
+
+                    <group string="العنوان الوطني">
+                        <group>
+                            <field name="sa_region_id"/>
+                            <field name="sa_city_id"
+                                   domain="[('region_id','=',sa_region_id)]"/>
+                            <field name="sa_district" placeholder="الحي"/>
+                            <field name="sa_street" placeholder="اسم الشارع"/>
+                        </group>
+                        <group>
+                            <field name="sa_national_address"
+                                   placeholder="ABCD1234"/>
+                            <field name="sa_building_no" placeholder="1234"/>
+                            <field name="sa_secondary_no" placeholder="0000"/>
+                            <field name="sa_postal_code" placeholder="12345"/>
+                        </group>
+                    </group>
+
+                    <group string="بيانات المالك">
+                        <group>
+                            <field name="sa_owner_id_type" readonly="1"/>
+                            <field name="sa_owner_national_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="sa_owner_iban" readonly="1"/>
+                        </group>
+                    </group>
+
+                </page>
+
+                <!-- ── tab المواصفات السعودية ── -->
+                <page string="المواصفات" name="sa_specs">
+                    <group string="الأبعاد والموقع">
+                        <group>
+                            <field name="sa_area_sqm" string="المساحة الإجمالية (م²)"/>
+                            <field name="sa_floor_number"/>
+                            <field name="sa_total_floors"/>
+                            <field name="sa_year_built"/>
+                            <field name="sa_condition"/>
+                        </group>
+                        <group>
+                            <field name="sa_rooms"/>
+                            <field name="sa_bathrooms"/>
+                            <field name="sa_parking"/>
+                            <field name="sa_furnished"/>
+                        </group>
+                    </group>
+                    <group string="المرافق والخدمات">
+                        <group>
+                            <field name="sa_majlis"/>
+                            <field name="sa_maid_room"/>
+                            <field name="sa_driver_room"/>
+                            <field name="sa_storage"/>
+                        </group>
+                        <group>
+                            <field name="sa_pool"/>
+                            <field name="sa_garden"/>
+                            <field name="sa_elevator"/>
+                        </group>
+                    </group>
+                </page>
+
+                <!-- ── tab التسعير السعودي ── -->
+                <page string="التسعير" name="sa_pricing">
+                    <group string="الإيجار">
+                        <group>
+                            <field name="sa_rent_annual" readonly="1" string="الإيجار السنوي (ريال)"/>
+                        </group>
+                        <group>
+                            <field name="sa_last_ejar_rent" string="آخر إيجار في إيجار (ريال)"/>
+                            <field name="sa_price_sqm" readonly="1" string="الإيجار لكل م²"/>
+                        </group>
+                    </group>
+                </page>
+
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

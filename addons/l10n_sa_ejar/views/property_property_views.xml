@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_property_form_sa_inherit" model="ir.ui.view">
+        <field name="name">property.property.form.sa.ejar</field>
+        <field name="model">property.property</field>
+        <field name="inherit_id" ref="sa_property_base.view_property_property_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="الموقع السعودي" name="sa_location">
+                    <group string="المنطقة والمدينة">
+                        <group>
+                            <field name="sa_region_id"/>
+                            <field name="sa_city_id"
+                                   domain="[('region_id', '=', sa_region_id)]"/>
+                            <field name="district_ar" placeholder="الحي"/>
+                            <field name="district" placeholder="District"/>
+                        </group>
+                        <group>
+                            <field name="national_address_code" placeholder="XXXX0000"/>
+                            <field name="building_number"/>
+                            <field name="street_ar" placeholder="اسم الشارع"/>
+                            <field name="postal_code"/>
+                        </group>
+                    </group>
+                    <group string="صك الملكية">
+                        <group>
+                            <field name="deed_number"/>
+                            <field name="deed_type"/>
+                            <field name="deed_date"/>
+                        </group>
+                        <group>
+                            <field name="municipality_number"/>
+                            <field name="plot_number"/>
+                            <field name="plan_number"/>
+                        </group>
+                    </group>
+                    <group string="إيجار">
+                        <group>
+                            <field name="ejar_unit_id" readonly="1"/>
+                            <field name="ejar_unit_type"/>
+                            <field name="last_ejar_rent"/>
+                        </group>
+                        <group>
+                            <field name="rent_freeze_active" readonly="1"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="not rent_freeze_active">
+                        <strong>تنبيه تجميد الإيجار:</strong>
+                        هذا العقار في الرياض — لا يُسمح برفع الإيجار لمدة 5 سنوات من سبتمبر 2025
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

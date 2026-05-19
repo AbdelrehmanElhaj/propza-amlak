@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Ejar contracts: bare top-level here. sa_rental_cycle re-parents
+         this entry under دورة الإيجار since that module loads after us
+         and can reference its own menu_sa_rental_cycle. -->
+    <menuitem id="menu_ejar_contracts"
+              name="عقود إيجار"
+              action="action_ejar_contract"
+              sequence="30"
+              web_icon="l10n_sa_ejar,static/description/icon.png"/>
+
+    <!-- Saudi regions / cities: configuration data, parked under
+         إدارة العقارات → الإعدادات (sa_property_base loads before us). -->
+    <menuitem id="menu_sa_regions"
+              name="المناطق الإدارية السعودية"
+              parent="sa_property_base.menu_pms_config_root"
+              action="action_sa_region"
+              sequence="10"
+              groups="base.group_system"/>
+
+</odoo>

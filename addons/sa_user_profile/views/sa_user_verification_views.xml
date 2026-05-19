@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_sa_user_verification_form" model="ir.ui.view">
+        <field name="name">sa.user.verification.form</field>
+        <field name="model">sa.user.verification</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_submit" string="تقديم للتحقق" type="object"
+                            class="btn-primary"
+                            invisible="state not in ('draft','rejected')"/>
+                    <button name="action_reset" string="إعادة تعيين" type="object"
+                            invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,verified"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-success" role="alert"
+                         invisible="state != 'verified'">
+                        ✓ تم التحقق من الهوية بنجاح في <field name="verified_date" readonly="1"/>
+                    </div>
+                    <div class="alert alert-danger" role="alert"
+                         invisible="state != 'rejected'">
+                        ✗ مرفوض: <field name="rejection_reason" readonly="1"/>
+                    </div>
+                    <group>
+                        <group string="بيانات الوثيقة">
+                            <field name="partner_id"/>
+                            <field name="id_type"/>
+                            <field name="id_number"/>
+                            <field name="id_expiry"/>
+                        </group>
+                        <group string="صورة الوثيقة">
+                            <field name="id_scan" widget="binary" filename="id_scan_name"/>
+                            <field name="id_scan_name" invisible="1"/>
+                            <field name="submission_date" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_sa_user_verification_list" model="ir.ui.view">
+        <field name="name">sa.user.verification.list</field>
+        <field name="model">sa.user.verification</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="state == 'verified'"
+                  decoration-danger="state == 'rejected'"
+                  decoration-warning="state == 'submitted'">
+                <field name="partner_id"/>
+                <field name="id_type"/>
+                <field name="id_number"/>
+                <field name="id_expiry"/>
+                <field name="submission_date"/>
+                <field name="verified_date"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'verified'"
+                       decoration-danger="state == 'rejected'"
+                       decoration-warning="state == 'submitted'"
+                       decoration-muted="state == 'draft'"/>
+                <field name="rejection_reason" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Admin: all verification requests -->
+    <record id="action_sa_user_verification" model="ir.actions.act_window">
+        <field name="name">طلبات التوثيق</field>
+        <field name="res_model">sa.user.verification</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Self-service: current user's verifications only -->
+    <record id="action_my_verification" model="ir.actions.act_window">
+        <field name="name">توثيقاتي</field>
+        <field name="res_model">sa.user.verification</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('partner_id.user_ids', 'in', [uid])]</field>
+    </record>
+
+</odoo>

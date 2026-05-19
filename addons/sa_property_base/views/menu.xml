@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_pms_properties"
+              name="العقارات"
+              parent="menu_pms_root"
+              action="action_property_property"
+              sequence="10"/>
+
+    <menuitem id="menu_pms_tenancies"
+              name="عقود الإيجار"
+              parent="menu_pms_root"
+              action="action_property_tenancy"
+              sequence="20"/>
+
+    <menuitem id="menu_pms_config_root"
+              name="الإعدادات"
+              parent="menu_pms_root"
+              sequence="100"/>
+</odoo>

@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sa_maintenance_skill,sa.maintenance.skill,model_sa_maintenance_skill,base.group_user,1,1,1,0
+access_sa_maintenance_skill_mgr,sa.maintenance.skill manager,model_sa_maintenance_skill,base.group_system,1,1,1,1
+access_sa_maintenance_request,sa.maintenance.request,model_sa_maintenance_request,base.group_user,1,1,1,0
+access_sa_maintenance_request_mgr,sa.maintenance.request manager,model_sa_maintenance_request,base.group_system,1,1,1,1
+access_sa_maintenance_work_order,sa.maintenance.work_order,model_sa_maintenance_work_order,base.group_user,1,1,1,0
+access_sa_maintenance_work_order_mgr,sa.maintenance.work_order manager,model_sa_maintenance_work_order,base.group_system,1,1,1,1
+access_sa_maintenance_contract,sa.maintenance.contract,model_sa_maintenance_contract,base.group_user,1,1,1,0
+access_sa_maintenance_contract_mgr,sa.maintenance.contract manager,model_sa_maintenance_contract,base.group_system,1,1,1,1

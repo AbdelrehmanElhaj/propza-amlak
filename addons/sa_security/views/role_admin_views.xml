@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         قوائم المستخدمين حسب الدور
+         ═══════════════════════════════════════════════════════════ -->
+
+    <record id="action_users_by_role_admin" model="ir.actions.act_window">
+        <field name="name">مدراء النظام</field>
+        <field name="res_model">res.users</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain" eval="[('groups_id', 'in', [ref('group_pms_admin')])]"/>
+    </record>
+
+    <record id="action_users_by_role_manager" model="ir.actions.act_window">
+        <field name="name">مدراء العقارات</field>
+        <field name="res_model">res.users</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain" eval="[('groups_id', 'in', [ref('group_pms_manager')])]"/>
+    </record>
+
+    <record id="action_users_by_role_accountant" model="ir.actions.act_window">
+        <field name="name">المحاسبون</field>
+        <field name="res_model">res.users</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain" eval="[('groups_id', 'in', [ref('group_pms_accountant')])]"/>
+    </record>
+
+    <record id="action_users_by_role_agent" model="ir.actions.act_window">
+        <field name="name">موظفو خدمة العملاء</field>
+        <field name="res_model">res.users</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain" eval="[('groups_id', 'in', [ref('group_pms_agent')])]"/>
+    </record>
+
+    <record id="action_users_by_role_owner" model="ir.actions.act_window">
+        <field name="name">الملاك (مستخدمون داخليون)</field>
+        <field name="res_model">res.users</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain" eval="[('groups_id', 'in', [ref('group_pms_owner')])]"/>
+    </record>
+
+    <record id="action_users_by_role_technician" model="ir.actions.act_window">
+        <field name="name">فنيو الصيانة</field>
+        <field name="res_model">res.users</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain" eval="[('groups_id', 'in', [ref('group_pms_technician')])]"/>
+    </record>
+
+    <record id="action_users_by_role_tenant_portal" model="ir.actions.act_window">
+        <field name="name">مستأجرو البوابة</field>
+        <field name="res_model">res.users</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain" eval="[('groups_id', 'in', [ref('group_pms_tenant_portal')])]"/>
+    </record>
+
+    <!-- All PMS users (any role) -->
+    <record id="action_pms_users_all" model="ir.actions.act_window">
+        <field name="name">كل مستخدمي PMS</field>
+        <field name="res_model">res.users</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('groups_id.category_id.name', 'in', [
+            'إدارة العقارات — الموظفون',
+            'إدارة العقارات — أدوار خاصة'
+        ])]</field>
+        <field name="context">{'search_default_group_pms_role_label': 1}</field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         مصفوفة الصلاحيات (Static QWeb action)
+         ═══════════════════════════════════════════════════════════ -->
+
+    <template id="role_matrix_template_view">
+        <html dir="rtl" lang="ar">
+            <head>
+                <meta charset="utf-8"/>
+                <title>مصفوفة الصلاحيات — PMS</title>
+                <link rel="stylesheet" href="/web/static/lib/bootstrap/dist/css/bootstrap.css"/>
+                <style>
+                    body { padding: 30px; background: #f8f9fa; font-family: sans-serif; direction: rtl; text-align: right; }
+                    .container { max-width: 1100px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+                    table th, table td { padding: 8px; border: 1px solid #dee2e6; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h2 style="text-align:center">مصفوفة الصلاحيات</h2>
+                    <p style="font-size:12px;color:#666">
+                        <strong>الرموز:</strong>
+                        CRUD = إنشاء/قراءة/تعديل/حذف،
+                        R = قراءة فقط،
+                        — = لا وصول،
+                        * = محصور بسجلاته فقط (record rules)
+                    </p>
+
+                    <table class="table table-bordered" style="font-size:11px">
+                        <thead style="background:#f5f5f5">
+                            <tr>
+                                <th>الموديل</th>
+                                <th>Admin</th>
+                                <th>Manager</th>
+                                <th>Accountant</th>
+                                <th>Agent</th>
+                                <th>Owner*</th>
+                                <th>Technician*</th>
+                                <th>Tenant*</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>property.property</strong> (العقارات)</td>
+                                <td>CRUD</td><td>CRUD</td><td>R</td><td>R</td>
+                                <td>R*</td><td>—</td><td>—</td>
+                            </tr>
+                            <tr>
+                                <td><strong>property.tenancy</strong> (عقود الإيجار)</td>
+                                <td>CRUD</td><td>CRUD</td><td>R</td><td>RU</td>
+                                <td>R*</td><td>—</td><td>R*</td>
+                            </tr>
+                            <tr>
+                                <td><strong>sa.rent.payment</strong> (الدفعات)</td>
+                                <td>CRUD</td><td>CRUD</td><td>CRUD</td><td>R</td>
+                                <td>R*</td><td>—</td><td>R*</td>
+                            </tr>
+                            <tr>
+                                <td><strong>account.move</strong> (الفواتير)</td>
+                                <td>CRUD</td><td>R</td><td>CRUD</td><td>—</td>
+                                <td>R*</td><td>—</td><td>—</td>
+                            </tr>
+                            <tr>
+                                <td><strong>account.payment</strong> (سندات الدفع)</td>
+                                <td>CRUD</td><td>R</td><td>CRUD</td><td>—</td>
+                                <td>R*</td><td>—</td><td>—</td>
+                            </tr>
+                            <tr>
+                                <td><strong>sa.maintenance.request</strong> (طلبات الصيانة)</td>
+                                <td>CRUD</td><td>CRUD</td><td>R</td><td>CRUD</td>
+                                <td>R*</td><td>RU*</td><td>RC*</td>
+                            </tr>
+                            <tr>
+                                <td><strong>sa.maintenance.work_order</strong> (أوامر العمل)</td>
+                                <td>CRUD</td><td>CRUD</td><td>R</td><td>RU</td>
+                                <td>R*</td><td>RU*</td><td>—</td>
+                            </tr>
+                            <tr>
+                                <td><strong>sa.maintenance.contract</strong> (عقود الصيانة)</td>
+                                <td>CRUD</td><td>CRUD</td><td>R</td><td>R</td>
+                                <td>R*</td><td>—</td><td>—</td>
+                            </tr>
+                            <tr>
+                                <td><strong>sa.property.inspection</strong> (المعاينات)</td>
+                                <td>CRUD</td><td>CRUD</td><td>R</td><td>RU</td>
+                                <td>R*</td><td>—</td><td>R*</td>
+                            </tr>
+                            <tr>
+                                <td><strong>res.partner</strong> (جهات الاتصال)</td>
+                                <td>CRUD</td><td>CRUD</td><td>R</td><td>RU</td>
+                                <td>R(self)</td><td>—</td><td>R(self)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>التقارير المالية</strong></td>
+                                <td>✓</td><td>✓</td><td>✓</td><td>—</td>
+                                <td>✓*</td><td>—</td><td>—</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 style="margin-top:30px">القواعد التطبيقية (Record Rules)</h4>
+                    <table class="table table-sm" style="font-size:11px">
+                        <thead>
+                            <tr>
+                                <th>الدور</th>
+                                <th>القاعدة</th>
+                                <th>المنطق</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Owner</td>
+                                <td>عقاراته فقط</td>
+                                <td>property.owner_partner_id.user_ids = المستخدم الحالي</td>
+                            </tr>
+                            <tr>
+                                <td>Owner</td>
+                                <td>عقوده ودفعاته فقط</td>
+                                <td>tenancy.owner_partner_id... + payment.tenancy.owner...</td>
+                            </tr>
+                            <tr>
+                                <td>Technician</td>
+                                <td>أوامر العمل المُسنَدة</td>
+                                <td>work_order.technician_id.user_ids = المستخدم الحالي</td>
+                            </tr>
+                            <tr>
+                                <td>Tenant Portal</td>
+                                <td>عقده فقط</td>
+                                <td>tenancy.partner_id.user_ids = المستخدم الحالي</td>
+                            </tr>
+                            <tr>
+                                <td>Tenant Portal</td>
+                                <td>دفعات وطلبات صيانته</td>
+                                <td>partner_id.user_ids = المستخدم</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div style="margin-top:30px;padding:12px;background:#f9f9f9;border-radius:6px;font-size:11px">
+                        <strong>ملاحظات:</strong>
+                        <ul>
+                            <li>المستخدم في عدة أدوار يحصل على <em>اتحاد</em> الصلاحيات (OR)</li>
+                            <li>القواعد التطبيقية تُلغى لـ Manager/Admin (وصول كامل)</li>
+                            <li>الحقول الحساسة (الضمان، رقم الهوية، IBAN) محمية بقيود إضافية في Phase 5</li>
+                            <li>كل عملية مالية تُسجَّل في mail.thread (audit trail) لـ ZATCA</li>
+                        </ul>
+                    </div>
+                </div>
+            </body>
+        </html>
+    </template>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         قائمة "إدارة الصلاحيات" — رئيسية بنفس مستوى إدارة العقارات
+         ═══════════════════════════════════════════════════════════ -->
+
+    <menuitem id="menu_pms_security_root"
+              name="إدارة الصلاحيات"
+              sequence="70"
+              web_icon="sa_security,static/description/icon.png"
+              groups="base.group_system,group_pms_admin"/>
+
+    <menuitem id="menu_pms_users_all"
+              name="كل مستخدمي PMS"
+              parent="menu_pms_security_root"
+              action="action_pms_users_all"
+              sequence="5"/>
+
+    <menuitem id="menu_pms_security_staff"
+              name="الموظفون"
+              parent="menu_pms_security_root"
+              sequence="10"/>
+
+    <menuitem id="menu_users_admin"
+              name="مدراء النظام"
+              parent="menu_pms_security_staff"
+              action="action_users_by_role_admin"
+              sequence="10"/>
+
+    <menuitem id="menu_users_manager"
+              name="مدراء العقارات"
+              parent="menu_pms_security_staff"
+              action="action_users_by_role_manager"
+              sequence="20"/>
+
+    <menuitem id="menu_users_accountant"
+              name="المحاسبون"
+              parent="menu_pms_security_staff"
+              action="action_users_by_role_accountant"
+              sequence="30"/>
+
+    <menuitem id="menu_users_agent"
+              name="موظفو خدمة العملاء"
+              parent="menu_pms_security_staff"
+              action="action_users_by_role_agent"
+              sequence="40"/>
+
+    <menuitem id="menu_pms_security_special"
+              name="الأدوار الخاصة"
+              parent="menu_pms_security_root"
+              sequence="20"/>
+
+    <menuitem id="menu_users_owner"
+              name="الملاك"
+              parent="menu_pms_security_special"
+              action="action_users_by_role_owner"
+              sequence="10"/>
+
+    <menuitem id="menu_users_technician"
+              name="الفنيون"
+              parent="menu_pms_security_special"
+              action="action_users_by_role_technician"
+              sequence="20"/>
+
+    <menuitem id="menu_users_tenant_portal"
+              name="مستأجرو البوابة"
+              parent="menu_pms_security_special"
+              action="action_users_by_role_tenant_portal"
+              sequence="30"/>
+
+    <!-- ── مصفوفة الصلاحيات: URL لعرض الـ QWeb مباشرة كـ HTML ── -->
+    <record id="action_role_matrix_url" model="ir.actions.act_url">
+        <field name="name">مصفوفة الصلاحيات</field>
+        <field name="url">/pms/role-matrix</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_role_matrix_doc"
+              name="مصفوفة الصلاحيات"
+              parent="menu_pms_security_root"
+              action="action_role_matrix_url"
+              sequence="100"/>
+
+</odoo>

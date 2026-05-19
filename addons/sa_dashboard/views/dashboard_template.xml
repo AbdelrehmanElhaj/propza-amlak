@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="dashboard_view">
+        <html dir="rtl" lang="ar">
+            <head>
+                <meta charset="utf-8"/>
+                <title>لوحة تحكم — إدارة العقارات</title>
+                <link rel="stylesheet" href="/web/static/lib/bootstrap/dist/css/bootstrap.css"/>
+                <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+                <style>
+                    body {
+                        background: #f5f7fa;
+                        font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+                        direction: rtl;
+                        text-align: right;
+                        margin: 0;
+                        padding: 20px;
+                    }
+                    .header {
+                        max-width: 1400px;
+                        margin: 0 auto 20px;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    }
+                    .header h1 { margin: 0; color: #1a3a5c; }
+                    .header .date { color: #6c757d; font-size: 14px; }
+
+                    .container-main { max-width: 1400px; margin: 0 auto; }
+
+                    .kpi-grid {
+                        display: grid;
+                        grid-template-columns: repeat(4, 1fr);
+                        gap: 16px;
+                        margin-bottom: 24px;
+                    }
+                    .kpi-card {
+                        background: white;
+                        padding: 20px;
+                        border-radius: 12px;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    .kpi-card::before {
+                        content: '';
+                        position: absolute;
+                        top: 0; right: 0;
+                        width: 4px; height: 100%;
+                        background: var(--accent);
+                    }
+                    .kpi-label { font-size: 13px; color: #6c757d; margin-bottom: 8px; }
+                    .kpi-value { font-size: 28px; font-weight: 700; color: #1a3a5c; }
+                    .kpi-sub { font-size: 12px; color: #6c757d; margin-top: 4px; }
+
+                    .chart-grid {
+                        display: grid;
+                        grid-template-columns: 2fr 1fr;
+                        gap: 16px;
+                        margin-bottom: 24px;
+                    }
+                    .chart-grid-2 {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 16px;
+                        margin-bottom: 24px;
+                    }
+                    .chart-card {
+                        background: white;
+                        padding: 20px;
+                        border-radius: 12px;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                    }
+                    .chart-card h3 { margin: 0 0 16px; color: #1a3a5c; font-size: 16px; }
+                    .chart-card canvas { max-height: 300px; }
+
+                    .list-card { background: white; padding: 20px; border-radius: 12px;
+                                 box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+                    .list-card h3 { margin: 0 0 16px; color: #1a3a5c; font-size: 16px; }
+                    .list-card table { width: 100%; }
+                    .list-card td, .list-card th { padding: 10px 8px; border-bottom: 1px solid #eee; }
+                    .list-card th { font-size: 12px; color: #6c757d; font-weight: 500; }
+                    .badge-warn { background: #fff3cd; color: #856404; padding: 2px 8px; border-radius: 4px; }
+                    .badge-danger { background: #f8d7da; color: #721c24; padding: 2px 8px; border-radius: 4px; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <div>
+                        <h1>📊 لوحة تحكم إدارة العقارات</h1>
+                        <div class="date">آخر تحديث: <span t-out="today"/></div>
+                    </div>
+                </div>
+
+                <div class="container-main">
+                    <!-- KPI cards -->
+                    <div class="kpi-grid">
+                        <div class="kpi-card" style="--accent:#2c5aa0">
+                            <div class="kpi-label">إجمالي العقارات</div>
+                            <div class="kpi-value"><span t-out="kpis['total_properties']"/></div>
+                            <div class="kpi-sub">
+                                <span t-out="kpis['occupied']"/> مؤجَّر،
+                                <span t-out="kpis['vacant']"/> شاغر
+                            </div>
+                        </div>
+                        <div class="kpi-card" style="--accent:#198754">
+                            <div class="kpi-label">عقود سارية</div>
+                            <div class="kpi-value"><span t-out="kpis['active_tenancies']"/></div>
+                            <div class="kpi-sub">
+                                إيراد متوقع: <span t-out="'%.0f' % kpis['monthly_revenue']"/> ر.س/شهر
+                            </div>
+                        </div>
+                        <div class="kpi-card" style="--accent:#dc3545">
+                            <div class="kpi-label">دفعات متأخرة</div>
+                            <div class="kpi-value"><span t-out="kpis['overdue_count']"/></div>
+                            <div class="kpi-sub">
+                                <span t-out="'%.0f' % kpis['overdue_amount']"/> ر.س
+                            </div>
+                        </div>
+                        <div class="kpi-card" style="--accent:#ff9800">
+                            <div class="kpi-label">عقود تنتهي خلال 60 يوم</div>
+                            <div class="kpi-value"><span t-out="kpis['expiring_60d']"/></div>
+                            <div class="kpi-sub">للتجديد قبل النهاية</div>
+                        </div>
+                    </div>
+
+                    <!-- Revenue trend (large) + occupancy (small) -->
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <h3>📈 اتجاه الإيرادات (آخر 12 شهر)</h3>
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <h3>🏠 إشغال العقارات</h3>
+                            <canvas id="occupancyChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Maintenance cost + top overdue -->
+                    <div class="chart-grid-2">
+                        <div class="chart-card">
+                            <h3>🔧 تكاليف الصيانة حسب الفئة (آخر 12 شهر)</h3>
+                            <canvas id="maintChart"></canvas>
+                        </div>
+                        <div class="list-card">
+                            <h3>⚠️ أكثر 5 مستأجرين تأخراً</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>المستأجر</th>
+                                        <th style="text-align:left">إجمالي المتأخر</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="top_overdue" t-as="row">
+                                        <tr>
+                                            <td><span t-out="row[0]"/></td>
+                                            <td style="text-align:left">
+                                                <span class="badge-danger">
+                                                    <span t-out="'%.0f' % row[1]"/> ر.س
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <tr t-if="not top_overdue">
+                                        <td colspan="2" style="text-align:center;color:#6c757d">
+                                            لا توجد متأخرات 🎉
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Expiring contracts -->
+                    <div class="list-card" style="margin-bottom:24px">
+                        <h3>📅 العقود التي تنتهي قريباً (60 يوم)</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>رقم العقد</th>
+                                    <th>المستأجر</th>
+                                    <th>العقار</th>
+                                    <th>تاريخ النهاية</th>
+                                    <th>الأيام المتبقية</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="expiring_list" t-as="t">
+                                    <tr>
+                                        <td><span t-out="t['name']"/></td>
+                                        <td><span t-out="t['tenant']"/></td>
+                                        <td><span t-out="t['property']"/></td>
+                                        <td><span t-out="t['end_date']"/></td>
+                                        <td>
+                                            <span class="badge-warn">
+                                                <span t-out="t['days_left']"/> يوم
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <tr t-if="not expiring_list">
+                                    <td colspan="5" style="text-align:center;color:#6c757d">
+                                        لا توجد عقود تنتهي قريباً
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Chart data passed via data-* attributes -->
+                <div id="chart-data"
+                     t-att-data-months="months_json"
+                     t-att-data-occupancy="occupancy_json"
+                     t-att-data-maint="maint_by_cat_json"
+                     style="display:none"/>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const el = document.getElementById('chart-data');
+                        const monthsData = JSON.parse(el.dataset.months);
+                        const occupancyData = JSON.parse(el.dataset.occupancy);
+                        const maintData = JSON.parse(el.dataset.maint);
+
+                        // Revenue trend chart
+                        new Chart(document.getElementById('revenueChart'), {
+                            type: 'line',
+                            data: {
+                                labels: monthsData.map(d => d.month),
+                                datasets: [
+                                    {
+                                        label: 'المستحق',
+                                        data: monthsData.map(d => d.due),
+                                        borderColor: '#2c5aa0',
+                                        backgroundColor: 'rgba(44,90,160,0.1)',
+                                        tension: 0.3,
+                                        fill: true,
+                                    },
+                                    {
+                                        label: 'المُسدَّد',
+                                        data: monthsData.map(d => d.paid),
+                                        borderColor: '#198754',
+                                        backgroundColor: 'rgba(25,135,84,0.1)',
+                                        tension: 0.3,
+                                        fill: true,
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: { legend: { position: 'bottom' } },
+                                scales: { y: { beginAtZero: true } }
+                            }
+                        });
+
+                        // Occupancy donut
+                        new Chart(document.getElementById('occupancyChart'), {
+                            type: 'doughnut',
+                            data: {
+                                labels: ['مؤجَّر', 'شاغر', 'أخرى'],
+                                datasets: [{
+                                    data: [occupancyData.on_rent, occupancyData.vacant, occupancyData.other],
+                                    backgroundColor: ['#198754', '#ff9800', '#6c757d'],
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: { legend: { position: 'bottom' } }
+                            }
+                        });
+
+                        // Maintenance cost bar
+                        const maintLabels = Object.keys(maintData);
+                        const maintValues = Object.values(maintData);
+                        new Chart(document.getElementById('maintChart'), {
+                            type: 'bar',
+                            data: {
+                                labels: maintLabels,
+                                datasets: [{
+                                    label: 'التكلفة (ر.س)',
+                                    data: maintValues,
+                                    backgroundColor: '#f57c00',
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: { legend: { display: false } },
+                                scales: { y: { beginAtZero: true } }
+                            }
+                        });
+                    });
+                </script>
+            </body>
+        </html>
+    </template>
+
+</odoo>

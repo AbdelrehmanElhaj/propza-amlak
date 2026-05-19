@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         Kanban "أعمالي اليوم" — للفني الميداني
+         ═══════════════════════════════════════════════════════════ -->
+    <record id="view_work_order_kanban_mobile" model="ir.ui.view">
+        <field name="name">sa.maintenance.work_order.kanban.mobile</field>
+        <field name="model">sa.maintenance.work_order</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile o_pms_tech_kanban"
+                    default_group_by="state"
+                    records_draggable="false">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="request_id"/>
+                <field name="property_id"/>
+                <field name="scheduled_date"/>
+                <field name="state"/>
+                <field name="duration_planned"/>
+                <field name="image_before"/>
+                <field name="image_after"/>
+                <progressbar field="state"
+                             colors='{"scheduled":"info","in_progress":"warning","done":"success","cancelled":"muted"}'/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click pms_tech_card">
+                            <div class="o_kanban_record_top" style="margin-bottom:6px">
+                                <div class="o_kanban_record_headings">
+                                    <strong style="font-size:15px;color:#1a3a5c">
+                                        <field name="name"/>
+                                    </strong>
+                                </div>
+                                <div>
+                                    <span class="badge bg-info" t-if="record.state.raw_value == 'scheduled'">مجدول</span>
+                                    <span class="badge bg-warning" t-if="record.state.raw_value == 'in_progress'">جاري</span>
+                                    <span class="badge bg-success" t-if="record.state.raw_value == 'done'">منجز</span>
+                                </div>
+                            </div>
+
+                            <div style="font-size:13px;color:#444;margin-bottom:6px">
+                                📍 <field name="property_id"/>
+                            </div>
+                            <div style="font-size:12px;color:#888;margin-bottom:4px">
+                                طلب: <field name="request_id"/>
+                            </div>
+                            <div style="font-size:12px;color:#888">
+                                ⏰ <field name="scheduled_date"/>
+                                <span t-if="record.duration_planned.raw_value">
+                                    | ⏱ <field name="duration_planned"/> ساعة
+                                </span>
+                            </div>
+
+                            <!-- Photo previews (small) -->
+                            <div t-if="record.image_before.raw_value or record.image_after.raw_value"
+                                 style="margin-top:8px;display:flex;gap:6px">
+                                <img t-if="record.image_before.raw_value"
+                                     t-att-src="kanban_image('sa.maintenance.work_order','image_before',record.id.raw_value)"
+                                     style="width:50px;height:50px;object-fit:cover;border-radius:6px;border:2px solid #ddd"
+                                     title="قبل" alt="صورة قبل العمل"/>
+                                <img t-if="record.image_after.raw_value"
+                                     t-att-src="kanban_image('sa.maintenance.work_order','image_after',record.id.raw_value)"
+                                     style="width:50px;height:50px;object-fit:cover;border-radius:6px;border:2px solid #4caf50"
+                                     title="بعد" alt="صورة بعد العمل"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         Mobile-friendly form view — single column, large buttons
+         ═══════════════════════════════════════════════════════════ -->
+    <record id="view_work_order_form_mobile" model="ir.ui.view">
+        <field name="name">sa.maintenance.work_order.form.mobile</field>
+        <field name="model">sa.maintenance.work_order</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <form string="أمر عمل" class="o_pms_tech_form">
+                <header>
+                    <button name="action_start" string="▶ بدء التنفيذ"
+                            type="object" class="btn-primary o_pms_tech_btn"
+                            invisible="state != 'scheduled'"
+                            confirm="هل تأكد من البدء بهذا العمل الآن؟"/>
+                    <button name="action_done" string="✓ إنجاز العمل"
+                            type="object" class="btn-success o_pms_tech_btn"
+                            invisible="state != 'in_progress'"/>
+                    <button name="action_cancel" string="إلغاء"
+                            type="object"
+                            invisible="state in ('done','cancelled')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="scheduled,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title" style="margin-bottom:20px">
+                        <h1 style="font-size:24px;color:#1a3a5c">
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <!-- ─── Big info block ──────────────────────── -->
+                    <div class="o_pms_tech_block">
+                        <div class="o_pms_tech_label">📋 الطلب</div>
+                        <field name="request_id" readonly="1" class="o_pms_tech_value"/>
+                    </div>
+
+                    <div class="o_pms_tech_block">
+                        <div class="o_pms_tech_label">📍 العقار</div>
+                        <field name="property_id" readonly="1" class="o_pms_tech_value"/>
+                    </div>
+
+                    <div class="o_pms_tech_block">
+                        <div class="o_pms_tech_label">⏰ موعد التنفيذ</div>
+                        <field name="scheduled_date" readonly="1" class="o_pms_tech_value"/>
+                    </div>
+
+                    <div class="o_pms_tech_block">
+                        <div class="o_pms_tech_label">📝 الوصف</div>
+                        <field name="description" readonly="1"
+                               class="o_pms_tech_value" nolabel="1"/>
+                    </div>
+
+                    <!-- ─── Photo before / after ────────────────── -->
+                    <div class="o_pms_tech_block">
+                        <div class="o_pms_tech_label">📷 صورة قبل العمل</div>
+                        <field name="image_before" widget="image"
+                               options="{'size': [300, 300], 'preview_image': 'image_before'}"
+                               class="o_pms_tech_image"/>
+                    </div>
+
+                    <div class="o_pms_tech_block">
+                        <div class="o_pms_tech_label">📷 صورة بعد العمل</div>
+                        <field name="image_after" widget="image"
+                               options="{'size': [300, 300], 'preview_image': 'image_after'}"
+                               class="o_pms_tech_image"/>
+                    </div>
+
+                    <!-- ─── Cost inputs ──────────────────────────── -->
+                    <div class="o_pms_tech_block" invisible="state == 'scheduled'">
+                        <div class="o_pms_tech_label">💰 التكاليف</div>
+                        <group>
+                            <field name="materials_cost" string="مواد"/>
+                            <field name="labor_cost" string="عمالة"/>
+                            <field name="transport_cost" string="مواصلات"/>
+                            <field name="total_cost" readonly="1" string="الإجمالي"/>
+                        </group>
+                    </div>
+
+                    <!-- ─── Field notes ──────────────────────────── -->
+                    <div class="o_pms_tech_block">
+                        <div class="o_pms_tech_label">✏ ملاحظات سريعة</div>
+                        <field name="field_notes" nolabel="1"
+                               placeholder="ملاحظات من موقع العمل..."
+                               class="o_pms_tech_value"/>
+                    </div>
+
+                    <!-- ─── Time tracking (auto) ─────────────────── -->
+                    <div class="o_pms_tech_block" invisible="state == 'scheduled'">
+                        <div class="o_pms_tech_label">⏱ زمن العمل</div>
+                        <group>
+                            <field name="actual_start" readonly="1"/>
+                            <field name="actual_end" readonly="1"/>
+                            <field name="duration_actual" readonly="1"/>
+                        </group>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         Search view — filters relevant to a technician
+         ═══════════════════════════════════════════════════════════ -->
+    <record id="view_work_order_search_mobile" model="ir.ui.view">
+        <field name="name">sa.maintenance.work_order.search.mobile</field>
+        <field name="model">sa.maintenance.work_order</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="request_id"/>
+                <field name="property_id"/>
+                <separator/>
+                <filter name="filt_scheduled" string="مجدول"
+                        domain="[('state','=','scheduled')]"/>
+                <filter name="filt_in_progress" string="جاري"
+                        domain="[('state','=','in_progress')]"/>
+                <filter name="filt_done" string="منجز"
+                        domain="[('state','=','done')]"/>
+                <separator/>
+                <filter name="filt_today" string="اليوم"
+                        domain="[('scheduled_date','&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')),
+                                 ('scheduled_date','&lt;', context_today().strftime('%Y-%m-%d 23:59:59'))]"/>
+                <filter name="filt_this_week" string="هذا الأسبوع"
+                        domain="[('scheduled_date','&gt;=', context_today().strftime('%Y-%m-%d 00:00:00'))]"/>
+                <group expand="0" string="تجميع">
+                    <filter name="g_state" string="الحالة"
+                            context="{'group_by':'state'}"/>
+                    <filter name="g_property" string="العقار"
+                            context="{'group_by':'property_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         Action: "أعمالي" — landing page for technicians
+         ═══════════════════════════════════════════════════════════ -->
+    <record id="action_my_work_orders" model="ir.actions.act_window">
+        <field name="name">أعمالي</field>
+        <field name="res_model">sa.maintenance.work_order</field>
+        <field name="view_mode">kanban,form,tree</field>
+        <field name="view_ids" eval="[
+            (5, 0, 0),
+            (0, 0, {'view_mode': 'kanban', 'view_id': ref('view_work_order_kanban_mobile')}),
+            (0, 0, {'view_mode': 'form',   'view_id': ref('view_work_order_form_mobile')}),
+            (0, 0, {'view_mode': 'tree'}),
+        ]"/>
+        <field name="search_view_id" ref="view_work_order_search_mobile"/>
+        <field name="context">{
+            'search_default_filt_scheduled': 1,
+            'search_default_filt_in_progress': 1,
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">لا توجد أعمال مُسنَدة لك حالياً</p>
+            <p>سيظهر هنا أوامر العمل التي تُسنَد إليك من قبل إدارة الصيانة.</p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- List -->
+    <record id="view_property_tenancy_list" model="ir.ui.view">
+        <field name="name">property.tenancy.list</field>
+        <field name="model">property.tenancy</field>
+        <field name="arch" type="xml">
+            <tree string="عقود الإيجار"
+                  decoration-info="state=='confirm'"
+                  decoration-success="state=='running'"
+                  decoration-muted="state in ('closed','cancelled')">
+                <field name="name"/>
+                <field name="property_id"/>
+                <field name="partner_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="rent_amount" sum="إجمالي الإيجار"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form -->
+    <record id="view_property_tenancy_form" model="ir.ui.view">
+        <field name="name">property.tenancy.form</field>
+        <field name="model">property.tenancy</field>
+        <field name="arch" type="xml">
+            <form string="عقد إيجار">
+                <header>
+                    <button name="action_confirm" type="object" string="تأكيد"
+                            invisible="state != 'draft'" class="oe_highlight"/>
+                    <button name="action_start" type="object" string="بدء"
+                            invisible="state != 'confirm'" class="oe_highlight"/>
+                    <button name="action_close" type="object" string="إنهاء"
+                            invisible="state != 'running'"/>
+                    <button name="action_cancel" type="object" string="إلغاء"
+                            invisible="state in ('closed','cancelled')"/>
+                    <button name="action_set_to_draft" type="object" string="إعادة لـ مسودة"
+                            invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirm,running,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="الأطراف">
+                            <field name="property_id"/>
+                            <field name="partner_id"/>
+                            <field name="owner_partner_id" readonly="1"/>
+                        </group>
+                        <group string="المدة">
+                            <field name="start_date"/>
+                            <field name="duration"/>
+                            <field name="interval_type"/>
+                            <field name="end_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="القيمة">
+                            <field name="rent_amount" widget="monetary"/>
+                            <field name="deposit_amount" widget="monetary"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="الدفع">
+                            <field name="payment_method"/>
+                            <field name="priority" widget="priority"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="ملاحظات" name="notes">
+                            <!-- Empty placeholder; SA modules add tabs here via xpath -->
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search -->
+    <record id="view_property_tenancy_search" model="ir.ui.view">
+        <field name="name">property.tenancy.search</field>
+        <field name="model">property.tenancy</field>
+        <field name="arch" type="xml">
+            <search string="بحث في العقود">
+                <field name="name"/>
+                <field name="property_id"/>
+                <field name="partner_id"/>
+                <separator/>
+                <filter name="draft"     string="جديد"   domain="[('state','=','draft')]"/>
+                <filter name="confirm"   string="مؤكد"   domain="[('state','=','confirm')]"/>
+                <filter name="running"   string="ساري"   domain="[('state','=','running')]"/>
+                <filter name="closed"    string="منتهي"  domain="[('state','=','closed')]"/>
+                <group expand="0" string="تجميع حسب">
+                    <filter name="group_state"    string="الحالة"  context="{'group_by':'state'}"/>
+                    <filter name="group_property" string="العقار"  context="{'group_by':'property_id'}"/>
+                    <filter name="group_owner"    string="المؤجر"  context="{'group_by':'owner_partner_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_property_tenancy" model="ir.actions.act_window">
+        <field name="name">عقود الإيجار</field>
+        <field name="res_model">property.tenancy</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_property_tenancy_search"/>
+    </record>
+
+</odoo>

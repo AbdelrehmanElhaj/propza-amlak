@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ═══════════════════════════════════════════════════════
+             Cron 1: تذكير الدفعات المستحقة قريباً (يومي)
+             ═══════════════════════════════════════════════════════ -->
+        <record id="cron_payment_reminder" model="ir.cron">
+            <field name="name">PMS: تذكير الدفعات المستحقة قريباً</field>
+            <field name="model_id" ref="sa_rental_cycle.model_sa_rent_payment"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_send_payment_reminders()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             Cron 2: تنبيه الدفعات المتأخرة (يومي)
+             ═══════════════════════════════════════════════════════ -->
+        <record id="cron_payment_overdue" model="ir.cron">
+            <field name="name">PMS: تنبيه الدفعات المتأخرة</field>
+            <field name="model_id" ref="sa_rental_cycle.model_sa_rent_payment"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_send_overdue_alerts()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             Cron 3: تنبيه عقود تنتهي قريباً (يومي)
+             ═══════════════════════════════════════════════════════ -->
+        <record id="cron_contract_expiring" model="ir.cron">
+            <field name="name">PMS: تنبيه عقود تنتهي قريباً</field>
+            <field name="model_id" ref="sa_property_base.model_property_tenancy"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_send_expiring_alerts()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+        </record>
+
+    </data>
+</odoo>

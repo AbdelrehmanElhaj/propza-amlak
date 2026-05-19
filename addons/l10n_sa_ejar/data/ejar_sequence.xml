@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_ejar_contract" model="ir.sequence">
+            <field name="name">Ejar Contract</field>
+            <field name="code">ejar.contract</field>
+            <field name="prefix">EJAR/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+    </data>
+</odoo>

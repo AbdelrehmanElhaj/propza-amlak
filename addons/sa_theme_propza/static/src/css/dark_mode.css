@@ -1,0 +1,294 @@
+/* ===========================
+   PROPZA THEME - Dark Mode
+   =========================== */
+
+/* Dark Mode Variables */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --propza-bg-primary: #1F2937;
+        --propza-bg-secondary: #111827;
+        --propza-bg-tertiary: #0F172A;
+        
+        --propza-text-primary: #F9FAFB;
+        --propza-text-secondary: #D1D5DB;
+        --propza-text-tertiary: #9CA3AF;
+        
+        --propza-gray-50: #F9FAFB;
+        --propza-gray-100: #1F2937;
+        --propza-gray-200: #374151;
+        --propza-gray-300: #4B5563;
+        --propza-gray-400: #6B7280;
+        --propza-gray-500: #9CA3AF;
+        --propza-gray-600: #D1D5DB;
+        --propza-gray-700: #E5E7EB;
+        --propza-gray-800: #F3F4F6;
+        --propza-gray-900: #F9FAFB;
+    }
+}
+
+/* Manual Dark Mode */
+body.dark-mode {
+    --propza-bg-primary: #1F2937;
+    --propza-bg-secondary: #111827;
+    --propza-bg-tertiary: #0F172A;
+    
+    --propza-text-primary: #F9FAFB;
+    --propza-text-secondary: #D1D5DB;
+    --propza-text-tertiary: #9CA3AF;
+    
+    --propza-gray-50: #F9FAFB;
+    --propza-gray-100: #1F2937;
+    --propza-gray-200: #374151;
+    --propza-gray-300: #4B5563;
+    --propza-gray-400: #6B7280;
+    --propza-gray-500: #9CA3AF;
+    --propza-gray-600: #D1D5DB;
+    --propza-gray-700: #E5E7EB;
+    --propza-gray-800: #F3F4F6;
+    --propza-gray-900: #F9FAFB;
+}
+
+/* Dark Mode Specific Styles */
+body.dark-mode {
+    background-color: var(--propza-bg-primary);
+    color: var(--propza-text-primary);
+}
+
+body.dark-mode a {
+    color: #60A5FA;
+}
+
+body.dark-mode a:hover {
+    color: #93C5FD;
+}
+
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode h6 {
+    color: var(--propza-text-primary);
+}
+
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select {
+    background-color: var(--propza-bg-secondary);
+    border-color: var(--propza-gray-300);
+    color: var(--propza-text-primary);
+}
+
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+    color: var(--propza-text-tertiary);
+}
+
+body.dark-mode input:focus,
+body.dark-mode textarea:focus,
+body.dark-mode select:focus {
+    border-color: var(--propza-primary);
+    background-color: var(--propza-bg-secondary);
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.2);
+}
+
+body.dark-mode .card {
+    background-color: var(--propza-bg-secondary);
+    border-color: var(--propza-gray-300);
+}
+
+body.dark-mode .card-header {
+    background-color: var(--propza-bg-tertiary);
+    border-color: var(--propza-gray-300);
+}
+
+body.dark-mode .card-footer {
+    background-color: var(--propza-bg-tertiary);
+    border-color: var(--propza-gray-300);
+}
+
+body.dark-mode .table {
+    background-color: var(--propza-bg-secondary);
+    border-color: var(--propza-gray-300);
+}
+
+body.dark-mode .table thead {
+    background-color: var(--propza-bg-tertiary);
+    border-color: var(--propza-gray-300);
+}
+
+body.dark-mode .table td {
+    border-color: var(--propza-gray-300);
+    color: var(--propza-text-secondary);
+}
+
+body.dark-mode .table tbody tr:hover {
+    background-color: var(--propza-bg-tertiary);
+}
+
+body.dark-mode .btn-secondary {
+    background-color: var(--propza-gray-200);
+    color: var(--propza-text-primary);
+    border-color: var(--propza-gray-300);
+}
+
+body.dark-mode .btn-secondary:hover {
+    background-color: var(--propza-gray-300);
+}
+
+body.dark-mode .navbar {
+    background-color: var(--propza-bg-secondary);
+    border-color: var(--propza-gray-300);
+}
+
+body.dark-mode .sidebar {
+    background-color: var(--propza-bg-secondary);
+    border-color: var(--propza-gray-300);
+}
+
+body.dark-mode .dropdown-menu {
+    background-color: var(--propza-bg-secondary);
+    border-color: var(--propza-gray-300);
+}
+
+body.dark-mode .dropdown-item:hover {
+    background-color: var(--propza-bg-tertiary);
+}
+
+body.dark-mode .modal-dialog {
+    background-color: var(--propza-bg-secondary);
+}
+
+body.dark-mode .modal-header {
+    border-color: var(--propza-gray-300);
+}
+
+body.dark-mode .modal-footer {
+    border-color: var(--propza-gray-300);
+}
+
+body.dark-mode .alert {
+    background-color: var(--propza-bg-tertiary);
+}
+
+body.dark-mode .progress {
+    background-color: var(--propza-gray-300);
+}
+
+body.dark-mode code,
+body.dark-mode pre {
+    background-color: var(--propza-bg-tertiary);
+    color: var(--propza-text-secondary);
+}
+
+body.dark-mode blockquote {
+    border-color: var(--propza-primary);
+    color: var(--propza-text-secondary);
+}
+
+body.dark-mode hr {
+    border-color: var(--propza-gray-300);
+}
+
+body.dark-mode ::-webkit-scrollbar-track {
+    background: var(--propza-bg-secondary);
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb {
+    background: var(--propza-gray-400);
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb:hover {
+    background: var(--propza-gray-500);
+}
+
+/* Dark Mode Toggle Button */
+.theme-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    padding: var(--propza-space-2);
+    border-radius: var(--propza-radius-md);
+    transition: all var(--propza-transition-base);
+    color: var(--propza-text-secondary);
+}
+
+.theme-toggle:hover {
+    background-color: var(--propza-gray-200);
+    color: var(--propza-text-primary);
+}
+
+body.dark-mode .theme-toggle:hover {
+    background-color: var(--propza-gray-200);
+}
+
+.theme-toggle::before {
+    content: '🌙';
+}
+
+body.dark-mode .theme-toggle::before {
+    content: '☀️';
+}
+
+/* Dark Mode Transitions */
+body.dark-mode * {
+    transition: background-color var(--propza-transition-base),
+                color var(--propza-transition-base),
+                border-color var(--propza-transition-base);
+}
+
+/* KPI Cards in Dark Mode */
+body.dark-mode .kpi-card {
+    box-shadow: 0 4px 20px rgba(0, 102, 204, 0.2);
+}
+
+body.dark-mode .kpi-card::before {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Form Validation in Dark Mode */
+body.dark-mode .form-group.is-invalid input {
+    border-color: #FF6B6B;
+}
+
+body.dark-mode .form-group.is-valid input {
+    border-color: var(--propza-success);
+}
+
+/* Badges in Dark Mode */
+body.dark-mode .badge-light {
+    background-color: var(--propza-gray-200);
+    color: var(--propza-text-primary);
+}
+
+/* Links in Dark Mode */
+body.dark-mode a {
+    color: #60A5FA;
+}
+
+body.dark-mode a:hover {
+    color: #93C5FD;
+}
+
+body.dark-mode .nav-link {
+    color: var(--propza-text-secondary);
+}
+
+body.dark-mode .nav-link.active {
+    background-color: var(--propza-primary);
+    color: var(--propza-text-inverse);
+}
+
+/* Table in Dark Mode Styles */
+body.dark-mode .datatable {
+    background-color: var(--propza-bg-secondary);
+}
+
+body.dark-mode .datatable-header {
+    background-color: var(--propza-bg-tertiary);
+}
+
+body.dark-mode .datatable-footer {
+    background-color: var(--propza-bg-tertiary);
+}

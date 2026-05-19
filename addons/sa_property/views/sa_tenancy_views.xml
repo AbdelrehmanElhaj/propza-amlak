@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_sa_tenancy_form" model="ir.ui.view">
+        <field name="name">sa.tenancy.form</field>
+        <field name="model">property.tenancy</field>
+        <field name="inherit_id" ref="sa_property_base.view_property_tenancy_form"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+
+            <!-- إضافة زر إرسال لإيجار في الـ header -->
+            <xpath expr="//header" position="inside">
+                <button name="action_send_to_ejar"
+                        string="إرسال لإيجار"
+                        type="object"
+                        class="btn-primary"
+                        invisible="sa_ejar_status != 'not_registered'"/>
+                <field name="sa_ejar_status" widget="statusbar"
+                       statusbar_visible="not_registered,pending,active,expired"
+                       invisible="sa_ejar_status == 'not_registered'"/>
+            </xpath>
+
+            <!-- إضافة tab "هوية المستأجر والعقد" كأول tab -->
+            <xpath expr="//notebook/page[1]" position="before">
+
+                <page string="هوية المستأجر" name="sa_tenant_id">
+
+                    <!-- تحذير تجميد الرياض -->
+                    <div class="alert alert-warning" role="alert"
+                         invisible="not sa_rent_freeze_warning">
+                        <field name="sa_rent_freeze_warning" invisible="1"/>
+                        <strong>تحذير — تجميد إيجار الرياض:</strong>
+                        الإيجار المدخل يتجاوز آخر إيجار مسجل في إيجار.
+                        لا يُسمح برفع الإيجار في الرياض لمدة 5 سنوات من سبتمبر 2025.
+                    </div>
+
+                    <group string="هوية المستأجر">
+                        <group>
+                            <field name="partner_id" string="المستأجر"/>
+                            <field name="tenant_id_type"/>
+                            <field name="tenant_national_id"
+                                   placeholder="10 أرقام للهوية الوطنية"/>
+                            <field name="tenant_id_expiry"/>
+                            <field name="sa_tenant_nationality"/>
+                        </group>
+                        <group>
+                            <field name="sa_tenant_phone" readonly="1"/>
+                        </group>
+                    </group>
+
+                </page>
+
+                <page string="بنود العقد" name="sa_contract">
+
+                    <group string="نوع العقد ودورة الدفع">
+                        <group>
+                            <field name="sa_contract_type"/>
+                            <field name="sa_payment_schedule"/>
+                            <field name="payment_method"/>
+                            <field name="sublease_allowed"/>
+                        </group>
+                        <group>
+                            <field name="sa_broker_id"/>
+                            <field name="sa_broker_license" readonly="1"/>
+                            <field name="ejar_fee_bearer"/>
+                            <field name="ejar_doc_fee" readonly="1"
+                                   string="رسوم التوثيق (ريال)"/>
+                        </group>
+                    </group>
+
+                    <group string="ملاحظات العقد">
+                        <field name="sa_contract_notes" nolabel="1"
+                               placeholder="أي بنود إضافية يتفق عليها الطرفان..."/>
+                    </group>
+
+                </page>
+
+                <page string="إيجار" name="sa_ejar_info">
+                    <group string="حالة التسجيل في إيجار">
+                        <group>
+                            <field name="ejar_contract_number" readonly="1"/>
+                            <field name="sa_ejar_status" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="sadad_invoice_number"
+                                   invisible="payment_method != 'sadad'"/>
+                        </group>
+                    </group>
+                </page>
+
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Client action: embeds /pms/dashboard inside Odoo webclient (iframe) -->
+    <record id="action_pms_dashboard_client" model="ir.actions.client">
+        <field name="name">لوحة التحكم</field>
+        <field name="tag">pms_dashboard_action</field>
+    </record>
+
+    <!-- Top placement under "إدارة العقارات" -->
+    <menuitem id="menu_pms_dashboard"
+              name="لوحة التحكم"
+              parent="sa_property_base.menu_pms_root"
+              action="action_pms_dashboard_client"
+              sequence="1"/>
+
+</odoo>

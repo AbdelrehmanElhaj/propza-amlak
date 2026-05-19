@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_sadad_receipt" model="ir.actions.report">
+        <field name="name">إيصال SADAD</field>
+        <field name="model">sa.sadad.invoice</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">sa_sadad.report_sadad_receipt</field>
+        <field name="report_file">sa_sadad.report_sadad_receipt</field>
+        <field name="print_report_name">'SADAD %s' % (object.bill_number or '')</field>
+        <field name="binding_model_id" ref="model_sa_sadad_invoice"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_sadad_receipt">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page" dir="rtl" style="direction:rtl;text-align:right">
+                        <h2 style="text-align:center;color:#1a3a5c">إيصال دفع SADAD</h2>
+                        <hr/>
+
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px">
+                            <div>
+                                <table class="table table-sm">
+                                    <tr>
+                                        <th>رقم الفاتورة SADAD</th>
+                                        <td>
+                                            <strong style="font-size:14px;color:#2c5aa0">
+                                                <span t-out="doc.bill_number"/>
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>المرجع</th>
+                                        <td><span t-out="doc.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th>المستأجر</th>
+                                        <td><span t-out="doc.partner_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th>العقار</th>
+                                        <td><span t-out="doc.property_id.display_name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th>المبلغ</th>
+                                        <td>
+                                            <strong style="font-size:18px;color:#198754">
+                                                <span t-out="doc.amount"/> ر.س
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>تاريخ الإصدار</th>
+                                        <td><span t-out="doc.issue_date"/></td>
+                                    </tr>
+                                    <tr t-if="doc.expiry_date">
+                                        <th>صلاحية حتى</th>
+                                        <td><span t-out="doc.expiry_date"/></td>
+                                    </tr>
+                                    <tr t-if="doc.state == 'paid'">
+                                        <th>تاريخ السداد</th>
+                                        <td><span t-out="doc.paid_date"/></td>
+                                    </tr>
+                                    <tr t-if="doc.state == 'paid'">
+                                        <th>قناة الدفع</th>
+                                        <td><span t-out="doc.payment_channel"/></td>
+                                    </tr>
+                                    <tr t-if="doc.state == 'paid'">
+                                        <th>المرجع البنكي</th>
+                                        <td><span t-out="doc.payment_ref"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div style="text-align:center">
+                                <h4>QR للدفع</h4>
+                                <img t-if="doc.qr_code"
+                                     t-att-src="image_data_uri(doc.qr_code)"
+                                     style="max-width:200px"/>
+                                <div t-if="not doc.qr_code"
+                                     style="padding:60px;border:2px dashed #ccc;color:#999">
+                                    لا يوجد QR
+                                </div>
+                                <div style="font-size:11px;color:#666;margin-top:10px">
+                                    امسح الكود من تطبيق البنك
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:30px;padding:15px;background:#f5f7fa;border-radius:8px;text-align:center"
+                             t-if="doc.state == 'paid'">
+                            <h3 style="color:#198754;margin:0">✓ تم السداد بنجاح</h3>
+                        </div>
+                        <div style="margin-top:30px;padding:15px;background:#fff3cd;border-radius:8px;text-align:center"
+                             t-if="doc.state == 'pending'">
+                            <h3 style="color:#ff9800;margin:0">⏳ في انتظار السداد</h3>
+                            <p style="margin:5px 0 0">يمكنكم السداد عبر تطبيق البنك أو ATM باستخدام رقم الفاتورة أعلاه</p>
+                        </div>
+
+                        <div style="margin-top:50px;text-align:center;font-size:11px;color:#999">
+                            هذا إيصال آلي — لا يحتاج توقيع
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

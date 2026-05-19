@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_sa_payment_wizard" model="ir.ui.view">
+        <field name="name">sa.payment.wizard.form</field>
+        <field name="model">sa.payment.wizard</field>
+        <field name="arch" type="xml">
+            <form string="تسجيل دفعة إيجار">
+                <group>
+                    <group>
+                        <field name="rent_payment_id" readonly="1"/>
+                        <field name="amount_due" readonly="1"/>
+                        <field name="amount_paid"/>
+                        <field name="payment_date"/>
+                    </group>
+                    <group>
+                        <field name="payment_method"/>
+                        <field name="reference"
+                               placeholder="رقم المرجع / الشيك / SADAD"/>
+                    </group>
+                </group>
+                <group string="الفوترة المحاسبية">
+                    <field name="create_invoice"/>
+                </group>
+                <group string="ملاحظات">
+                    <field name="notes" nolabel="1"/>
+                </group>
+                <footer>
+                    <button name="action_register_payment"
+                            string="تأكيد الدفع"
+                            type="object" class="btn-primary"/>
+                    <button string="إلغاء" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

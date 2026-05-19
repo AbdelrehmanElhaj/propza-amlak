@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_property_property_tenant,property.property tenant,sa_property_base.model_property_property,group_pms_tenant_portal,1,0,0,0
+access_property_tenancy_tenant,property.tenancy tenant,sa_property_base.model_property_tenancy,group_pms_tenant_portal,1,0,0,0
+access_sa_rent_payment_tenant,sa.rent.payment tenant,sa_rental_cycle.model_sa_rent_payment,group_pms_tenant_portal,1,0,0,0
+access_sa_maintenance_request_tenant,sa.maintenance.request tenant,sa_maintenance.model_sa_maintenance_request,group_pms_tenant_portal,1,1,1,0
+access_sa_property_inspection_tenant,sa.property.inspection tenant,sa_property_base.model_sa_property_inspection,group_pms_tenant_portal,1,0,0,0
+access_sa_property_inspection_line_tenant,sa.property.inspection.line tenant,sa_property_base.model_sa_property_inspection_line,group_pms_tenant_portal,1,0,0,0
+access_property_property_owner,property.property owner,sa_property_base.model_property_property,group_pms_owner,1,0,0,0
+access_sa_maintenance_work_order_tech,sa.maintenance.work_order technician,sa_maintenance.model_sa_maintenance_work_order,group_pms_technician,1,1,0,0
+access_sa_maintenance_request_tech,sa.maintenance.request technician,sa_maintenance.model_sa_maintenance_request,group_pms_technician,1,1,0,0
+access_property_property_tech,property.property technician,sa_property_base.model_property_property,group_pms_technician,1,0,0,0

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Sequence for maintenance request numbers -->
+        <record id="seq_sa_maintenance_request" model="ir.sequence">
+            <field name="name">طلب صيانة</field>
+            <field name="code">sa.maintenance.request</field>
+            <field name="prefix">MAINT/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Sequence for work orders -->
+        <record id="seq_sa_maintenance_work_order" model="ir.sequence">
+            <field name="name">أمر عمل صيانة</field>
+            <field name="code">sa.maintenance.work_order</field>
+            <field name="prefix">WO/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Cron: scan preventive contracts daily -->
+        <record id="cron_generate_due_services" model="ir.cron">
+            <field name="name">صيانة دورية: توليد طلبات تلقائياً</field>
+            <field name="model_id" ref="model_sa_maintenance_contract"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_generate_due_services()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Default skill catalog -->
+        <record id="skill_plumbing" model="sa.maintenance.skill">
+            <field name="name">سباكة</field>
+            <field name="code">plumbing</field>
+            <field name="sequence">10</field>
+            <field name="color">1</field>
+        </record>
+        <record id="skill_electrical" model="sa.maintenance.skill">
+            <field name="name">كهرباء</field>
+            <field name="code">electrical</field>
+            <field name="sequence">20</field>
+            <field name="color">2</field>
+        </record>
+        <record id="skill_ac" model="sa.maintenance.skill">
+            <field name="name">تكييف وتبريد</field>
+            <field name="code">ac</field>
+            <field name="sequence">30</field>
+            <field name="color">3</field>
+        </record>
+        <record id="skill_painting" model="sa.maintenance.skill">
+            <field name="name">دهان</field>
+            <field name="code">painting</field>
+            <field name="sequence">40</field>
+            <field name="color">4</field>
+        </record>
+        <record id="skill_carpentry" model="sa.maintenance.skill">
+            <field name="name">نجارة</field>
+            <field name="code">carpentry</field>
+            <field name="sequence">50</field>
+            <field name="color">5</field>
+        </record>
+        <record id="skill_cleaning" model="sa.maintenance.skill">
+            <field name="name">تنظيف</field>
+            <field name="code">cleaning</field>
+            <field name="sequence">60</field>
+            <field name="color">6</field>
+        </record>
+        <record id="skill_pest" model="sa.maintenance.skill">
+            <field name="name">مكافحة حشرات</field>
+            <field name="code">pest</field>
+            <field name="sequence">70</field>
+            <field name="color">7</field>
+        </record>
+        <record id="skill_appliance" model="sa.maintenance.skill">
+            <field name="name">أجهزة منزلية</field>
+            <field name="code">appliance</field>
+            <field name="sequence">80</field>
+            <field name="color">8</field>
+        </record>
+
+    </data>
+</odoo>

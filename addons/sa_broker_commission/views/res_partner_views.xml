@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ─── إحصائيات العمولات على form الوسيط ───────────────────── -->
+    <record id="view_partner_form_broker_stats" model="ir.ui.view">
+        <field name="name">res.partner.form.broker.stats</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="priority">95</field>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_broker_commissions" type="object"
+                        class="oe_stat_button" icon="fa-money"
+                        invisible="not is_broker">
+                    <field name="broker_active_commissions" widget="statinfo"
+                           string="عمولات نشطة"/>
+                </button>
+            </xpath>
+
+            <xpath expr="//sheet" position="inside">
+                <group string="إحصائيات الوسيط"
+                       invisible="not is_broker">
+                    <group>
+                        <field name="broker_active_commissions" readonly="1"/>
+                        <field name="broker_total_pending" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="broker_total_earned" readonly="1"/>
+                        <field name="broker_ytd_earned" readonly="1"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

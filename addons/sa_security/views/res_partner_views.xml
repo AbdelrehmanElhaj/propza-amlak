@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- زرّ "إنشاء مستخدم" + معلومات الحساب على form الجهة -->
+    <record id="view_res_partner_pms_user_buttons" model="ir.ui.view">
+        <field name="name">res.partner.pms.user.buttons</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+
+            <!-- زرّ في الـ button_box -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_open_pms_user" type="object"
+                        class="oe_stat_button" icon="fa-user"
+                        invisible="not has_pms_user">
+                    <field name="pms_user_role" widget="statinfo"
+                           string="حساب النظام"/>
+                </button>
+            </xpath>
+
+            <!-- إجراءات بعد عنوان الجهة -->
+            <xpath expr="//sheet" position="inside">
+                <group string="حساب نظام إدارة العقارات"
+                       invisible="not (is_property_owner or is_tenant or is_technician)">
+                    <group>
+                        <field name="has_pms_user" readonly="1"/>
+                        <field name="pms_user_id" readonly="1"
+                               invisible="not has_pms_user"/>
+                        <field name="pms_user_role" readonly="1"
+                               invisible="not has_pms_user"/>
+                    </group>
+                    <group>
+                        <button name="action_create_pms_user"
+                                type="object"
+                                string="إنشاء حساب نظام"
+                                class="btn-primary"
+                                icon="fa-user-plus"
+                                invisible="has_pms_user
+                                           or not (is_property_owner or is_tenant or is_technician)"/>
+                        <button name="action_resend_pms_invite"
+                                type="object"
+                                string="إعادة إرسال دعوة"
+                                class="btn-secondary"
+                                icon="fa-envelope"
+                                invisible="not has_pms_user"/>
+                        <div invisible="not (is_property_owner or is_tenant or is_technician)
+                                       or has_pms_user
+                                       or email"
+                             style="color:#c62828;font-size:12px">
+                            <i class="fa fa-warning" title="تحذير" role="img"/>
+                            يجب إدخال البريد الإلكتروني قبل إنشاء الحساب
+                        </div>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- إضافة عمود "دور PMS" في قائمة المستخدمين -->
+    <record id="view_users_tree_pms_role" model="ir.ui.view">
+        <field name="name">res.users.tree.pms.role</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='login']" position="after">
+                <field name="pms_role_label" string="دور PMS" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

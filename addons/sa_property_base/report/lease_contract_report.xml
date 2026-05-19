@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ─── Action ──────────────────────────────────────────────── -->
+    <record id="action_report_lease_contract" model="ir.actions.report">
+        <field name="name">عقد الإيجار للطباعة</field>
+        <field name="model">property.tenancy</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">sa_property_base.report_lease_contract</field>
+        <field name="report_file">sa_property_base.report_lease_contract</field>
+        <field name="print_report_name">'عقد إيجار %s' % (object.name or '')</field>
+        <field name="binding_model_id" ref="model_property_tenancy"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- ─── Template ────────────────────────────────────────────── -->
+    <template id="report_lease_contract">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page" dir="rtl" style="direction:rtl;text-align:right;line-height:1.7">
+
+                        <h2 style="text-align:center;margin-bottom:8px">عقد إيجار</h2>
+                        <div style="text-align:center;font-size:12px;color:#666;margin-bottom:20px">
+                            رقم العقد: <span t-field="doc.name"/>
+                        </div>
+
+                        <!-- ─── Preamble ────────────────────────── -->
+                        <p style="text-align:justify">
+                            إنه في يوم <span t-field="doc.start_date"/>، تم إبرام هذا العقد بين الأطراف الآتي ذكرهم:
+                        </p>
+
+                        <!-- ─── Parties ─────────────────────────── -->
+                        <div style="margin:16px 0;padding:12px;border:1px solid #ddd;border-radius:6px">
+                            <h5 style="margin-top:0">الطرف الأول (المؤجِّر / المالك)</h5>
+                            <table class="table table-sm" style="margin-bottom:0">
+                                <tr>
+                                    <th style="width:30%">الاسم</th>
+                                    <td><span t-field="doc.owner_partner_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <th>رقم الهوية</th>
+                                    <td><span t-field="doc.owner_partner_id.vat"/></td>
+                                </tr>
+                                <tr>
+                                    <th>رقم الجوال</th>
+                                    <td><span t-field="doc.owner_partner_id.phone"/></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div style="margin:16px 0;padding:12px;border:1px solid #ddd;border-radius:6px">
+                            <h5 style="margin-top:0">الطرف الثاني (المستأجر)</h5>
+                            <table class="table table-sm" style="margin-bottom:0">
+                                <tr>
+                                    <th style="width:30%">الاسم</th>
+                                    <td><span t-field="doc.partner_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <th>رقم الهوية</th>
+                                    <td><span t-field="doc.partner_id.vat"/></td>
+                                </tr>
+                                <tr>
+                                    <th>رقم الجوال</th>
+                                    <td><span t-field="doc.partner_id.phone"/></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- ─── Article 1: Property ──────────────── -->
+                        <h4 style="margin-top:20px">المادة الأولى: العقار المؤجَّر</h4>
+                        <p style="text-align:justify">
+                            يقرّ الطرف الأول بأنه قام بتأجير العقار التالي للطرف الثاني:
+                        </p>
+                        <table class="table table-sm">
+                            <tr>
+                                <th style="width:30%">العقار</th>
+                                <td><span t-field="doc.property_id.display_name"/></td>
+                            </tr>
+                        </table>
+
+                        <!-- ─── Article 2: Term ──────────────────── -->
+                        <h4 style="margin-top:20px">المادة الثانية: مدة العقد</h4>
+                        <p style="text-align:justify">
+                            تبدأ مدة هذا العقد من تاريخ <strong><span t-field="doc.start_date"/></strong>
+                            وتنتهي في تاريخ <strong><span t-field="doc.end_date"/></strong>،
+                            ومدتها <strong><span t-field="doc.duration"/></strong>
+                            <span t-field="doc.interval_type"/>.
+                        </p>
+
+                        <!-- ─── Article 3: Rent ──────────────────── -->
+                        <h4 style="margin-top:20px">المادة الثالثة: قيمة الإيجار</h4>
+                        <p style="text-align:justify">
+                            اتفق الطرفان على أن تكون قيمة الإيجار
+                            <strong><span t-field="doc.rent_amount"/> ريال سعودي</strong>،
+                            تُسدَّد عبر <span t-field="doc.payment_method"/>،
+                            ودفع الطرف الثاني للطرف الأول مبلغ
+                            <strong><span t-field="doc.deposit_amount"/> ريال سعودي</strong>
+                            كتأمين، يُرَدّ عند انتهاء العقد بعد خصم أي تلفيات أو متأخرات (إن وُجدت).
+                        </p>
+
+                        <!-- ─── Article 4: Obligations ──────────── -->
+                        <h4 style="margin-top:20px">المادة الرابعة: الالتزامات</h4>
+                        <ol style="text-align:justify">
+                            <li>يلتزم الطرف الثاني بسداد الإيجار في مواعيده المحددة.</li>
+                            <li>يلتزم الطرف الثاني بالمحافظة على العقار وعدم إجراء أي تعديلات إنشائية دون إذن خطّي.</li>
+                            <li>يتحمل الطرف الثاني فواتير الكهرباء والماء والإنترنت.</li>
+                            <li>يلتزم الطرف الأول بصيانة العقار من الأعطال الإنشائية الكبرى.</li>
+                            <li>عند انتهاء العقد يُسلِّم الطرف الثاني العقار بالحالة المُستلمة بموجب تقرير المعاينة.</li>
+                        </ol>
+
+                        <!-- ─── Article 5: Termination ──────────── -->
+                        <h4 style="margin-top:20px">المادة الخامسة: إنهاء العقد</h4>
+                        <p style="text-align:justify">
+                            في حال إخلال أيّ من الطرفين بالتزاماته، يحقّ للطرف الآخر فسخ العقد بعد إنذار رسمي
+                            مدته 30 يوماً. ويخضع هذا العقد لأحكام نظام الإيجار السعودي وقواعد منصة "إيجار".
+                        </p>
+
+                        <!-- ─── Closing ─────────────────────────── -->
+                        <p style="text-align:justify;margin-top:20px">
+                            حُرِّر هذا العقد من نسختين، بيد كلِّ طرف نسخة للعمل بموجبها.
+                        </p>
+
+                        <!-- ─── Signatures ──────────────────────── -->
+                        <div style="margin-top:50px;display:grid;grid-template-columns:1fr 1fr;gap:60px">
+                            <div style="text-align:center">
+                                <div style="border-top:1px solid #333;padding-top:8px;font-weight:600">
+                                    الطرف الأول (المؤجِّر)
+                                </div>
+                                <div style="font-size:12px;color:#666;margin-top:6px">
+                                    <span t-field="doc.owner_partner_id.name"/>
+                                </div>
+                                <div style="font-size:11px;color:#999;margin-top:30px">
+                                    التوقيع: ______________________
+                                </div>
+                            </div>
+                            <div style="text-align:center">
+                                <div style="border-top:1px solid #333;padding-top:8px;font-weight:600">
+                                    الطرف الثاني (المستأجر)
+                                </div>
+                                <div style="font-size:12px;color:#666;margin-top:6px">
+                                    <span t-field="doc.partner_id.name"/>
+                                </div>
+                                <div style="font-size:11px;color:#999;margin-top:30px">
+                                    التوقيع: ______________________
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

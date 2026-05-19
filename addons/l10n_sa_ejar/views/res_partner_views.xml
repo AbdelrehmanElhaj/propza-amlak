@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_res_partner_form_sa_inherit" model="ir.ui.view">
+        <field name="name">res.partner.form.sa.ejar</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//notebook" position="inside">
+                <page string="هوية سعودية" name="sa_identity">
+                    <group string="الهوية">
+                        <group>
+                            <field name="sa_id_type"/>
+                            <field name="sa_national_id"/>
+                            <field name="sa_id_expiry"/>
+                            <field name="sa_id_verified" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="sa_cr_number"/>
+                            <field name="sa_cr_expiry"/>
+                            <field name="sa_iban" placeholder="SA + 22 digit"/>
+                        </group>
+                    </group>
+                    <group string="دور في العقارات">
+                        <field name="is_property_owner"/>
+                        <field name="is_tenant"/>
+                        <field name="is_broker"/>
+                        <field name="broker_license"
+                               invisible="not is_broker"/>
+                    </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

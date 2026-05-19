@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ────────────── ACTIONS ────────────── -->
+
+    <record id="action_property_owners" model="ir.actions.act_window">
+        <field name="name">الملاك</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('is_property_owner','=',True)]</field>
+        <field name="context">{'default_is_property_owner': True, 'default_company_type': 'person'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">إضافة مالك عقار جديد</p>
+            <p>قائمة الملاك المُسجَّلين في النظام مع بياناتهم القانونية والمالية.</p>
+        </field>
+    </record>
+
+    <record id="action_property_tenants" model="ir.actions.act_window">
+        <field name="name">المستأجرون</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('is_tenant','=',True)]</field>
+        <field name="context">{'default_is_tenant': True, 'default_company_type': 'person'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">إضافة مستأجر جديد</p>
+            <p>قائمة المستأجرين مع هوياتهم وعقودهم الجارية.</p>
+        </field>
+    </record>
+
+    <record id="action_property_brokers" model="ir.actions.act_window">
+        <field name="name">الوسطاء العقاريون</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('is_broker','=',True)]</field>
+        <field name="context">{'default_is_broker': True, 'default_company_type': 'company'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">إضافة مكتب وساطة جديد</p>
+            <p>قائمة مكاتب الوساطة العقارية مع أرقام تراخيصها.</p>
+        </field>
+    </record>
+
+    <!-- ────────────── MENUS ────────────── -->
+
+    <menuitem id="menu_pms_parties_root"
+              name="الأطراف"
+              parent="menu_pms_root"
+              sequence="30"/>
+
+    <menuitem id="menu_pms_owners"
+              name="الملاك"
+              parent="menu_pms_parties_root"
+              action="action_property_owners"
+              sequence="10"/>
+
+    <menuitem id="menu_pms_tenants"
+              name="المستأجرون"
+              parent="menu_pms_parties_root"
+              action="action_property_tenants"
+              sequence="20"/>
+
+    <menuitem id="menu_pms_brokers"
+              name="الوسطاء العقاريون"
+              parent="menu_pms_parties_root"
+              action="action_property_brokers"
+              sequence="30"/>
+
+</odoo>

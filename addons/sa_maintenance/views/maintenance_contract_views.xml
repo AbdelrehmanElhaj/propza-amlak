@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_contract_tree" model="ir.ui.view">
+        <field name="name">sa.maintenance.contract.list</field>
+        <field name="model">sa.maintenance.contract</field>
+        <field name="arch" type="xml">
+            <tree string="عقود الصيانة الدورية"
+                  decoration-success="state == 'active'"
+                  decoration-warning="state == 'suspended'"
+                  decoration-muted="state in ('draft','expired')">
+                <field name="name"/>
+                <field name="supplier_partner_id"/>
+                <field name="category"/>
+                <field name="frequency"/>
+                <field name="last_service_date"/>
+                <field name="next_service_date"/>
+                <field name="estimated_cost_per_visit" sum="إجمالي/زيارة"/>
+                <field name="request_count"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-warning="state == 'suspended'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_contract_form" model="ir.ui.view">
+        <field name="name">sa.maintenance.contract.form</field>
+        <field name="model">sa.maintenance.contract</field>
+        <field name="arch" type="xml">
+            <form string="عقد صيانة دورية">
+                <header>
+                    <button name="action_activate" string="تفعيل"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_suspend" string="إيقاف مؤقت"
+                            type="object"
+                            invisible="state != 'active'"/>
+                    <button name="action_activate" string="استئناف"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'suspended'"/>
+                    <button name="action_expire" string="انتهاء"
+                            type="object"
+                            invisible="state in ('draft','expired')"/>
+                    <button name="action_generate_request_now" string="توليد طلب الآن"
+                            type="object" class="btn-secondary"
+                            invisible="state != 'active'"
+                            help="توليد طلب صيانة فوراً بدون انتظار الـ cron"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,active,expired"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_requests" type="object"
+                                class="oe_stat_button" icon="fa-wrench">
+                            <field name="request_count" widget="statinfo"
+                                   string="الطلبات المُولّدة"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="مثال: عقد صيانة التكييف السنوي 2026"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="supplier_partner_id"/>
+                            <field name="category"/>
+                            <field name="frequency"/>
+                            <field name="estimated_cost_per_visit"/>
+                        </group>
+                        <group>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="last_service_date" readonly="1"/>
+                            <field name="next_service_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="العقارات المُغطّاة">
+                        <field name="property_ids" widget="many2many_tags" nolabel="1"/>
+                    </group>
+                    <group string="وصف الخدمة">
+                        <field name="service_description" nolabel="1"
+                               placeholder="مثال: فحص + تنظيف + تعقيم وحدات التكييف، استبدال الفلاتر..."/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_contract" model="ir.actions.act_window">
+        <field name="name">عقود الصيانة الدورية</field>
+        <field name="res_model">sa.maintenance.contract</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">إضافة عقد صيانة دورية</p>
+            <p>عقود تُولّد طلبات صيانة تلقائياً (تكييف سنوي، حشرات ربع سنوي…)</p>
+        </field>
+    </record>
+
+</odoo>

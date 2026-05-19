@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Top-menu tweaks for the property management deployment:
+
+        1. Hide Discuss + Calendar from the apps switcher (the underlying
+           mail/calendar modules stay installed for chatter and activity
+           reminders).
+
+        2. Push the generic "Contacts" menu to the end of the functional
+           list (sequence=200) so the property-focused menus take priority
+           in the apps switcher. Contacts remains available for suppliers,
+           government entities, banks, employees, and any other partner
+           that doesn't fit the owner/tenant/broker roles.
+    -->
+    <data noupdate="1">
+        <record id="mail.menu_root_discuss" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+        </record>
+        <record id="spreadsheet_dashboard.spreadsheet_dashboard_menu_root" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+        </record>
+    </data>
+</odoo>

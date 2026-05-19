@@ -1,0 +1,87 @@
+/* ═══════════════════════════════════════════════════════════
+   Mobile-friendly styles for technician work order form
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─── Form blocks: large, single-column, touch-friendly ─── */
+.o_pms_tech_form .o_pms_tech_block {
+    background: #fafbfc;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+}
+
+.o_pms_tech_form .o_pms_tech_label {
+    font-size: 13px;
+    color: #6c757d;
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+.o_pms_tech_form .o_pms_tech_value {
+    font-size: 16px;
+    color: #1a3a5c;
+    font-weight: 500;
+}
+
+.o_pms_tech_form .o_pms_tech_value input,
+.o_pms_tech_form .o_pms_tech_value textarea {
+    font-size: 16px;
+    padding: 8px;
+    min-height: 40px;
+}
+
+/* ─── Big touch buttons in header ─── */
+.o_pms_tech_form .o_pms_tech_btn {
+    font-size: 16px;
+    padding: 10px 20px;
+    min-height: 44px;
+    font-weight: 600;
+}
+
+/* ─── Image previews ─── */
+.o_pms_tech_form .o_pms_tech_image {
+    display: block;
+    max-width: 100%;
+}
+
+/* ─── Mobile responsive overrides ─── */
+@media (max-width: 768px) {
+    .o_pms_tech_form .o_form_sheet {
+        padding: 12px !important;
+        max-width: 100% !important;
+    }
+    .o_pms_tech_form .o_pms_tech_block {
+        padding: 12px;
+    }
+    .o_pms_tech_form .o_form_view .o_group {
+        column-count: 1 !important;
+    }
+    .o_pms_tech_form .oe_title h1 {
+        font-size: 20px !important;
+    }
+    /* Hide chatter on mobile to save space */
+    .o_pms_tech_form .o_chatter {
+        display: none;
+    }
+}
+
+/* ─── Kanban cards: bigger on mobile ─── */
+.o_pms_tech_kanban .pms_tech_card {
+    padding: 14px;
+    min-height: 110px;
+}
+
+@media (max-width: 768px) {
+    .o_pms_tech_kanban .pms_tech_card {
+        font-size: 14px;
+    }
+    .o_pms_tech_kanban .o_kanban_record_top strong {
+        font-size: 17px !important;
+    }
+}
+
+/* ─── RTL adjustments ─── */
+.o_pms_tech_form[dir="rtl"] .o_pms_tech_block {
+    text-align: right;
+}

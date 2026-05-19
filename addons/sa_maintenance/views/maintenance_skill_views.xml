@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_skill_tree" model="ir.ui.view">
+        <field name="name">sa.maintenance.skill.list</field>
+        <field name="model">sa.maintenance.skill</field>
+        <field name="arch" type="xml">
+            <tree string="التخصصات" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="color" widget="color_picker"/>
+                <field name="description"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_skill" model="ir.actions.act_window">
+        <field name="name">تخصصات الصيانة</field>
+        <field name="res_model">sa.maintenance.skill</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+</odoo>

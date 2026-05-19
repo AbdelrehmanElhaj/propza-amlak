@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ─── Owner Dashboard: Kanban with KPI tiles ──────────── -->
+    <record id="view_owner_dashboard_kanban" model="ir.ui.view">
+        <field name="name">res.partner.owner.dashboard.kanban</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_dashboard" create="0" group_create="false">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="sa_total_properties"/>
+                <field name="sa_occupied_properties"/>
+                <field name="sa_vacant_properties"/>
+                <field name="sa_active_tenancies"/>
+                <field name="sa_expiring_60d"/>
+                <field name="sa_monthly_revenue"/>
+                <field name="sa_overdue_count"/>
+                <field name="sa_overdue_total"/>
+                <field name="sa_total_collected"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click"
+                             style="padding:16px;min-width:320px">
+                            <div style="display:flex;align-items:center;margin-bottom:12px">
+                                <div style="flex:1">
+                                    <div style="font-size:18px;font-weight:600">
+                                        <field name="name"/>
+                                    </div>
+                                    <div style="font-size:11px;color:var(--color-text-secondary)">مالك عقار</div>
+                                </div>
+                                <div style="font-size:24px;color:var(--color-text-secondary)">
+                                    <i class="fa fa-building" title="مالك عقار" role="img"/>
+                                </div>
+                            </div>
+
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+                                <div style="padding:8px;background:var(--color-background-secondary);border-radius:6px">
+                                    <div style="font-size:11px;color:var(--color-text-secondary)">إجمالي العقارات</div>
+                                    <div style="font-size:20px;font-weight:600">
+                                        <field name="sa_total_properties"/>
+                                    </div>
+                                </div>
+                                <div style="padding:8px;background:var(--color-background-secondary);border-radius:6px">
+                                    <div style="font-size:11px;color:var(--color-text-secondary)">عقود سارية</div>
+                                    <div style="font-size:20px;font-weight:600">
+                                        <field name="sa_active_tenancies"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+                                <div style="padding:8px;background:var(--color-background-secondary);border-radius:6px">
+                                    <div style="font-size:11px;color:var(--color-text-secondary)">مؤجَّرة</div>
+                                    <div style="font-size:16px;font-weight:500;color:var(--color-text-success)">
+                                        <field name="sa_occupied_properties"/>
+                                    </div>
+                                </div>
+                                <div style="padding:8px;background:var(--color-background-secondary);border-radius:6px">
+                                    <div style="font-size:11px;color:var(--color-text-secondary)">شاغرة</div>
+                                    <div style="font-size:16px;font-weight:500;color:var(--color-text-warning)">
+                                        <field name="sa_vacant_properties"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="padding:10px;background:var(--color-background-secondary);border-radius:6px;margin-bottom:8px">
+                                <div style="font-size:11px;color:var(--color-text-secondary)">الإيراد الشهري المتوقع</div>
+                                <div style="font-size:22px;font-weight:600;color:var(--color-text-success)">
+                                    <field name="sa_monthly_revenue" widget="monetary"/>
+                                </div>
+                            </div>
+
+                            <div t-if="record.sa_overdue_count.raw_value > 0"
+                                 style="padding:10px;background:#fdecea;border-radius:6px;margin-bottom:8px">
+                                <div style="font-size:11px;color:#c62828">دفعات متأخرة</div>
+                                <div style="font-size:18px;font-weight:600;color:#c62828">
+                                    <field name="sa_overdue_count"/>
+                                    دفعة (
+                                    <field name="sa_overdue_total" widget="monetary"/>)
+                                </div>
+                            </div>
+
+                            <div t-if="record.sa_expiring_60d.raw_value > 0"
+                                 style="padding:8px;background:#fff8e1;border-radius:6px;margin-bottom:8px">
+                                <div style="font-size:11px;color:#ff6f00">عقود تنتهي خلال 60 يوم</div>
+                                <div style="font-size:16px;font-weight:600;color:#ff6f00">
+                                    <field name="sa_expiring_60d"/>
+                                </div>
+                            </div>
+
+                            <div style="display:flex;gap:6px;margin-top:12px">
+                                <button name="action_view_my_properties" type="object"
+                                        class="btn btn-secondary btn-sm" style="flex:1">
+                                    العقارات
+                                </button>
+                                <button name="action_view_my_tenancies" type="object"
+                                        class="btn btn-secondary btn-sm" style="flex:1">
+                                    العقود
+                                </button>
+                                <button t-if="record.sa_overdue_count.raw_value > 0"
+                                        name="action_view_my_overdue" type="object"
+                                        class="btn btn-danger btn-sm" style="flex:1">
+                                    المتأخرات
+                                </button>
+                            </div>
+                            <div style="margin-top:8px">
+                                <button name="action_export_owner_pnl_xlsx" type="object"
+                                        class="btn btn-success btn-sm" style="width:100%"
+                                        icon="fa-file-excel-o">
+                                    تقرير ربح/خسارة Excel
+                                </button>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ─── Owner Dashboard: List view ───────────────────────── -->
+    <record id="view_owner_dashboard_tree" model="ir.ui.view">
+        <field name="name">res.partner.owner.dashboard.tree</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <tree string="لوحة المالكين" create="0">
+                <field name="name"/>
+                <field name="sa_total_properties"/>
+                <field name="sa_occupied_properties"/>
+                <field name="sa_vacant_properties"/>
+                <field name="sa_active_tenancies"/>
+                <field name="sa_monthly_revenue" sum="إجمالي الإيراد"/>
+                <field name="sa_overdue_count"/>
+                <field name="sa_overdue_total" sum="إجمالي متأخر"/>
+                <field name="sa_total_collected" sum="إجمالي محصَّل"/>
+                <field name="sa_expiring_60d"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ─── Action ────────────────────────────────────────────── -->
+    <record id="action_owner_dashboard" model="ir.actions.act_window">
+        <field name="name">لوحة المالكين</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,tree</field>
+        <field name="view_ids" eval="[
+            (5, 0, 0),
+            (0, 0, {'view_mode': 'kanban', 'view_id': ref('view_owner_dashboard_kanban')}),
+            (0, 0, {'view_mode': 'tree',   'view_id': ref('view_owner_dashboard_tree')}),
+        ]"/>
+        <field name="domain">[('is_property_owner','=',True)]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">لا يوجد ملاك عقارات بعد</p>
+            <p>أضف ملاكاً من قائمة "إدارة العقارات → جهات → الملاك"</p>
+        </field>
+    </record>
+
+    <!-- ─── Menu ──────────────────────────────────────────────── -->
+    <menuitem id="menu_owner_dashboard"
+              name="لوحة المالكين"
+              parent="sa_property_base.menu_pms_root"
+              action="action_owner_dashboard"
+              sequence="5"/>
+
+</odoo>

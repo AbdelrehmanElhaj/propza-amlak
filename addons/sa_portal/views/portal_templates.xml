@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         Portal home: add 4 tiles for tenant
+         ═══════════════════════════════════════════════════════════ -->
+    <template id="portal_my_home_tenant_tiles"
+              name="بطاقات المستأجر"
+              inherit_id="portal.portal_my_home"
+              priority="40">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-if="request.env.user.has_group('sa_security.group_pms_tenant_portal')">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="title">عقد الإيجار</t>
+                    <t t-set="url">/my/contracts</t>
+                    <t t-set="text">عقد الإيجار الخاص بي ومعلومات العقار</t>
+                    <t t-set="config_card" t-value="True"/>
+                </t>
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="title">الدفعات</t>
+                    <t t-set="url">/my/payments</t>
+                    <t t-set="text">جدول الدفعات والكشف المالي</t>
+                    <t t-set="config_card" t-value="True"/>
+                </t>
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="title">طلبات الصيانة</t>
+                    <t t-set="url">/my/maintenance</t>
+                    <t t-set="text">طلب صيانة جديد ومتابعة الطلبات الحالية</t>
+                    <t t-set="config_card" t-value="True"/>
+                </t>
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="title">المعاينات</t>
+                    <t t-set="url">/my/inspections</t>
+                    <t t-set="text">تقارير معاينة العقار (الاستلام/التسليم)</t>
+                    <t t-set="config_card" t-value="True"/>
+                </t>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         Breadcrumb / sidebar — add tenant menu items
+         ═══════════════════════════════════════════════════════════ -->
+    <template id="portal_breadcrumbs_tenant"
+              name="فتات تنقّل المستأجر"
+              inherit_id="portal.portal_breadcrumbs"
+              priority="40">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'contracts'" class="breadcrumb-item active">
+                عقد الإيجار
+            </li>
+            <li t-if="page_name == 'contract'" class="breadcrumb-item active">
+                <a t-attf-href="/my/contracts">عقود الإيجار</a>
+            </li>
+            <li t-if="page_name == 'payments'" class="breadcrumb-item active">
+                الدفعات
+            </li>
+            <li t-if="page_name == 'maintenance'" class="breadcrumb-item active">
+                طلبات الصيانة
+            </li>
+            <li t-if="page_name == 'inspections'" class="breadcrumb-item active">
+                المعاينات
+            </li>
+        </xpath>
+    </template>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         /my/contracts — list of tenancies
+         ═══════════════════════════════════════════════════════════ -->
+    <template id="portal_my_contracts" name="عقودي">
+        <t t-call="portal.portal_layout">
+            <t t-set="page_name" t-value="'contracts'"/>
+            <div dir="rtl" style="direction:rtl;text-align:right">
+                <h3>عقود الإيجار</h3>
+                <t t-if="not tenancies">
+                    <div class="alert alert-info">لا توجد عقود إيجار لعرضها</div>
+                </t>
+                <t t-if="tenancies">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>رقم العقد</th>
+                                    <th>العقار</th>
+                                    <th>تاريخ البداية</th>
+                                    <th>تاريخ النهاية</th>
+                                    <th>قيمة الإيجار</th>
+                                    <th>الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="tenancies" t-as="t">
+                                    <td>
+                                        <a t-attf-href="/my/contracts/#{t.id}">
+                                            <span t-field="t.name"/>
+                                        </a>
+                                    </td>
+                                    <td><span t-field="t.property_id.display_name"/></td>
+                                    <td><span t-field="t.start_date"/></td>
+                                    <td><span t-field="t.end_date"/></td>
+                                    <td><span t-field="t.rent_amount"/> ر.س</td>
+                                    <td>
+                                        <span class="badge bg-success" t-if="t.state == 'running'">ساري</span>
+                                        <span class="badge bg-secondary" t-if="t.state == 'closed'">منتهي</span>
+                                        <span class="badge bg-warning" t-if="t.state == 'confirm'">مؤكد</span>
+                                        <span class="badge bg-light" t-if="t.state in ('draft','cancelled')">
+                                            <span t-esc="dict(t._fields['state'].selection).get(t.state)"/>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- /my/contracts/<id> — detail -->
+    <template id="portal_my_contract_detail" name="تفاصيل العقد">
+        <t t-call="portal.portal_layout">
+            <t t-set="page_name" t-value="'contract'"/>
+            <div dir="rtl" style="direction:rtl;text-align:right">
+                <h3>تفاصيل عقد الإيجار</h3>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>رقم العقد:</strong> <span t-field="tenancy.name"/></p>
+                                <p><strong>العقار:</strong> <span t-field="tenancy.property_id.display_name"/></p>
+                                <p><strong>تاريخ البداية:</strong> <span t-field="tenancy.start_date"/></p>
+                                <p><strong>تاريخ النهاية:</strong> <span t-field="tenancy.end_date"/></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>قيمة الإيجار الشهري:</strong> <span t-field="tenancy.rent_amount"/> ر.س</p>
+                                <p><strong>الضمان:</strong> <span t-field="tenancy.deposit_amount"/> ر.س</p>
+                                <p><strong>طريقة الدفع:</strong> <span t-field="tenancy.payment_method"/></p>
+                                <p><strong>الحالة:</strong> <span t-field="tenancy.state"/></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="mt-4">جدول الدفعات</h4>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>الفترة</th>
+                                <th>الاستحقاق</th>
+                                <th>المستحق</th>
+                                <th>المدفوع</th>
+                                <th>الرصيد</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="tenancy.sa_payment_ids" t-as="p">
+                                <td><span t-field="p.period_label"/></td>
+                                <td><span t-field="p.due_date"/></td>
+                                <td><span t-field="p.amount"/></td>
+                                <td><span t-field="p.amount_paid"/></td>
+                                <td><span t-field="p.balance"/></td>
+                                <td>
+                                    <span class="badge bg-success" t-if="p.state == 'paid'">مدفوعة</span>
+                                    <span class="badge bg-danger" t-if="p.state == 'overdue'">متأخرة</span>
+                                    <span class="badge bg-warning" t-if="p.state == 'partial'">جزئية</span>
+                                    <span class="badge bg-light" t-if="p.state == 'pending'">معلَّقة</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         /my/payments
+         ═══════════════════════════════════════════════════════════ -->
+    <template id="portal_my_payments" name="دفعاتي">
+        <t t-call="portal.portal_layout">
+            <t t-set="page_name" t-value="'payments'"/>
+            <div dir="rtl" style="direction:rtl;text-align:right">
+                <h3>الدفعات</h3>
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <small>إجمالي المستحق</small>
+                                <h4><span t-out="'%.2f' % total_due"/> ر.س</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <small>إجمالي المدفوع</small>
+                                <h4 class="text-success"><span t-out="'%.2f' % total_paid"/> ر.س</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <small>الرصيد المتبقي</small>
+                                <h4 class="text-danger"><span t-out="'%.2f' % total_balance"/> ر.س</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <small>متأخرات</small>
+                                <h4 class="text-warning"><span t-out="overdue_count"/></h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>الفترة</th>
+                                <th>تاريخ الاستحقاق</th>
+                                <th>النوع</th>
+                                <th>المستحق</th>
+                                <th>المدفوع</th>
+                                <th>الرصيد</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="payments" t-as="p">
+                                <td><span t-field="p.period_label"/></td>
+                                <td><span t-field="p.due_date"/></td>
+                                <td><span t-field="p.payment_type"/></td>
+                                <td><span t-field="p.amount"/></td>
+                                <td><span t-field="p.amount_paid"/></td>
+                                <td><span t-field="p.balance"/></td>
+                                <td>
+                                    <span class="badge bg-success" t-if="p.state == 'paid'">مدفوعة</span>
+                                    <span class="badge bg-danger" t-if="p.state == 'overdue'">متأخرة</span>
+                                    <span class="badge bg-warning" t-if="p.state == 'partial'">جزئية</span>
+                                    <span class="badge bg-light" t-if="p.state == 'pending'">معلَّقة</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         /my/maintenance — list + new request form
+         ═══════════════════════════════════════════════════════════ -->
+    <template id="portal_my_maintenance" name="طلبات الصيانة">
+        <t t-call="portal.portal_layout">
+            <t t-set="page_name" t-value="'maintenance'"/>
+            <div dir="rtl" style="direction:rtl;text-align:right">
+                <h3>طلبات الصيانة</h3>
+
+                <!-- Error / success alerts -->
+                <t t-set="error" t-value="request.params.get('error')"/>
+                <t t-set="success" t-value="request.params.get('success')"/>
+                <div class="alert alert-warning" t-if="error == 'no_tenancy'">
+                    لا يوجد عقد إيجار ساري لإنشاء طلب صيانة
+                </div>
+                <div class="alert alert-warning" t-if="error == 'no_description'">
+                    يجب إدخال وصف الطلب
+                </div>
+                <div class="alert alert-success" t-if="success">
+                    تم إنشاء طلب الصيانة بنجاح
+                </div>
+
+                <!-- New request form -->
+                <t t-if="tenancy">
+                    <div class="card mb-4">
+                        <div class="card-header">طلب صيانة جديد</div>
+                        <div class="card-body">
+                            <form action="/my/maintenance/new" method="post" class="row">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div class="col-md-4 mb-2">
+                                    <label>الفئة</label>
+                                    <select name="category" class="form-select">
+                                        <t t-foreach="categories.items()" t-as="cat">
+                                            <option t-att-value="cat[0]"><t t-esc="cat[1]"/></option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <label>الأولوية</label>
+                                    <select name="priority" class="form-select">
+                                        <t t-foreach="priorities.items()" t-as="pr">
+                                            <option t-att-value="pr[0]"><t t-esc="pr[1]"/></option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="col-md-12 mb-2">
+                                    <label>وصف المشكلة</label>
+                                    <textarea name="description" class="form-control" rows="4"
+                                              placeholder="مثال: تسرب ماء في حوض المطبخ، الباب الرئيسي لا يغلق بإحكام..."
+                                              required="required"/>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">إرسال الطلب</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Existing requests -->
+                <h4>طلباتي السابقة</h4>
+                <t t-if="not requests">
+                    <div class="alert alert-info">لا توجد طلبات سابقة</div>
+                </t>
+                <t t-if="requests">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>رقم الطلب</th>
+                                    <th>التاريخ</th>
+                                    <th>الفئة</th>
+                                    <th>الأولوية</th>
+                                    <th>الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="requests" t-as="r">
+                                    <td><a t-attf-href="/my/maintenance/#{r.id}"><span t-esc="r.name"/></a></td>
+                                    <td><span t-esc="r.request_date"/></td>
+                                    <td>
+                                        <span t-out="dict(r._fields['category'].selection).get(r.category, r.category or '-')"/>
+                                    </td>
+                                    <td>
+                                        <span t-out="dict(r._fields['priority'].selection).get(r.priority, r.priority or '-')"/>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success" t-if="r.state == 'done'">منجزة</span>
+                                        <span class="badge bg-info" t-if="r.state in ('approved','scheduled','in_progress')">جارية</span>
+                                        <span class="badge bg-light" t-if="r.state == 'new'">جديدة</span>
+                                        <span class="badge bg-secondary" t-if="r.state == 'cancelled'">ملغاة</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- /my/maintenance/<id> — detail -->
+    <template id="portal_my_maintenance_detail" name="تفاصيل طلب الصيانة">
+        <t t-call="portal.portal_layout">
+            <t t-set="page_name" t-value="'maintenance'"/>
+            <div dir="rtl" style="direction:rtl;text-align:right">
+                <h3>طلب صيانة <span t-field="request.name"/></h3>
+                <div class="card">
+                    <div class="card-body">
+                        <p><strong>التاريخ:</strong> <span t-field="request.request_date"/></p>
+                        <p><strong>الفئة:</strong> <span t-field="request.category"/></p>
+                        <p><strong>الأولوية:</strong> <span t-field="request.priority"/></p>
+                        <p><strong>الحالة:</strong> <span t-field="request.state"/></p>
+                        <p><strong>الوصف:</strong></p>
+                        <pre style="white-space:pre-wrap;font-family:inherit"><span t-field="request.description"/></pre>
+                        <t t-if="request.scheduled_date">
+                            <p><strong>تاريخ الجدولة:</strong> <span t-field="request.scheduled_date"/></p>
+                        </t>
+                        <t t-if="request.completion_date">
+                            <p><strong>تاريخ الإنجاز:</strong> <span t-field="request.completion_date"/></p>
+                        </t>
+                        <t t-if="request.notes">
+                            <p><strong>ملاحظات الإدارة:</strong></p>
+                            <pre style="white-space:pre-wrap;font-family:inherit"><span t-field="request.notes"/></pre>
+                        </t>
+                    </div>
+                </div>
+                <a href="/my/maintenance" class="btn btn-secondary mt-3">عودة للقائمة</a>
+            </div>
+        </t>
+    </template>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         /my/inspections
+         ═══════════════════════════════════════════════════════════ -->
+    <template id="portal_my_inspections" name="معايناتي">
+        <t t-call="portal.portal_layout">
+            <t t-set="page_name" t-value="'inspections'"/>
+            <div dir="rtl" style="direction:rtl;text-align:right">
+                <h3>تقارير المعاينة</h3>
+                <t t-if="not inspections">
+                    <div class="alert alert-info">لا توجد تقارير معاينة</div>
+                </t>
+                <t t-if="inspections">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>رقم التقرير</th>
+                                    <th>النوع</th>
+                                    <th>التاريخ</th>
+                                    <th>الحالة العامة</th>
+                                    <th>إجمالي الأضرار</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="inspections" t-as="i">
+                                    <td><a t-attf-href="/my/inspections/#{i.id}"><span t-field="i.name"/></a></td>
+                                    <td><span t-field="i.inspection_type"/></td>
+                                    <td><span t-field="i.inspection_date"/></td>
+                                    <td><span t-field="i.general_condition"/></td>
+                                    <td><span t-field="i.total_damages_cost"/> ر.س</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- /my/inspections/<id> — detail -->
+    <template id="portal_my_inspection_detail" name="تفاصيل المعاينة">
+        <t t-call="portal.portal_layout">
+            <t t-set="page_name" t-value="'inspections'"/>
+            <div dir="rtl" style="direction:rtl;text-align:right">
+                <h3>معاينة <span t-field="inspection.name"/></h3>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <p><strong>النوع:</strong> <span t-field="inspection.inspection_type"/></p>
+                        <p><strong>التاريخ:</strong> <span t-field="inspection.inspection_date"/></p>
+                        <p><strong>القائم بالمعاينة:</strong> <span t-field="inspection.inspector_id.name"/></p>
+                        <p><strong>الحالة العامة:</strong> <span t-field="inspection.general_condition"/></p>
+                        <p><strong>إجمالي الأضرار:</strong> <span t-field="inspection.total_damages_cost"/> ر.س</p>
+                        <t t-if="inspection.general_notes">
+                            <p><strong>ملاحظات:</strong></p>
+                            <pre style="white-space:pre-wrap;font-family:inherit"><span t-field="inspection.general_notes"/></pre>
+                        </t>
+                    </div>
+                </div>
+
+                <h4>بنود المعاينة</h4>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>الموقع</th>
+                                <th>العنصر</th>
+                                <th>الحالة</th>
+                                <th>تكلفة الإصلاح</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="inspection.line_ids" t-as="line">
+                                <td><span t-field="line.room"/></td>
+                                <td><span t-field="line.item"/></td>
+                                <td><span t-field="line.condition"/></td>
+                                <td><span t-field="line.damage_cost"/> ر.س</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <a href="/my/inspections" class="btn btn-secondary mt-3">عودة للقائمة</a>
+            </div>
+        </t>
+    </template>
+
+</odoo>

@@ -1,0 +1,775 @@
+/* ===========================
+   PROPZA — Form Styles
+   Focus ring: Saudi Green
+   Checkboxes/radios: Saudi Green checked, Gold accent
+   =========================== */
+
+/* === Form Group === */
+.form-group {
+    margin-bottom: var(--propza-space-5);
+}
+
+.form-group:last-child { margin-bottom: 0; }
+
+/* === Labels === */
+label {
+    display: block;
+    margin-bottom: var(--propza-space-2);
+    font-weight: var(--propza-font-semibold);
+    font-size: var(--propza-text-sm);
+    color: var(--propza-text-primary);
+    letter-spacing: 0.01em;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: var(--propza-space-2);
+}
+
+label.required::after {
+    content: '*';
+    color: var(--propza-danger);
+    margin-inline-start: 2px;
+    font-weight: var(--propza-font-bold);
+}
+
+/* === Base Inputs === */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]),
+textarea,
+select {
+    font-family: var(--propza-font-primary);
+    font-size: var(--propza-text-sm);
+    line-height: var(--propza-leading-normal);
+    color: var(--propza-text-primary);
+    background-color: var(--propza-bg-primary);
+    border: 1.5px solid var(--propza-border);
+    border-radius: var(--propza-radius-lg);
+    padding: var(--propza-space-3) var(--propza-space-4);
+    width: 100%;
+    transition: border-color var(--propza-transition-base),
+                box-shadow var(--propza-transition-base),
+                background-color var(--propza-transition-base);
+    appearance: none;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--propza-text-tertiary);
+    font-weight: var(--propza-font-normal);
+}
+
+/* Focus — Saudi green ring */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--propza-primary);
+    box-shadow: 0 0 0 3px rgba(var(--propza-primary-rgb), 0.14);
+    background-color: var(--propza-bg-primary);
+    color: var(--propza-text-primary);
+}
+
+/* Disabled */
+input:disabled,
+textarea:disabled,
+select:disabled {
+    background-color: var(--propza-gray-100);
+    border-color: var(--propza-gray-200);
+    color: var(--propza-text-tertiary);
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+/* === Sizing variants === */
+.form-control-sm {
+    padding: var(--propza-space-2) var(--propza-space-3);
+    font-size: var(--propza-text-sm);
+    border-radius: var(--propza-radius-md);
+}
+
+.form-control-lg {
+    padding: var(--propza-space-4) var(--propza-space-5);
+    font-size: var(--propza-text-base);
+    border-radius: var(--propza-radius-xl);
+}
+
+/* === Textarea === */
+textarea {
+    resize: vertical;
+    min-height: 100px;
+    line-height: var(--propza-leading-relaxed);
+}
+
+/* === Select with custom arrow === */
+select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%231B5E3B' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: calc(100% - var(--propza-space-4)) center;
+    padding-inline-end: var(--propza-space-10);
+    cursor: pointer;
+}
+
+[dir="rtl"] select {
+    background-position: var(--propza-space-4) center;
+    padding-inline-start: var(--propza-space-10);
+    padding-inline-end: var(--propza-space-4);
+}
+
+/* === Input Group (icon prefix/suffix) === */
+.input-group {
+    display: flex;
+    align-items: stretch;
+    border: 1.5px solid var(--propza-border);
+    border-radius: var(--propza-radius-lg);
+    background-color: var(--propza-bg-primary);
+    transition: border-color var(--propza-transition-base),
+                box-shadow var(--propza-transition-base);
+    overflow: hidden;
+}
+
+.input-group:focus-within {
+    border-color: var(--propza-primary);
+    box-shadow: 0 0 0 3px rgba(var(--propza-primary-rgb), 0.14);
+}
+
+.input-group-icon,
+.input-group-prefix,
+.input-group-suffix {
+    display: flex;
+    align-items: center;
+    padding: 0 var(--propza-space-3);
+    color: var(--propza-text-tertiary);
+    background-color: var(--propza-gray-50);
+    border-inline-end: 1px solid var(--propza-border);
+    font-size: var(--propza-text-base);
+    flex-shrink: 0;
+}
+
+.input-group-suffix {
+    border-inline-start: 1px solid var(--propza-border);
+    border-inline-end: none;
+}
+
+.input-group input {
+    flex: 1;
+    border: none;
+    padding: var(--propza-space-3) var(--propza-space-4);
+    background: transparent;
+    width: 100%;
+    font-family: var(--propza-font-primary);
+    font-size: var(--propza-text-sm);
+    color: var(--propza-text-primary);
+    border-radius: 0;
+}
+
+.input-group input:focus {
+    outline: none;
+    box-shadow: none;
+    border-color: transparent;
+    background: transparent;
+}
+
+/* Icon changes color when parent is focused */
+.input-group:focus-within .input-group-icon,
+.input-group:focus-within .input-group-prefix {
+    color: var(--propza-primary);
+    border-inline-end-color: var(--propza-primary);
+}
+
+/* === Checkboxes & Radios === */
+.form-check {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--propza-space-3);
+    cursor: pointer;
+}
+
+.form-check input[type="checkbox"],
+.form-check input[type="radio"] {
+    flex-shrink: 0;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    padding: 0;
+    border: 2px solid var(--propza-border-strong);
+    background-color: var(--propza-bg-primary);
+    border-radius: var(--propza-radius-base);
+    cursor: pointer;
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--propza-transition-fast);
+    vertical-align: middle;
+}
+
+input[type="radio"] {
+    border-radius: 50%;
+}
+
+input[type="checkbox"]:hover,
+input[type="radio"]:hover {
+    border-color: var(--propza-primary);
+}
+
+input[type="checkbox"]:checked {
+    background-color: var(--propza-primary);
+    border-color: var(--propza-primary);
+}
+
+input[type="checkbox"]:checked::after {
+    content: '';
+    display: block;
+    width: 5px;
+    height: 9px;
+    border: 2px solid var(--propza-white);
+    border-top: none;
+    border-inline-start: none;
+    transform: rotate(45deg) translateY(-1px);
+    border-radius: 1px;
+}
+
+input[type="radio"]:checked {
+    background-color: var(--propza-primary);
+    border-color: var(--propza-primary);
+}
+
+input[type="radio"]:checked::after {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--propza-white);
+}
+
+input[type="checkbox"]:focus,
+input[type="radio"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(var(--propza-primary-rgb), 0.18);
+}
+
+/* Gold variant checkboxes */
+.form-check-gold input[type="checkbox"]:checked,
+.form-check-gold input[type="radio"]:checked {
+    background-color: var(--propza-accent);
+    border-color: var(--propza-accent);
+}
+
+/* === Validation States === */
+.form-group.is-invalid input,
+.form-group.is-invalid textarea,
+.form-group.is-invalid select,
+.is-invalid {
+    border-color: var(--propza-danger) !important;
+    background-color: rgba(220, 38, 38, 0.03);
+}
+
+.form-group.is-invalid input:focus,
+.form-group.is-invalid textarea:focus,
+.form-group.is-invalid select:focus {
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.14);
+}
+
+.form-group.is-valid input,
+.form-group.is-valid textarea,
+.form-group.is-valid select,
+.is-valid {
+    border-color: var(--propza-success) !important;
+    background-color: rgba(22, 163, 74, 0.03);
+}
+
+.form-group.is-valid input:focus,
+.form-group.is-valid textarea:focus,
+.form-group.is-valid select:focus {
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.14);
+}
+
+.invalid-feedback {
+    display: flex;
+    align-items: center;
+    gap: var(--propza-space-1);
+    margin-top: var(--propza-space-2);
+    font-size: var(--propza-text-xs);
+    color: var(--propza-danger);
+    font-weight: var(--propza-font-medium);
+}
+
+.valid-feedback {
+    display: flex;
+    align-items: center;
+    gap: var(--propza-space-1);
+    margin-top: var(--propza-space-2);
+    font-size: var(--propza-text-xs);
+    color: var(--propza-success);
+    font-weight: var(--propza-font-medium);
+}
+
+/* === Form Layout === */
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--propza-space-5);
+}
+
+.form-col-2 { grid-template-columns: repeat(2, 1fr); }
+.form-col-3 { grid-template-columns: repeat(3, 1fr); }
+
+/* === Helper Text === */
+.form-text {
+    display: block;
+    margin-top: var(--propza-space-1);
+    font-size: var(--propza-text-xs);
+    color: var(--propza-text-tertiary);
+}
+
+/* === Range Input === */
+input[type="range"] {
+    width: 100%;
+    height: 5px;
+    border-radius: var(--propza-radius-full);
+    background: var(--propza-gray-200);
+    outline: none;
+    appearance: none;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--propza-primary);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(var(--propza-primary-rgb), 0.4);
+    border: 2px solid white;
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--propza-primary);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 6px rgba(var(--propza-primary-rgb), 0.4);
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+    height: 5px;
+    border-radius: var(--propza-radius-full);
+    background: linear-gradient(
+        to right,
+        var(--propza-primary) var(--range-progress, 50%),
+        var(--propza-gray-200) var(--range-progress, 50%)
+    );
+}
+
+/* === Color Input === */
+input[type="color"] {
+    width: 48px;
+    height: 38px;
+    padding: 2px;
+    border: 1.5px solid var(--propza-border);
+    border-radius: var(--propza-radius-lg);
+    cursor: pointer;
+    background: var(--propza-bg-primary);
+}
+
+/* === File Input === */
+input[type="file"] {
+    font-family: var(--propza-font-primary);
+    font-size: var(--propza-text-sm);
+    color: var(--propza-text-secondary);
+    cursor: pointer;
+}
+
+input[type="file"]::file-selector-button {
+    font-family: var(--propza-font-primary);
+    font-size: var(--propza-text-sm);
+    font-weight: var(--propza-font-semibold);
+    color: var(--propza-primary);
+    background: rgba(var(--propza-primary-rgb), 0.08);
+    border: 1.5px solid var(--propza-primary);
+    border-radius: var(--propza-radius-md);
+    padding: var(--propza-space-2) var(--propza-space-4);
+    margin-inline-end: var(--propza-space-3);
+    cursor: pointer;
+    transition: all var(--propza-transition-fast);
+}
+
+input[type="file"]::file-selector-button:hover {
+    background: var(--propza-primary);
+    color: var(--propza-text-inverse);
+}
+
+/* === Floating Label === */
+.form-floating {
+    position: relative;
+}
+
+.form-floating input,
+.form-floating select {
+    padding-top: 1.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.form-floating label {
+    position: absolute;
+    top: 0;
+    inset-inline-start: 0;
+    height: 100%;
+    padding: var(--propza-space-3) var(--propza-space-4);
+    pointer-events: none;
+    color: var(--propza-text-tertiary);
+    transform-origin: 0 0;
+    transition: opacity 0.12s ease-in-out, transform 0.12s ease-in-out, color 0.12s ease-in-out;
+    margin-bottom: 0;
+    font-weight: var(--propza-font-normal);
+}
+
+.form-floating input:focus ~ label,
+.form-floating input:not(:placeholder-shown) ~ label,
+.form-floating select:focus ~ label {
+    opacity: 0.8;
+    transform: scale(0.8) translateY(-0.45rem) translateX(0.1rem);
+    color: var(--propza-primary);
+    font-weight: var(--propza-font-medium);
+}
+
+/* ============================================================
+   ODOO 17 FORM VIEW OVERRIDES
+   ============================================================ */
+
+/* === Form sheet background & card === */
+.o_form_view,
+.o_form_view .o_form_view_container {
+    background-color: var(--propza-bg-secondary) !important;
+    font-family: var(--propza-font-primary) !important;
+}
+
+.o_form_view .o_form_sheet_bg {
+    background-color: var(--propza-bg-secondary) !important;
+    padding: var(--propza-space-5) var(--propza-space-6) !important;
+}
+
+.o_form_view .o_form_sheet {
+    background: var(--propza-surface) !important;
+    border-radius: var(--propza-radius-xl) !important;
+    box-shadow: var(--propza-shadow-md) !important;
+    border: 1px solid var(--propza-border-light) !important;
+    padding: var(--propza-space-6) !important;
+    max-width: 100% !important;
+}
+
+/* === Form title === */
+.o_form_view .o_form_sheet .o_form_view_container h1,
+.o_form_view h1.o_form_record_title,
+.o_form_view .o_form_record_title {
+    font-size: var(--propza-text-2xl) !important;
+    font-weight: var(--propza-font-extrabold) !important;
+    color: var(--propza-text-primary) !important;
+    letter-spacing: -0.02em !important;
+    margin-bottom: var(--propza-space-1) !important;
+}
+
+/* === Status bar (top of form) === */
+.o_form_view .o_statusbar {
+    background: var(--propza-bg-primary) !important;
+    border-bottom: 1px solid var(--propza-border-light) !important;
+    padding: var(--propza-space-3) var(--propza-space-5) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: var(--propza-space-2) !important;
+    flex-wrap: wrap !important;
+}
+
+.o_form_view .o_statusbar_status .btn,
+.o_statusbar_status .btn {
+    border-radius: var(--propza-radius-full) !important;
+    font-size: var(--propza-text-xs) !important;
+    font-weight: var(--propza-font-semibold) !important;
+    padding: 4px var(--propza-space-4) !important;
+    border: 1.5px solid var(--propza-border) !important;
+    background: transparent !important;
+    color: var(--propza-text-secondary) !important;
+    transition: all var(--propza-transition-fast) !important;
+    cursor: pointer !important;
+}
+
+.o_form_view .o_statusbar_status .btn:hover,
+.o_statusbar_status .btn:hover {
+    border-color: var(--propza-primary) !important;
+    color: var(--propza-primary) !important;
+    background: rgba(var(--propza-primary-rgb), 0.06) !important;
+}
+
+/* Current/active status — gold pill */
+.o_form_view .o_statusbar_status .btn.btn-primary,
+.o_form_view .o_statusbar_status .btn-primary,
+.o_statusbar_status .btn.btn-primary {
+    background: var(--propza-accent) !important;
+    border-color: var(--propza-accent) !important;
+    color: var(--propza-primary-dark) !important;
+    font-weight: var(--propza-font-bold) !important;
+    box-shadow: var(--propza-shadow-accent) !important;
+}
+
+/* === Field labels === */
+.o_form_label,
+.o_td_label .o_form_label,
+.o_wrap_label .o_form_label {
+    font-size: var(--propza-text-xs) !important;
+    font-weight: var(--propza-font-bold) !important;
+    color: var(--propza-text-tertiary) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    padding-top: var(--propza-space-3) !important;
+    white-space: nowrap !important;
+}
+
+/* Required field asterisk */
+.o_required_modifier .o_form_label::after,
+.o_field_widget.o_required_modifier > label::after {
+    content: ' *' !important;
+    color: var(--propza-danger) !important;
+    font-weight: var(--propza-font-bold) !important;
+}
+
+/* === Field values / inputs === */
+.o_field_widget .o_input,
+.o_field_widget input.o_input,
+.o_field_widget textarea.o_input {
+    border: 1.5px solid var(--propza-border) !important;
+    border-radius: var(--propza-radius-lg) !important;
+    font-family: var(--propza-font-primary) !important;
+    font-size: var(--propza-text-sm) !important;
+    color: var(--propza-text-primary) !important;
+    background: var(--propza-bg-primary) !important;
+    padding: var(--propza-space-2) var(--propza-space-3) !important;
+    transition: border-color var(--propza-transition-base),
+                box-shadow   var(--propza-transition-base) !important;
+    line-height: var(--propza-leading-normal) !important;
+}
+
+.o_field_widget .o_input:hover,
+.o_field_widget input.o_input:hover,
+.o_field_widget textarea.o_input:hover {
+    color: var(--propza-text-primary) !important;
+    background: var(--propza-bg-primary) !important;
+}
+
+.o_field_widget .o_input:focus,
+.o_field_widget input.o_input:focus,
+.o_field_widget textarea.o_input:focus {
+    border-color: var(--propza-primary) !important;
+    box-shadow: 0 0 0 3px rgba(var(--propza-primary-rgb), 0.12) !important;
+    outline: none !important;
+    background: var(--propza-bg-primary) !important;
+    color: var(--propza-text-primary) !important;
+}
+
+/* Read-only / disabled fields */
+.o_field_widget.o_readonly .o_input,
+.o_field_widget .o_input[disabled] {
+    background: var(--propza-gray-50) !important;
+    border-color: var(--propza-border-light) !important;
+    color: var(--propza-text-secondary) !important;
+}
+
+/* Plain text field value (non-input) */
+.o_field_widget span.o_field_char,
+.o_field_widget div.o_field_char,
+.o_field_widget .o_field_text {
+    color: var(--propza-text-primary) !important;
+    font-size: var(--propza-text-sm) !important;
+    font-family: var(--propza-font-primary) !important;
+}
+
+/* Many2one / selection display */
+.o_field_widget .o_field_many2one_selection,
+.o_field_widget .o_many2one_avatar {
+    font-size: var(--propza-text-sm) !important;
+    color: var(--propza-text-primary) !important;
+}
+
+.o_field_widget .o_field_many2one_selection .o_input {
+    border-color: var(--propza-border) !important;
+}
+
+/* === Group section separators === */
+.o_form_view .o_group .o_horizontal_separator,
+.o_form_view .o_horizontal_separator {
+    font-size: var(--propza-text-xs) !important;
+    font-weight: var(--propza-font-bold) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.07em !important;
+    color: var(--propza-text-tertiary) !important;
+    padding: var(--propza-space-4) 0 var(--propza-space-2) !important;
+    border-bottom: 2px solid var(--propza-border-light) !important;
+    margin-bottom: var(--propza-space-3) !important;
+    position: relative !important;
+}
+
+.o_form_view .o_horizontal_separator::before {
+    content: '' !important;
+    position: absolute !important;
+    inset-inline-start: 0 !important;
+    bottom: -2px !important;
+    width: 36px !important;
+    height: 2px !important;
+    background: var(--propza-accent) !important;
+    border-radius: 2px !important;
+}
+
+/* === Group layout === */
+.o_form_view .o_group {
+    margin-bottom: var(--propza-space-4) !important;
+}
+
+.o_form_view .o_group .o_cell {
+    padding: var(--propza-space-1) var(--propza-space-3) !important;
+    vertical-align: top !important;
+}
+
+/* ============================================================
+   ODOO 17 NOTEBOOK (TABS) OVERRIDES
+   ============================================================ */
+
+/* Tabs bar */
+.o_notebook > .o_notebook_headers,
+.o_notebook .nav-tabs {
+    border-bottom: 2px solid var(--propza-border) !important;
+    background: transparent !important;
+    padding: 0 var(--propza-space-2) !important;
+    gap: var(--propza-space-1) !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+}
+
+/* Individual tab */
+.o_notebook .nav-tabs .nav-link,
+.o_notebook .nav-item .nav-link {
+    font-size: var(--propza-text-sm) !important;
+    font-weight: var(--propza-font-medium) !important;
+    color: var(--propza-text-secondary) !important;
+    padding: var(--propza-space-3) var(--propza-space-5) !important;
+    border: none !important;
+    border-bottom: 3px solid transparent !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    margin-bottom: -2px !important;
+    transition: all var(--propza-transition-base) !important;
+    white-space: nowrap !important;
+    cursor: pointer !important;
+    letter-spacing: 0.01em !important;
+    text-decoration: none !important;
+}
+
+.o_notebook .nav-tabs .nav-link:hover,
+.o_notebook .nav-item .nav-link:hover {
+    color: var(--propza-primary) !important;
+    border-bottom-color: var(--propza-accent-light) !important;
+    background: rgba(var(--propza-primary-rgb), 0.04) !important;
+    text-decoration: none !important;
+}
+
+/* Active tab — gold underline + green text */
+.o_notebook .nav-tabs .nav-link.active,
+.o_notebook .nav-item .nav-link.active {
+    color: var(--propza-primary) !important;
+    font-weight: var(--propza-font-semibold) !important;
+    border-bottom: 3px solid var(--propza-accent) !important;
+    background: transparent !important;
+}
+
+/* Tab content panel */
+.o_notebook .tab-content,
+.o_notebook .o_notebook_content {
+    padding: var(--propza-space-5) var(--propza-space-2) !important;
+}
+
+.o_notebook .tab-pane {
+    background: transparent !important;
+}
+
+/* ============================================================
+   ODOO CHATTER
+   ============================================================ */
+
+.o_chatter {
+    background: var(--propza-surface) !important;
+    border-top: 1px solid var(--propza-border-light) !important;
+    border-inline-start: 1px solid var(--propza-border-light) !important;
+}
+
+.o_chatter .o_chatter_topbar {
+    background: var(--propza-bg-secondary) !important;
+    border-bottom: 1px solid var(--propza-border-light) !important;
+    padding: var(--propza-space-3) var(--propza-space-4) !important;
+}
+
+.o_mail_thread .o_message {
+    border-bottom: 1px solid var(--propza-border-light) !important;
+}
+
+.o_mail_thread .o_message_author {
+    color: var(--propza-primary) !important;
+    font-weight: var(--propza-font-semibold) !important;
+}
+
+.o_mail_thread .o_message_date {
+    color: var(--propza-text-tertiary) !important;
+    font-size: var(--propza-text-xs) !important;
+}
+
+/* Log note / send message buttons */
+.o_chatter .o_chatter_topbar .btn {
+    border-radius: var(--propza-radius-lg) !important;
+    font-size: var(--propza-text-sm) !important;
+}
+
+/* ============================================================
+   ODOO CONTROL PANEL BUTTONS (form actions)
+   ============================================================ */
+
+.o_control_panel .o_form_buttons_edit .btn-primary,
+.o_control_panel .btn-primary {
+    background-color: var(--propza-primary) !important;
+    border-color: var(--propza-primary) !important;
+    color: var(--propza-white) !important;
+    border-radius: var(--propza-radius-lg) !important;
+    font-weight: var(--propza-font-semibold) !important;
+    font-size: var(--propza-text-sm) !important;
+}
+
+.o_control_panel .o_form_buttons_edit .btn-primary:hover,
+.o_control_panel .btn-primary:hover {
+    background-color: var(--propza-primary-dark) !important;
+    border-color: var(--propza-primary-dark) !important;
+    box-shadow: var(--propza-shadow-green) !important;
+}
+
+.o_control_panel .btn-secondary,
+.o_control_panel .o_form_button_discard {
+    border-radius: var(--propza-radius-lg) !important;
+    font-size: var(--propza-text-sm) !important;
+    border-color: var(--propza-border-strong) !important;
+    color: var(--propza-text-secondary) !important;
+    background: var(--propza-bg-primary) !important;
+}
+
+.o_control_panel .btn-secondary:hover,
+.o_control_panel .o_form_button_discard:hover {
+    border-color: var(--propza-primary) !important;
+    color: var(--propza-primary) !important;
+    background: rgba(var(--propza-primary-rgb), 0.05) !important;
+}

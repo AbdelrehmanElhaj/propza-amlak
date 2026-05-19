@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ═══════════════════════════════════════════════════════
+             إعدادات افتراضية — يستطيع المسؤول تعديلها من الإعدادات
+             ═══════════════════════════════════════════════════════ -->
+
+        <record id="default_payment_reminder_enabled" model="ir.config_parameter">
+            <field name="key">sa_notifications.payment_reminder_enabled</field>
+            <field name="value">True</field>
+        </record>
+
+        <record id="default_payment_reminder_days" model="ir.config_parameter">
+            <field name="key">sa_notifications.payment_reminder_days</field>
+            <field name="value">7</field>
+        </record>
+
+        <record id="default_payment_overdue_enabled" model="ir.config_parameter">
+            <field name="key">sa_notifications.payment_overdue_enabled</field>
+            <field name="value">True</field>
+        </record>
+
+        <record id="default_contract_expiring_enabled" model="ir.config_parameter">
+            <field name="key">sa_notifications.contract_expiring_enabled</field>
+            <field name="value">True</field>
+        </record>
+
+        <record id="default_contract_expiring_days" model="ir.config_parameter">
+            <field name="key">sa_notifications.contract_expiring_days</field>
+            <field name="value">30</field>
+        </record>
+
+        <record id="default_maintenance_received_enabled" model="ir.config_parameter">
+            <field name="key">sa_notifications.maintenance_received_enabled</field>
+            <field name="value">True</field>
+        </record>
+
+        <record id="default_maintenance_assigned_enabled" model="ir.config_parameter">
+            <field name="key">sa_notifications.maintenance_assigned_enabled</field>
+            <field name="value">True</field>
+        </record>
+
+        <record id="default_maintenance_completed_enabled" model="ir.config_parameter">
+            <field name="key">sa_notifications.maintenance_completed_enabled</field>
+            <field name="value">True</field>
+        </record>
+
+        <record id="default_renewal_proposed_enabled" model="ir.config_parameter">
+            <field name="key">sa_notifications.renewal_proposed_enabled</field>
+            <field name="value">True</field>
+        </record>
+
+    </data>
+</odoo>

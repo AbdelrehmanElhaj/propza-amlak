@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         Field-Level Security: hide sensitive fields from low-priv roles
+         ═══════════════════════════════════════════════════════════ -->
+
+    <!-- ─── Tenancy: hide deposit details from Agent + Technician ── -->
+    <record id="view_tenancy_deposit_security" model="ir.ui.view">
+        <field name="name">property.tenancy.deposit.security</field>
+        <field name="model">property.tenancy</field>
+        <field name="inherit_id" ref="sa_property_base.view_property_tenancy_form"/>
+        <field name="priority">95</field>
+        <field name="arch" type="xml">
+            <!-- Hide deposit_amount from main form for Agent (not in accountant+ chain) -->
+            <xpath expr="//field[@name='deposit_amount']" position="attributes">
+                <attribute name="groups">sa_security.group_pms_accountant,sa_security.group_pms_owner,sa_security.group_pms_tenant_portal</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ─── Tenancy: hide deposit tab for Agent + Technician ─────── -->
+    <record id="view_tenancy_deposit_tab_security" model="ir.ui.view">
+        <field name="name">property.tenancy.deposit.tab.security</field>
+        <field name="model">property.tenancy</field>
+        <field name="inherit_id" ref="sa_rental_cycle.view_sa_tenancy_cycle_inherit"/>
+        <field name="priority">95</field>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='deposit_tab']" position="attributes">
+                <attribute name="groups">sa_security.group_pms_accountant,sa_security.group_pms_owner</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ─── Maintenance request: hide cost breakdown from Agent ──── -->
+    <record id="view_request_cost_security" model="ir.ui.view">
+        <field name="name">sa.maintenance.request.cost.security</field>
+        <field name="model">sa.maintenance.request</field>
+        <field name="inherit_id" ref="sa_maintenance.view_request_form"/>
+        <field name="priority">95</field>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='costs']" position="attributes">
+                <attribute name="groups">sa_security.group_pms_accountant,sa_security.group_pms_owner</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ─── Maintenance request tree: hide cost column from Agent ── -->
+    <record id="view_request_tree_cost_security" model="ir.ui.view">
+        <field name="name">sa.maintenance.request.tree.cost.security</field>
+        <field name="model">sa.maintenance.request</field>
+        <field name="inherit_id" ref="sa_maintenance.view_request_tree"/>
+        <field name="priority">95</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='cost']" position="attributes">
+                <attribute name="groups">sa_security.group_pms_accountant,sa_security.group_pms_owner</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ─── Work order tree: hide cost column from Agent ─────────── -->
+    <record id="view_work_order_tree_cost_security" model="ir.ui.view">
+        <field name="name">sa.maintenance.work_order.tree.cost.security</field>
+        <field name="model">sa.maintenance.work_order</field>
+        <field name="inherit_id" ref="sa_maintenance.view_work_order_tree"/>
+        <field name="priority">95</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='total_cost']" position="attributes">
+                <attribute name="groups">sa_security.group_pms_accountant,sa_security.group_pms_owner,sa_security.group_pms_technician</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ─── End-tenancy wizard: deductions tab restricted to Manager+ ── -->
+    <record id="view_end_tenancy_wizard_security" model="ir.ui.view">
+        <field name="name">sa.end.tenancy.wizard.security</field>
+        <field name="model">sa.end.tenancy.wizard</field>
+        <field name="inherit_id" ref="sa_rental_cycle.view_sa_end_tenancy_wizard"/>
+        <field name="priority">95</field>
+        <field name="arch" type="xml">
+            <!-- Only managers/accountants can mark forfeit_remaining -->
+            <xpath expr="//field[@name='forfeit_remaining']" position="attributes">
+                <attribute name="groups">sa_security.group_pms_manager</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

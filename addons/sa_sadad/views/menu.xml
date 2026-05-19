@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_sa_sadad_invoice"
+              name="فواتير SADAD"
+              parent="sa_property_base.menu_pms_root"
+              action="action_sadad_invoice"
+              sequence="38"
+              groups="sa_security.group_pms_accountant"/>
+
+</odoo>

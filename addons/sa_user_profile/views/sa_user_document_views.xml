@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_sa_user_document_list" model="ir.ui.view">
+        <field name="name">sa.user.document.list</field>
+        <field name="model">sa.user.document</field>
+        <field name="arch" type="xml">
+            <tree decoration-danger="state == 'expired'"
+                  decoration-warning="state == 'expiring_soon'"
+                  decoration-muted="state == 'archived'">
+                <field name="partner_id"/>
+                <field name="doc_type"/>
+                <field name="name"/>
+                <field name="upload_date"/>
+                <field name="expiry_date"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-warning="state == 'expiring_soon'"
+                       decoration-danger="state == 'expired'"
+                       decoration-muted="state == 'archived'"/>
+                <button name="action_archive" string="أرشفة" type="object"
+                        invisible="state == 'archived'" icon="fa-archive"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_sa_user_document_form" model="ir.ui.view">
+        <field name="name">sa.user.document.form</field>
+        <field name="model">sa.user.document</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="state != 'expiring_soon'">
+                        ⚠ هذه الوثيقة ستنتهي خلال 30 يوماً. يُرجى تجديدها.
+                    </div>
+                    <div class="alert alert-danger" role="alert"
+                         invisible="state != 'expired'">
+                        ✗ هذه الوثيقة منتهية الصلاحية.
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="doc_type"/>
+                            <field name="name"/>
+                            <field name="notes"/>
+                        </group>
+                        <group>
+                            <field name="upload_date"/>
+                            <field name="expiry_date"/>
+                            <field name="state" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="الملف">
+                        <field name="datas" widget="binary" filename="filename"/>
+                        <field name="filename" invisible="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Admin: all documents -->
+    <record id="action_sa_user_document" model="ir.actions.act_window">
+        <field name="name">وثائق المستخدمين</field>
+        <field name="res_model">sa.user.document</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Self-service: current user's documents only -->
+    <record id="action_my_document" model="ir.actions.act_window">
+        <field name="name">وثائقي</field>
+        <field name="res_model">sa.user.document</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('partner_id.user_ids', 'in', [uid])]</field>
+    </record>
+
+</odoo>

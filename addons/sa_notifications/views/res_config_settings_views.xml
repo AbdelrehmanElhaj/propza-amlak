@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_settings_pms_notifications" model="ir.ui.view">
+        <field name="name">res.config.settings.pms.notifications</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <div class="app_settings_block" data-string="إدارة العقارات — التنبيهات"
+                     string="PMS Notifications" data-key="sa_notifications"
+                     groups="base.group_system,sa_security.group_pms_admin">
+                    <h2>تنبيهات إدارة العقارات</h2>
+
+                    <div class="row mt16 o_settings_container">
+
+                        <!-- Payment reminders -->
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="sa_payment_reminder_enabled"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="sa_payment_reminder_enabled"/>
+                                <div class="text-muted">تذكير المستأجر قبل استحقاق الدفعة</div>
+                                <div class="content-group" invisible="not sa_payment_reminder_enabled">
+                                    <div class="mt8">
+                                        عدد الأيام قبل الاستحقاق:
+                                        <field name="sa_payment_reminder_days" class="oe_inline" style="width:60px"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Overdue alerts -->
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="sa_payment_overdue_enabled"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="sa_payment_overdue_enabled"/>
+                                <div class="text-muted">تنبيه المستأجر بعد التأخير (يوم 1، 7، 14، 30)</div>
+                            </div>
+                        </div>
+
+                        <!-- Contract expiring -->
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="sa_contract_expiring_enabled"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="sa_contract_expiring_enabled"/>
+                                <div class="text-muted">تنبيه قبل انتهاء العقد للمالك والمستأجر</div>
+                                <div class="content-group" invisible="not sa_contract_expiring_enabled">
+                                    <div class="mt8">
+                                        عدد الأيام قبل النهاية:
+                                        <field name="sa_contract_expiring_days" class="oe_inline" style="width:60px"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Maintenance received -->
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="sa_maintenance_received_enabled"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="sa_maintenance_received_enabled"/>
+                                <div class="text-muted">تأكيد استلام طلب الصيانة (للمستأجر)</div>
+                            </div>
+                        </div>
+
+                        <!-- Maintenance assigned -->
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="sa_maintenance_assigned_enabled"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="sa_maintenance_assigned_enabled"/>
+                                <div class="text-muted">إشعار الفني بأمر العمل المُسنَد</div>
+                            </div>
+                        </div>
+
+                        <!-- Maintenance completed -->
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="sa_maintenance_completed_enabled"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="sa_maintenance_completed_enabled"/>
+                                <div class="text-muted">إشعار المستأجر بإكمال طلب الصيانة</div>
+                            </div>
+                        </div>
+
+                        <!-- Renewal proposed -->
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="sa_renewal_proposed_enabled"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="sa_renewal_proposed_enabled"/>
+                                <div class="text-muted">إشعار المالك والمستأجر باقتراح التجديد التلقائي</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_pms_notifications_settings" model="ir.actions.act_window">
+        <field name="name">إعدادات تنبيهات PMS</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'sa_notifications'}</field>
+    </record>
+
+    <menuitem id="menu_pms_notifications_settings"
+              name="إعدادات التنبيهات"
+              parent="sa_security.menu_pms_security_root"
+              action="action_pms_notifications_settings"
+              sequence="90"/>
+
+</odoo>

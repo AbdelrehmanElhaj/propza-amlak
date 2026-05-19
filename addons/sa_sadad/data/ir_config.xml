@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="default_biller_code" model="ir.config_parameter">
+            <field name="key">sa_sadad.biller_code</field>
+            <field name="value">9999</field>
+        </record>
+        <record id="default_expiry_days" model="ir.config_parameter">
+            <field name="key">sa_sadad.expiry_days</field>
+            <field name="value">30</field>
+        </record>
+        <record id="default_webhook_token" model="ir.config_parameter">
+            <field name="key">sa_sadad.webhook_token</field>
+            <field name="value">change-me-in-production</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Add Profile card to /my homepage -->
+    <template id="portal_my_home_profile" inherit_id="portal.portal_my_home" name="Profile — /my home card">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">ملفي الشخصي</t>
+                <t t-set="url">/my/profile</t>
+                <t t-set="text">بياناتي الشخصية، العنوان الوطني، والتوثيق</t>
+                <t t-set="config_card" t-value="True"/>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Main /my/profile page -->
+    <template id="portal_my_profile" name="ملفي الشخصي">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="False"/>
+
+            <div class="container py-4" dir="rtl">
+
+                <!-- Page title + completion bar -->
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h3 class="mb-0">ملفي الشخصي</h3>
+                    <div class="d-flex align-items-center gap-2">
+                        <small class="text-muted">اكتمال الملف:</small>
+                        <div class="progress" style="width:120px;height:12px;">
+                            <div class="progress-bar bg-success"
+                                 t-att-style="'width:' + str(partner.profile_completion) + '%'"/>
+                        </div>
+                        <strong><t t-esc="partner.profile_completion"/>%</strong>
+                    </div>
+                </div>
+
+                <!-- Alerts -->
+                <t t-if="success">
+                    <div class="alert alert-success alert-dismissible" role="alert">
+                        ✓ تم الحفظ بنجاح.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"/>
+                    </div>
+                </t>
+                <t t-if="error">
+                    <div class="alert alert-danger alert-dismissible" role="alert">
+                        ✗ حدث خطأ، يرجى المحاولة مجدداً.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"/>
+                    </div>
+                </t>
+
+                <!-- Tabs navigation -->
+                <ul class="nav nav-tabs mb-4" id="profileTabs">
+                    <li class="nav-item">
+                        <a class="nav-link" t-att-class="'nav-link' + (' active' if active_tab == 'personal' else '')"
+                           data-bs-toggle="tab" href="#tab-personal">المعلومات الشخصية</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" t-att-class="'nav-link' + (' active' if active_tab == 'address' else '')"
+                           data-bs-toggle="tab" href="#tab-address">العنوان الوطني</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" t-att-class="'nav-link' + (' active' if active_tab == 'verification' else '')"
+                           data-bs-toggle="tab" href="#tab-verification">
+                            التوثيق
+                            <t t-if="partner.verification_state == 'verified'">
+                                <span class="badge bg-success ms-1">✓</span>
+                            </t>
+                            <t t-elif="partner.verification_state == 'rejected'">
+                                <span class="badge bg-danger ms-1">!</span>
+                            </t>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" t-att-class="'nav-link' + (' active' if active_tab == 'documents' else '')"
+                           data-bs-toggle="tab" href="#tab-documents">
+                            الوثائق
+                            <t t-if="documents">
+                                <span class="badge bg-secondary ms-1"><t t-esc="len(documents)"/></span>
+                            </t>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" t-att-class="'nav-link' + (' active' if active_tab == 'roles' else '')"
+                           data-bs-toggle="tab" href="#tab-roles">الصلاحيات</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" t-att-class="'nav-link' + (' active' if active_tab == 'activity' else '')"
+                           data-bs-toggle="tab" href="#tab-activity">سجل النشاط</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+
+                    <!-- ══ Tab 1: Personal Info ══ -->
+                    <div t-att-class="'tab-pane fade' + (' show active' if active_tab == 'personal' else '')" id="tab-personal">
+                        <div class="card shadow-sm">
+                            <div class="card-header"><strong>المعلومات الشخصية</strong></div>
+                            <div class="card-body">
+                                <form method="post" action="/my/profile/personal" enctype="multipart/form-data">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">الاسم الكامل *</label>
+                                            <input type="text" name="name" class="form-control"
+                                                   t-att-value="partner.name or ''" required="required"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">البريد الإلكتروني</label>
+                                            <input type="email" name="email" class="form-control"
+                                                   t-att-value="partner.email or ''"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">الجوال</label>
+                                            <input type="tel" name="phone" class="form-control"
+                                                   t-att-value="partner.phone or ''"/>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">الجنس</label>
+                                            <select name="gender" class="form-select">
+                                                <option value="">— اختر —</option>
+                                                <option value="male"   t-att-selected="'selected' if partner.gender == 'male'   else None">ذكر</option>
+                                                <option value="female" t-att-selected="'selected' if partner.gender == 'female' else None">أنثى</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">تاريخ الميلاد</label>
+                                            <input type="date" name="date_of_birth" class="form-control"
+                                                   t-att-value="str(partner.date_of_birth) if partner.date_of_birth else ''"/>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label">نبذة شخصية</label>
+                                            <textarea name="bio" class="form-control" rows="3"><t t-esc="partner.bio or ''"/></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <button type="submit" class="btn btn-primary">حفظ المعلومات</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ══ Tab 2: National Address ══ -->
+                    <div t-att-class="'tab-pane fade' + (' show active' if active_tab == 'address' else '')" id="tab-address">
+                        <div class="card shadow-sm">
+                            <div class="card-header"><strong>العنوان الوطني</strong></div>
+                            <div class="card-body">
+                                <form method="post" action="/my/profile/address">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">رقم العنوان الوطني (Short Address)</label>
+                                            <input type="text" name="sa_national_address" class="form-control"
+                                                   placeholder="XXXX0000" maxlength="8"
+                                                   t-att-value="partner.sa_national_address or ''"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">المنطقة الإدارية</label>
+                                            <select name="sa_region_id" class="form-select">
+                                                <option value="">— اختر المنطقة —</option>
+                                                <t t-foreach="regions" t-as="region">
+                                                    <option t-att-value="region.id"
+                                                            t-att-selected="'selected' if partner.sa_region_id.id == region.id else None">
+                                                        <t t-esc="region.name"/>
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">المدينة</label>
+                                            <input type="text" name="city" class="form-control"
+                                                   t-att-value="partner.city or ''"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">الحي</label>
+                                            <input type="text" name="sa_district" class="form-control"
+                                                   t-att-value="partner.sa_district or ''"/>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">رقم المبنى</label>
+                                            <input type="text" name="sa_building_no" class="form-control"
+                                                   t-att-value="partner.sa_building_no or ''"/>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">رقم الوحدة</label>
+                                            <input type="text" name="sa_unit_no" class="form-control"
+                                                   t-att-value="partner.sa_unit_no or ''"/>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">الرقم الإضافي</label>
+                                            <input type="text" name="sa_additional_no" class="form-control"
+                                                   t-att-value="partner.sa_additional_no or ''"/>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">الرمز البريدي</label>
+                                            <input type="text" name="sa_postal_code" class="form-control"
+                                                   t-att-value="partner.sa_postal_code or ''"/>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <button type="submit" class="btn btn-primary">حفظ العنوان</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ══ Tab 3: Verification ══ -->
+                    <div t-att-class="'tab-pane fade' + (' show active' if active_tab == 'verification' else '')" id="tab-verification">
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <strong>توثيق الهوية</strong>
+                                <t t-if="partner.verification_state == 'verified'">
+                                    <span class="badge bg-success">✓ موثَّق</span>
+                                </t>
+                                <t t-elif="partner.verification_state == 'pending'">
+                                    <span class="badge bg-warning text-dark">قيد المراجعة</span>
+                                </t>
+                                <t t-elif="partner.verification_state == 'rejected'">
+                                    <span class="badge bg-danger">مرفوض</span>
+                                </t>
+                                <t t-else="">
+                                    <span class="badge bg-secondary">غير موثَّق</span>
+                                </t>
+                            </div>
+                            <div class="card-body">
+                                <!-- Previous verifications -->
+                                <t t-if="verifications">
+                                    <table class="table table-sm mb-4">
+                                        <thead>
+                                            <tr>
+                                                <th>نوع الوثيقة</th>
+                                                <th>الرقم</th>
+                                                <th>الانتهاء</th>
+                                                <th>الحالة</th>
+                                                <th>ملاحظة</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="verifications" t-as="v">
+                                                <tr>
+                                                    <td><t t-esc="dict(id_types).get(v.id_type, v.id_type)"/></td>
+                                                    <td><t t-esc="v.id_number"/></td>
+                                                    <td><t t-esc="str(v.id_expiry) if v.id_expiry else '—'"/></td>
+                                                    <td>
+                                                        <t t-if="v.state == 'verified'"><span class="badge bg-success">موثَّق</span></t>
+                                                        <t t-elif="v.state == 'rejected'"><span class="badge bg-danger">مرفوض</span></t>
+                                                        <t t-elif="v.state == 'submitted'"><span class="badge bg-warning text-dark">قيد المراجعة</span></t>
+                                                        <t t-else=""><span class="badge bg-secondary">مسودة</span></t>
+                                                    </td>
+                                                    <td><small class="text-danger"><t t-esc="v.rejection_reason or ''"/></small></td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </t>
+
+                                <!-- New verification form -->
+                                <t t-if="partner.verification_state not in ('verified', 'pending')">
+                                    <h6 class="mb-3">تقديم طلب توثيق جديد</h6>
+                                    <form method="post" action="/my/profile/verification" enctype="multipart/form-data">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label">نوع الوثيقة *</label>
+                                                <select name="id_type" class="form-select" required="required">
+                                                    <option value="">— اختر —</option>
+                                                    <t t-foreach="id_types" t-as="it">
+                                                        <option t-att-value="it[0]"><t t-esc="it[1]"/></option>
+                                                    </t>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">رقم الوثيقة *</label>
+                                                <input type="text" name="id_number" class="form-control" required="required"/>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">تاريخ الانتهاء</label>
+                                                <input type="date" name="id_expiry" class="form-control"/>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label">صورة الوثيقة *</label>
+                                                <input type="file" name="id_scan" class="form-control"
+                                                       accept="image/*,.pdf" required="required"/>
+                                                <div class="form-text">صيغ مقبولة: JPG, PNG, PDF (بحد أقصى 5MB)</div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <button type="submit" class="btn btn-primary">تقديم للتحقق التلقائي</button>
+                                        </div>
+                                    </form>
+                                </t>
+                                <t t-else="">
+                                    <div class="alert alert-info mb-0">
+                                        <t t-if="partner.verification_state == 'verified'">
+                                            تم توثيق هويتك بنجاح. لا حاجة لإعادة التقديم.
+                                        </t>
+                                        <t t-else="">
+                                            طلبك قيد المراجعة. سيتم إشعارك عند الانتهاء.
+                                        </t>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ══ Tab 4: Documents ══ -->
+                    <div t-att-class="'tab-pane fade' + (' show active' if active_tab == 'documents' else '')" id="tab-documents">
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header"><strong>الوثائق المرفوعة</strong></div>
+                            <div class="card-body">
+                                <t t-if="documents">
+                                    <table class="table table-sm mb-4">
+                                        <thead>
+                                            <tr>
+                                                <th>النوع</th>
+                                                <th>الاسم</th>
+                                                <th>تاريخ الرفع</th>
+                                                <th>الانتهاء</th>
+                                                <th>الحالة</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="documents" t-as="doc">
+                                                <tr t-att-class="'table-danger' if doc.state == 'expired' else ('table-warning' if doc.state == 'expiring_soon' else '')">
+                                                    <td><t t-esc="dict(doc_types).get(doc.doc_type, doc.doc_type)"/></td>
+                                                    <td><t t-esc="doc.name"/></td>
+                                                    <td><t t-esc="str(doc.upload_date)"/></td>
+                                                    <td><t t-esc="str(doc.expiry_date) if doc.expiry_date else '—'"/></td>
+                                                    <td>
+                                                        <t t-if="doc.state == 'active'"><span class="badge bg-success">ساري</span></t>
+                                                        <t t-elif="doc.state == 'expiring_soon'"><span class="badge bg-warning text-dark">ينتهي قريباً</span></t>
+                                                        <t t-elif="doc.state == 'expired'"><span class="badge bg-danger">منتهي</span></t>
+                                                    </td>
+                                                    <td>
+                                                        <form method="post" t-attf-action="/my/profile/document/#{doc.id}/archive" style="display:inline">
+                                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                            <button type="submit" class="btn btn-sm btn-outline-secondary">أرشفة</button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </t>
+
+                                <!-- Upload form -->
+                                <h6 class="mb-3">رفع وثيقة جديدة</h6>
+                                <form method="post" action="/my/profile/document/upload" enctype="multipart/form-data">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label">نوع الوثيقة *</label>
+                                            <select name="doc_type" class="form-select" required="required">
+                                                <t t-foreach="doc_types" t-as="dt">
+                                                    <option t-att-value="dt[0]"><t t-esc="dt[1]"/></option>
+                                                </t>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">العنوان / الوصف</label>
+                                            <input type="text" name="doc_name" class="form-control"/>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">تاريخ الانتهاء</label>
+                                            <input type="date" name="expiry_date" class="form-control"/>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label">الملف *</label>
+                                            <input type="file" name="doc_file" class="form-control"
+                                                   accept="image/*,.pdf,.doc,.docx" required="required"/>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <button type="submit" class="btn btn-primary">رفع الوثيقة</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ══ Tab 5: Roles ══ -->
+                    <div t-att-class="'tab-pane fade' + (' show active' if active_tab == 'roles' else '')" id="tab-roles">
+                        <div class="card shadow-sm">
+                            <div class="card-header"><strong>الصلاحيات والأدوار</strong></div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted">دورك في النظام</label>
+                                    <div>
+                                        <t t-if="user_roles">
+                                            <t t-foreach="user_roles" t-as="role">
+                                                <span class="badge bg-primary me-2 fs-6"><t t-esc="role"/></span>
+                                            </t>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="text-muted">لا يوجد دور محدد</span>
+                                        </t>
+                                    </div>
+                                </div>
+                                <hr/>
+                                <div>
+                                    <label class="form-label text-muted">معلومات الحساب</label>
+                                    <table class="table table-sm table-borderless">
+                                        <tr>
+                                            <td class="text-muted">اسم المستخدم (Login)</td>
+                                            <td><strong><t t-esc="user.login"/></strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">آخر تسجيل دخول</td>
+                                            <td><t t-esc="str(user.login_date)[:16] if user.login_date else '—'"/></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="alert alert-info mt-3 mb-0">
+                                    لتغيير كلمة المرور أو إعدادات الأمان، انتقل إلى
+                                    <a href="/odoo/settings?searchTerms=password" target="_blank">الإعدادات الشخصية</a>.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ══ Tab 6: Activity & Audit ══ -->
+                    <div t-att-class="'tab-pane fade' + (' show active' if active_tab == 'activity' else '')" id="tab-activity">
+                        <div class="card shadow-sm">
+                            <div class="card-header"><strong>سجل النشاط</strong></div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <div class="border rounded p-3 text-center">
+                                            <div class="text-muted small">آخر تسجيل دخول</div>
+                                            <strong><t t-esc="str(user.login_date)[:16] if user.login_date else '—'"/></strong>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="border rounded p-3 text-center">
+                                            <div class="text-muted small">حالة التوثيق</div>
+                                            <strong>
+                                                <t t-if="partner.verification_state == 'verified'">موثَّق ✓</t>
+                                                <t t-elif="partner.verification_state == 'pending'">قيد المراجعة</t>
+                                                <t t-elif="partner.verification_state == 'rejected'">مرفوض</t>
+                                                <t t-else="">غير موثَّق</t>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="border rounded p-3 text-center">
+                                            <div class="text-muted small">الوثائق المرفوعة</div>
+                                            <strong><t t-esc="len(documents)"/></strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <t t-if="audit_entries">
+                                    <h6>آخر الرسائل والتعليقات</h6>
+                                    <ul class="list-group list-group-flush">
+                                        <t t-foreach="audit_entries" t-as="msg">
+                                            <li class="list-group-item px-0">
+                                                <small class="text-muted"><t t-esc="str(msg.date)[:16]"/></small>
+                                                <span class="mx-2">—</span>
+                                                <t t-esc="msg.body and msg.body[:100] or '(رسالة)'"/>
+                                            </li>
+                                        </t>
+                                    </ul>
+                                </t>
+                                <t t-else="">
+                                    <p class="text-muted">لا يوجد نشاط مسجَّل حتى الآن.</p>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+
+                </div><!-- end tab-content -->
+            </div><!-- end container -->
+        </t>
+    </template>
+
+</odoo>

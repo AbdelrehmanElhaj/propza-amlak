@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ═══════════════════════════════════════════════════════
+             1. تذكير دفعة قبل الاستحقاق (للمستأجر)
+             ═══════════════════════════════════════════════════════ -->
+        <record id="mail_template_payment_reminder" model="mail.template">
+            <field name="name">PMS — تذكير استحقاق دفعة</field>
+            <field name="model_id" ref="sa_rental_cycle.model_sa_rent_payment"/>
+            <field name="subject">تذكير: دفعة الإيجار مستحقة قريباً — {{ object.name }}</field>
+            <field name="email_from">{{ (object.tenancy_id.owner_partner_id.email or user.email or 'noreply@proptech.sa') }}</field>
+            <field name="email_to">{{ object.tenant_id.email or '' }}</field>
+            <field name="lang">ar_001</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div dir="rtl" style="direction:rtl;text-align:right;font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+                    <h2 style="color:#2c5aa0">تذكير بدفعة إيجار قادمة</h2>
+                    <p>السلام عليكم <strong t-out="object.tenant_id.name or 'المستأجر الكريم'"/></p>
+                    <p>نذكّركم بأن دفعة الإيجار التالية مستحقة قريباً:</p>
+
+                    <table style="width:100%;border-collapse:collapse;margin:16px 0">
+                        <tr style="background:#f5f5f5">
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold;width:40%">رقم الدفعة</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.name"/></td>
+                        </tr>
+                        <tr>
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">العقار</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.property_id.display_name"/></td>
+                        </tr>
+                        <tr style="background:#f5f5f5">
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">الفترة</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.period_label"/></td>
+                        </tr>
+                        <tr>
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">تاريخ الاستحقاق</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.due_date"/></td>
+                        </tr>
+                        <tr style="background:#fff8e1">
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">المبلغ المستحق</td>
+                            <td style="padding:8px;border:1px solid #ddd;font-size:18px;color:#c62828">
+                                <strong><span t-out="object.amount"/> ر.س</strong>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <p>يمكنكم سداد الدفعة عبر:</p>
+                    <ul>
+                        <li>البوابة الإلكترونية: <a t-attf-href="{{ object.env['ir.config_parameter'].sudo().get_param('web.base.url', '#') }}/my/payments">رابط الدفعات</a></li>
+                        <li>التحويل البنكي إلى حساب المالك</li>
+                        <li>SADAD باستخدام رقم الفاتورة</li>
+                    </ul>
+
+                    <p style="color:#666;font-size:12px;margin-top:30px">
+                        هذه رسالة آلية من نظام إدارة العقارات. للاستفسار، يرجى التواصل مع إدارة العقارات.
+                    </p>
+                </div>
+            </field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             2. تنبيه دفعة متأخرة
+             ═══════════════════════════════════════════════════════ -->
+        <record id="mail_template_payment_overdue" model="mail.template">
+            <field name="name">PMS — تنبيه دفعة متأخرة</field>
+            <field name="model_id" ref="sa_rental_cycle.model_sa_rent_payment"/>
+            <field name="subject">⚠️ دفعة إيجار متأخرة — {{ object.name }}</field>
+            <field name="email_from">{{ (object.tenancy_id.owner_partner_id.email or user.email or 'noreply@proptech.sa') }}</field>
+            <field name="email_to">{{ object.tenant_id.email or '' }}</field>
+            <field name="lang">ar_001</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div dir="rtl" style="direction:rtl;text-align:right;font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+                    <div style="background:#fdecea;padding:16px;border-right:4px solid #c62828;margin-bottom:16px">
+                        <h2 style="color:#c62828;margin-top:0">⚠️ تنبيه: دفعة إيجار متأخرة</h2>
+                    </div>
+                    <p>السلام عليكم <strong t-out="object.tenant_id.name or 'المستأجر الكريم'"/></p>
+                    <p>نود إخباركم بأن دفعة الإيجار التالية متأخرة عن موعد استحقاقها:</p>
+
+                    <table style="width:100%;border-collapse:collapse;margin:16px 0">
+                        <tr style="background:#fdecea">
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold;width:40%">رقم الدفعة</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.name"/></td>
+                        </tr>
+                        <tr>
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">الفترة</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.period_label"/></td>
+                        </tr>
+                        <tr style="background:#fdecea">
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">تاريخ الاستحقاق</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.due_date"/></td>
+                        </tr>
+                        <tr>
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">أيام التأخير</td>
+                            <td style="padding:8px;border:1px solid #ddd;color:#c62828">
+                                <strong><span t-out="object.days_overdue"/> يوم</strong>
+                            </td>
+                        </tr>
+                        <tr style="background:#fdecea">
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">المبلغ المتبقي</td>
+                            <td style="padding:8px;border:1px solid #ddd;font-size:18px;color:#c62828">
+                                <strong><span t-out="object.balance"/> ر.س</strong>
+                            </td>
+                        </tr>
+                        <tr t-if="object.penalty_amount">
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">غرامة التأخير المتراكمة</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.penalty_amount"/> ر.س</td>
+                        </tr>
+                    </table>
+
+                    <p style="color:#c62828">
+                        <strong>يرجى المسارعة بسداد المبلغ لتجنّب تراكم غرامات التأخير وأي إجراءات لاحقة.</strong>
+                    </p>
+
+                    <p style="color:#666;font-size:12px;margin-top:30px">
+                        هذه رسالة آلية. للتسوية أو الاستفسار، يرجى التواصل مع إدارة العقارات فوراً.
+                    </p>
+                </div>
+            </field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             3. تنبيه عقد ينتهي قريباً (للمستأجر + المالك)
+             ═══════════════════════════════════════════════════════ -->
+        <record id="mail_template_contract_expiring" model="mail.template">
+            <field name="name">PMS — عقد إيجار ينتهي قريباً</field>
+            <field name="model_id" ref="sa_property_base.model_property_tenancy"/>
+            <field name="subject">عقد الإيجار {{ object.name }} ينتهي خلال {{ object.sa_days_to_expiry }} يوم</field>
+            <field name="email_from">{{ (object.owner_partner_id.email or user.email or 'noreply@proptech.sa') }}</field>
+            <field name="email_to">{{ object.partner_id.email or '' }}</field>
+            <field name="email_cc">{{ object.owner_partner_id.email or '' }}</field>
+            <field name="lang">ar_001</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div dir="rtl" style="direction:rtl;text-align:right;font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+                    <h2 style="color:#ef6c00">📅 عقد إيجار قارب على الانتهاء</h2>
+                    <p>السلام عليكم،</p>
+                    <p>نود إعلامكم أن عقد الإيجار التالي سينتهي قريباً:</p>
+
+                    <table style="width:100%;border-collapse:collapse;margin:16px 0">
+                        <tr style="background:#fff8e1">
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold;width:40%">رقم العقد</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.name"/></td>
+                        </tr>
+                        <tr>
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">العقار</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.property_id.display_name"/></td>
+                        </tr>
+                        <tr style="background:#fff8e1">
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">المستأجر</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.partner_id.name"/></td>
+                        </tr>
+                        <tr>
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">تاريخ النهاية</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.end_date"/></td>
+                        </tr>
+                        <tr style="background:#fff8e1">
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">الأيام المتبقية</td>
+                            <td style="padding:8px;border:1px solid #ddd;color:#ef6c00">
+                                <strong><span t-out="object.sa_days_to_expiry"/> يوم</strong>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <p>للتجديد أو إنهاء العقد، يرجى التواصل مع إدارة العقارات قبل تاريخ النهاية.</p>
+
+                    <p style="color:#666;font-size:12px;margin-top:30px">
+                        هذه رسالة آلية من نظام إدارة العقارات.
+                    </p>
+                </div>
+            </field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             4. تأكيد استلام طلب الصيانة (للمستأجر)
+             ═══════════════════════════════════════════════════════ -->
+        <record id="mail_template_maintenance_received" model="mail.template">
+            <field name="name">PMS — تأكيد استلام طلب الصيانة</field>
+            <field name="model_id" ref="sa_maintenance.model_sa_maintenance_request"/>
+            <field name="subject">تأكيد استلام طلب صيانة — {{ object.name }}</field>
+            <field name="email_from">{{ user.email or 'noreply@proptech.sa' }}</field>
+            <field name="email_to">{{ object.partner_id.email or '' }}</field>
+            <field name="lang">ar_001</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div dir="rtl" style="direction:rtl;text-align:right;font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+                    <h2 style="color:#2e7d32">✓ تم استلام طلب الصيانة</h2>
+                    <p>السلام عليكم <strong t-out="object.partner_id.name or 'العميل الكريم'"/></p>
+                    <p>تم استلام طلب الصيانة الخاص بكم، وسيتم التواصل معكم قريباً.</p>
+
+                    <table style="width:100%;border-collapse:collapse;margin:16px 0">
+                        <tr style="background:#e8f5e9">
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold;width:40%">رقم الطلب</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.name"/></td>
+                        </tr>
+                        <tr>
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">العقار</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.property_id.display_name"/></td>
+                        </tr>
+                        <tr style="background:#e8f5e9">
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">الفئة</td>
+                            <td style="padding:8px;border:1px solid #ddd">
+                                <span t-out="dict(object._fields['category'].selection).get(object.category, '')"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">الأولوية</td>
+                            <td style="padding:8px;border:1px solid #ddd">
+                                <span t-out="dict(object._fields['priority'].selection).get(object.priority, '')"/>
+                            </td>
+                        </tr>
+                        <tr style="background:#e8f5e9">
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">تاريخ الطلب</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.request_date"/></td>
+                        </tr>
+                    </table>
+
+                    <p>يمكنكم متابعة حالة الطلب من البوابة:
+                        <a t-attf-href="{{ object.env['ir.config_parameter'].sudo().get_param('web.base.url', '#') }}/my/maintenance/{{ object.id }}">رابط الطلب</a>
+                    </p>
+
+                    <p style="color:#666;font-size:12px;margin-top:30px">شكراً لكم.</p>
+                </div>
+            </field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             5. إشعار الفني بأمر عمل مُسنَد
+             ═══════════════════════════════════════════════════════ -->
+        <record id="mail_template_maintenance_assigned" model="mail.template">
+            <field name="name">PMS — أمر عمل مُسنَد للفني</field>
+            <field name="model_id" ref="sa_maintenance.model_sa_maintenance_work_order"/>
+            <field name="subject">📋 أمر عمل جديد مُسنَد إليك — {{ object.name }}</field>
+            <field name="email_from">{{ user.email or 'noreply@proptech.sa' }}</field>
+            <field name="email_to">{{ object.technician_id.email or '' }}</field>
+            <field name="lang">ar_001</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div dir="rtl" style="direction:rtl;text-align:right;font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+                    <h2 style="color:#2c5aa0">أمر عمل جديد لتنفيذه</h2>
+                    <p>السلام عليكم <strong t-out="object.technician_id.name or 'الفني الكريم'"/></p>
+                    <p>تم إسناد أمر العمل التالي إليكم لتنفيذه:</p>
+
+                    <table style="width:100%;border-collapse:collapse;margin:16px 0">
+                        <tr style="background:#e3f2fd">
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold;width:40%">رقم أمر العمل</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.name"/></td>
+                        </tr>
+                        <tr>
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">طلب الصيانة</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.request_id.name"/></td>
+                        </tr>
+                        <tr style="background:#e3f2fd">
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">العقار</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.property_id.display_name"/></td>
+                        </tr>
+                        <tr>
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">تاريخ التنفيذ</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.scheduled_date"/></td>
+                        </tr>
+                        <tr style="background:#e3f2fd">
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">المدة المخططة</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.duration_planned"/> ساعة</td>
+                        </tr>
+                    </table>
+
+                    <h4>الوصف:</h4>
+                    <p style="background:#f5f5f5;padding:12px;border-radius:4px;white-space:pre-wrap"><span t-out="object.description or object.request_id.description"/></p>
+
+                    <p style="color:#666;font-size:12px;margin-top:30px">يرجى البدء في الموعد المحدد وتحديث الحالة عند الإنجاز.</p>
+                </div>
+            </field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             6. إكمال الصيانة (للمستأجر)
+             ═══════════════════════════════════════════════════════ -->
+        <record id="mail_template_maintenance_completed" model="mail.template">
+            <field name="name">PMS — إكمال طلب الصيانة</field>
+            <field name="model_id" ref="sa_maintenance.model_sa_maintenance_request"/>
+            <field name="subject">✓ تم إنجاز طلب الصيانة — {{ object.name }}</field>
+            <field name="email_from">{{ user.email or 'noreply@proptech.sa' }}</field>
+            <field name="email_to">{{ object.partner_id.email or '' }}</field>
+            <field name="lang">ar_001</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div dir="rtl" style="direction:rtl;text-align:right;font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+                    <h2 style="color:#2e7d32">✓ تم إنجاز طلب الصيانة</h2>
+                    <p>السلام عليكم <strong t-out="object.partner_id.name or 'العميل الكريم'"/></p>
+                    <p>تم إنجاز طلب الصيانة بنجاح. التفاصيل:</p>
+
+                    <table style="width:100%;border-collapse:collapse;margin:16px 0">
+                        <tr style="background:#e8f5e9">
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold;width:40%">رقم الطلب</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.name"/></td>
+                        </tr>
+                        <tr>
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">تاريخ الإنجاز</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.completion_date"/></td>
+                        </tr>
+                        <tr style="background:#e8f5e9">
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">المدة الفعلية</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.actual_duration"/> ساعة</td>
+                        </tr>
+                    </table>
+
+                    <p>نأمل أن تكون الخدمة قد تمت بشكل مُرضٍ. لأي ملاحظات، يرجى التواصل معنا.</p>
+
+                    <p style="color:#666;font-size:12px;margin-top:30px">شكراً لتعاونكم.</p>
+                </div>
+            </field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             7. اقتراح التجديد التلقائي (للمالك + المستأجر)
+             ═══════════════════════════════════════════════════════ -->
+        <record id="mail_template_renewal_proposed" model="mail.template">
+            <field name="name">PMS — اقتراح تجديد العقد</field>
+            <field name="model_id" ref="sa_property_base.model_property_tenancy"/>
+            <field name="subject">عقد تجديد جاهز للمراجعة — {{ object.name }}</field>
+            <field name="email_from">{{ user.email or 'noreply@proptech.sa' }}</field>
+            <field name="email_to">{{ object.owner_partner_id.email or '' }}</field>
+            <field name="email_cc">{{ object.partner_id.email or '' }}</field>
+            <field name="lang">ar_001</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div dir="rtl" style="direction:rtl;text-align:right;font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+                    <h2 style="color:#1976d2">🔄 عقد تجديد جاهز للمراجعة</h2>
+                    <p>السلام عليكم،</p>
+                    <p>تم إنشاء عقد تجديد تلقائياً للعقد رقم
+                       <strong><span t-out="object.renewed_from_id.name or ''"/></strong>.
+                       يرجى المراجعة والاعتماد:</p>
+
+                    <table style="width:100%;border-collapse:collapse;margin:16px 0">
+                        <tr style="background:#e3f2fd">
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold;width:40%">العقد الجديد</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.name"/></td>
+                        </tr>
+                        <tr>
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">العقار</td>
+                            <td style="padding:8px;border:1px solid #ddd"><span t-out="object.property_id.display_name"/></td>
+                        </tr>
+                        <tr style="background:#e3f2fd">
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">الفترة الجديدة</td>
+                            <td style="padding:8px;border:1px solid #ddd">
+                                من <span t-out="object.start_date"/>
+                                إلى <span t-out="object.end_date"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:8px;border:1px solid #ddd;font-weight:bold">قيمة الإيجار</td>
+                            <td style="padding:8px;border:1px solid #ddd">
+                                <span t-out="object.rent_amount"/> ر.س
+                            </td>
+                        </tr>
+                    </table>
+
+                    <p style="color:#666;font-size:12px;margin-top:30px">
+                        العقد بحالة <strong>مسودة</strong> ويحتاج للاعتماد من إدارة العقارات.
+                    </p>
+                </div>
+            </field>
+        </record>
+
+    </data>
+</odoo>

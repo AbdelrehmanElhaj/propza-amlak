@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- List -->
+    <record id="view_request_tree" model="ir.ui.view">
+        <field name="name">sa.maintenance.request.list</field>
+        <field name="model">sa.maintenance.request</field>
+        <field name="arch" type="xml">
+            <tree string="طلبات الصيانة"
+                  decoration-danger="priority == '3'"
+                  decoration-warning="priority == '2'"
+                  decoration-success="state == 'done'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="request_date"/>
+                <field name="property_id"/>
+                <field name="category"/>
+                <field name="priority" widget="priority"/>
+                <field name="supplier_partner_id"/>
+                <field name="scheduled_date"/>
+                <field name="cost" sum="إجمالي التكلفة"/>
+                <field name="cost_bearer"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-info="state in ('approved','scheduled','in_progress')"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form -->
+    <record id="view_request_form" model="ir.ui.view">
+        <field name="name">sa.maintenance.request.form</field>
+        <field name="model">sa.maintenance.request</field>
+        <field name="arch" type="xml">
+            <form string="طلب صيانة">
+                <header>
+                    <button name="action_approve" string="اعتماد"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'new'"/>
+                    <button name="action_schedule" string="جدولة"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'approved'"/>
+                    <button name="action_start" string="بدء التنفيذ"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'scheduled'"/>
+                    <button name="action_done" string="إنجاز"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'in_progress'"/>
+                    <button name="action_cancel" string="إلغاء"
+                            type="object"
+                            invisible="state in ('done','cancelled')"/>
+                    <button name="action_set_to_new" string="إعادة لـ جديد"
+                            type="object"
+                            invisible="state == 'new'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="new,approved,scheduled,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="property_id"/>
+                            <field name="tenancy_id"/>
+                            <field name="partner_id" readonly="1"/>
+                            <field name="owner_partner_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="request_date"/>
+                            <field name="category"/>
+                            <field name="skill_ids" widget="many2many_tags"
+                                   options="{'color_field': 'color'}"/>
+                            <field name="priority" widget="priority"/>
+                            <field name="cost_bearer"/>
+                        </group>
+                    </group>
+                    <group string="وصف المشكلة">
+                        <field name="description" nolabel="1" placeholder="اشرح المشكلة بالتفصيل..."/>
+                    </group>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_work_orders" type="object"
+                                class="oe_stat_button" icon="fa-tasks"
+                                invisible="work_order_count == 0">
+                            <field name="work_order_count" widget="statinfo" string="أوامر العمل"/>
+                        </button>
+                        <button name="action_create_work_order" type="object"
+                                class="oe_stat_button" icon="fa-plus">
+                            <span>أمر عمل جديد</span>
+                        </button>
+                    </div>
+                    <notebook>
+                        <page string="التنفيذ" name="execution">
+                            <group>
+                                <group string="المقاول/الفني">
+                                    <field name="supplier_partner_id"/>
+                                    <field name="scheduled_date"/>
+                                    <field name="estimated_duration"/>
+                                </group>
+                                <group string="الإنجاز">
+                                    <field name="completion_date" readonly="1"/>
+                                    <field name="actual_duration"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="التكاليف" name="costs">
+                            <group>
+                                <group>
+                                    <field name="materials_cost"/>
+                                    <field name="labor_cost"/>
+                                    <field name="transport_cost"/>
+                                </group>
+                                <group>
+                                    <field name="cost" readonly="1"
+                                           class="o_form_label_required"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="أوامر العمل" name="work_orders">
+                            <field name="work_order_ids" nolabel="1">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="technician_id"/>
+                                    <field name="scheduled_date"/>
+                                    <field name="total_cost"/>
+                                    <field name="state" widget="badge"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="الاعتماد والملاحظات" name="approval">
+                            <group>
+                                <group>
+                                    <field name="approved_by" readonly="1"/>
+                                    <field name="approval_date" readonly="1"/>
+                                    <field name="contract_id" readonly="1"
+                                           invisible="not contract_id"/>
+                                </group>
+                            </group>
+                            <group string="ملاحظات إضافية">
+                                <field name="notes" nolabel="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search -->
+    <record id="view_request_search" model="ir.ui.view">
+        <field name="name">sa.maintenance.request.search</field>
+        <field name="model">sa.maintenance.request</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="property_id"/>
+                <field name="supplier_partner_id"/>
+                <field name="category"/>
+                <separator/>
+                <filter name="my_open" string="مفتوحة"
+                        domain="[('state','in',['new','approved','scheduled','in_progress'])]"/>
+                <filter name="urgent" string="عاجلة"
+                        domain="[('priority','=','3')]"/>
+                <filter name="done" string="منجزة"
+                        domain="[('state','=','done')]"/>
+                <separator/>
+                <filter name="filt_plumbing"   string="سباكة"        domain="[('category','=','plumbing')]"/>
+                <filter name="filt_electrical" string="كهرباء"       domain="[('category','=','electrical')]"/>
+                <filter name="filt_ac"         string="تكييف"         domain="[('category','=','ac')]"/>
+                <group expand="0" string="تجميع حسب">
+                    <filter name="g_state"    string="الحالة"   context="{'group_by':'state'}"/>
+                    <filter name="g_category" string="الفئة"    context="{'group_by':'category'}"/>
+                    <filter name="g_property" string="العقار"   context="{'group_by':'property_id'}"/>
+                    <filter name="g_supplier" string="المقاول" context="{'group_by':'supplier_partner_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ─── Graph view (maintenance analytics) ─────────────────── -->
+    <record id="view_request_graph" model="ir.ui.view">
+        <field name="name">sa.maintenance.request.graph</field>
+        <field name="model">sa.maintenance.request</field>
+        <field name="arch" type="xml">
+            <graph string="تحليل الصيانة" type="bar" sample="1">
+                <field name="request_date" interval="month" type="row"/>
+                <field name="cost" type="measure"/>
+                <field name="materials_cost" type="measure"/>
+                <field name="labor_cost" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ─── Pivot view (maintenance analytics) ─────────────────── -->
+    <record id="view_request_pivot" model="ir.ui.view">
+        <field name="name">sa.maintenance.request.pivot</field>
+        <field name="model">sa.maintenance.request</field>
+        <field name="arch" type="xml">
+            <pivot string="تحليل الصيانة" sample="1">
+                <field name="property_id" type="row"/>
+                <field name="category" type="col"/>
+                <field name="cost" type="measure"/>
+                <field name="materials_cost" type="measure"/>
+                <field name="labor_cost" type="measure"/>
+                <field name="transport_cost" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_request" model="ir.actions.act_window">
+        <field name="name">طلبات الصيانة</field>
+        <field name="res_model">sa.maintenance.request</field>
+        <field name="view_mode">tree,graph,pivot,form</field>
+        <field name="search_view_id" ref="view_request_search"/>
+        <field name="context">{'search_default_my_open': 1}</field>
+    </record>
+
+    <record id="action_request_urgent" model="ir.actions.act_window">
+        <field name="name">طلبات عاجلة</field>
+        <field name="res_model">sa.maintenance.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('priority','=','3'),('state','not in',['done','cancelled'])]</field>
+    </record>
+
+    <!-- ─── Analytics action ──────────────────────────────────── -->
+    <record id="action_request_analytics" model="ir.actions.act_window">
+        <field name="name">تحليل تكاليف الصيانة</field>
+        <field name="res_model">sa.maintenance.request</field>
+        <field name="view_mode">graph,pivot,tree</field>
+    </record>
+
+    <menuitem id="menu_maintenance_analytics"
+              name="تحليل التكاليف"
+              parent="menu_maintenance_root"
+              action="action_request_analytics"
+              sequence="50"/>
+
+</odoo>

@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_sa_tenancy_cycle_inherit" model="ir.ui.view">
+        <field name="name">sa.tenancy.cycle.inherit</field>
+        <field name="model">property.tenancy</field>
+        <field name="inherit_id" ref="sa_property_base.view_property_tenancy_form"/>
+        <field name="priority">25</field>
+        <field name="arch" type="xml">
+
+            <!-- أزرار دورة الإيجار في الـ header -->
+            <xpath expr="//header" position="inside">
+                <button name="action_generate_payment_schedule"
+                        string="توليد جدول الدفعات"
+                        type="object"
+                        class="btn-primary"
+                        invisible="sa_cycle_state not in ('draft','confirmed')"/>
+                <button name="action_send_to_ejar_full"
+                        string="إرسال لإيجار"
+                        type="object"
+                        invisible="sa_cycle_state not in ('confirmed','draft')"/>
+                <button name="action_open_end_wizard"
+                        string="إنهاء العقد"
+                        type="object"
+                        class="btn-danger"
+                        invisible="state in ('closed','cancelled')"/>
+                <button name="action_open_renewal_wizard"
+                        string="تجديد العقد"
+                        type="object"
+                        class="btn-secondary"
+                        invisible="state not in ('running','closed') or renewed_to_id"/>
+                <button name="action_export_statement_xlsx"
+                        string="تصدير كشف Excel"
+                        type="object"
+                        class="btn-secondary"
+                        icon="fa-file-excel-o"/>
+                <field name="sa_cycle_state" widget="statusbar"
+                       statusbar_visible="draft,confirmed,active,ended"/>
+            </xpath>
+
+            <!-- إحصائيات سريعة في الـ header -->
+            <xpath expr="//sheet" position="before">
+                <div class="o_form_view_container">
+                    <field name="sa_payment_count" invisible="1"/>
+                    <field name="sa_overdue_count" invisible="1"/>
+                    <field name="sa_maintenance_count" invisible="1"/>
+                    <field name="sa_days_to_expiry" invisible="1"/>
+                </div>
+            </xpath>
+
+            <!-- إضافة tabs دورة الإيجار -->
+            <xpath expr="//notebook" position="inside">
+
+                <!-- جدول الدفعات -->
+                <page string="جدول الدفعات" name="payment_schedule">
+
+                    <!-- ملخص مالي -->
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;padding:12px;background:var(--color-background-secondary);border-radius:8px;border:0.5px solid var(--color-border-tertiary)">
+                        <div>
+                            <div style="font-size:11px;color:var(--color-text-secondary)">إجمالي المستحق</div>
+                            <div style="font-size:16px;font-weight:500">
+                                <field name="sa_total_due" readonly="1"/> ريال
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size:11px;color:var(--color-text-secondary)">إجمالي المدفوع</div>
+                            <div style="font-size:16px;font-weight:500;color:var(--color-text-success)">
+                                <field name="sa_total_paid" readonly="1"/> ريال
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size:11px;color:var(--color-text-secondary)">الرصيد المتبقي</div>
+                            <div style="font-size:16px;font-weight:500;color:var(--color-text-warning)">
+                                <field name="sa_total_balance" readonly="1"/> ريال
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size:11px;color:var(--color-text-secondary)">دفعات متأخرة</div>
+                            <div style="font-size:16px;font-weight:500;color:var(--color-text-danger)">
+                                <field name="sa_overdue_count" readonly="1"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <field name="sa_payment_ids">
+                        <tree decoration-danger="state == 'overdue'"
+                              decoration-success="state == 'paid'"
+                              decoration-warning="state == 'partial'"
+                              decoration-muted="state == 'cancelled'">
+                            <field name="period_label" string="الفترة"/>
+                            <field name="due_date" string="تاريخ الاستحقاق"/>
+                            <field name="amount" string="المستحق (ريال)"/>
+                            <field name="amount_paid" string="المدفوع (ريال)"/>
+                            <field name="balance" string="الرصيد (ريال)"/>
+                            <field name="payment_type" string="النوع"/>
+                            <field name="payment_method" string="طريقة الدفع" optional="show"/>
+                            <field name="days_overdue" string="أيام التأخير"/>
+                            <field name="state" widget="badge"
+                                   decoration-danger="state == 'overdue'"
+                                   decoration-success="state == 'paid'"
+                                   decoration-warning="state == 'partial'"/>
+                            <button name="action_open_payment_wizard" type="object"
+                                    string="دفع" class="btn-primary btn-sm"
+                                    invisible="state in ('paid','cancelled')"/>
+                        </tree>
+                    </field>
+                </page>
+
+                <!-- الصيانة -->
+                <page string="الصيانة" name="maintenance_tab">
+                    <button name="action_new_maintenance"
+                            string="طلب صيانة جديد"
+                            type="object"
+                            class="btn-secondary"
+                            style="margin-bottom:12px"/>
+                    <field name="sa_maintenance_ids">
+                        <tree decoration-danger="priority == 'urgent'"
+                              decoration-warning="priority == 'high'">
+                            <field name="name" string="رقم الطلب"/>
+                            <field name="category" string="النوع"/>
+                            <field name="priority" widget="priority"/>
+                            <field name="request_date" string="تاريخ الطلب"/>
+                            <field name="cost" string="التكلفة (ريال)"/>
+                            <field name="cost_bearer" string="على حساب"/>
+                            <field name="state" widget="badge"
+                                   decoration-success="state == 'done'"
+                                   decoration-warning="state == 'in_progress'"/>
+                        </tree>
+                    </field>
+                </page>
+
+                <!-- الضمان (Deposit Tracking) -->
+                <page string="الضمان" name="deposit_tab">
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;padding:12px;background:var(--color-background-secondary);border-radius:8px;border:0.5px solid var(--color-border-tertiary)">
+                        <div>
+                            <div style="font-size:11px;color:var(--color-text-secondary)">قيمة الضمان</div>
+                            <div style="font-size:16px;font-weight:500">
+                                <field name="deposit_amount" readonly="1"/> ريال
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size:11px;color:var(--color-text-secondary)">المُسترد</div>
+                            <div style="font-size:16px;font-weight:500;color:var(--color-text-success)">
+                                <field name="deposit_returned_amount" readonly="1"/> ريال
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size:11px;color:var(--color-text-secondary)">المُصادَر</div>
+                            <div style="font-size:16px;font-weight:500;color:var(--color-text-warning)">
+                                <field name="deposit_forfeited_amount" readonly="1"/> ريال
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size:11px;color:var(--color-text-secondary)">المتبقي</div>
+                            <div style="font-size:16px;font-weight:500">
+                                <field name="deposit_remaining" readonly="1"/> ريال
+                            </div>
+                        </div>
+                    </div>
+
+                    <group>
+                        <group string="الاستلام">
+                            <field name="deposit_state" widget="badge"
+                                   decoration-success="deposit_state == 'held'"
+                                   decoration-info="deposit_state == 'returned'"
+                                   decoration-warning="deposit_state == 'partially_returned'"
+                                   decoration-danger="deposit_state == 'forfeited'"
+                                   decoration-muted="deposit_state == 'not_paid'"/>
+                            <field name="deposit_date_paid"/>
+                            <field name="deposit_payment_id" readonly="1"
+                                   options="{'no_create': True, 'no_open': False}"/>
+                        </group>
+                        <group string="إجراءات">
+                            <button name="action_register_deposit_receipt"
+                                    type="object" string="تسجيل استلام الضمان"
+                                    class="btn-primary"
+                                    invisible="deposit_state != 'not_paid' or not deposit_amount"/>
+                            <button name="action_view_deposit_payment"
+                                    type="object" string="عرض سند الضمان"
+                                    class="btn-secondary"
+                                    invisible="not deposit_payment_id"/>
+                        </group>
+                    </group>
+
+                    <group string="ملاحظات">
+                        <field name="deposit_notes" nolabel="1"
+                               placeholder="ملاحظات حول الضمان (مثال: تاريخ التسليم النقدي، رقم الإيصال، شروط خاصة...)"/>
+                    </group>
+                </page>
+
+                <!-- التجديد التلقائي -->
+                <page string="التجديد" name="renewal_tab">
+                    <group>
+                        <group string="إعدادات التجديد التلقائي">
+                            <field name="auto_renew"/>
+                            <field name="renewal_period_months"
+                                   invisible="not auto_renew"/>
+                            <field name="renewal_rent_increase_pct"
+                                   invisible="not auto_renew"/>
+                            <field name="renewal_notice_days"
+                                   invisible="not auto_renew"/>
+                        </group>
+                        <group string="حالة التجديد">
+                            <field name="is_renewed" invisible="1"/>
+                            <field name="renewed_from_id" readonly="1"
+                                   invisible="not renewed_from_id"/>
+                            <field name="renewed_to_id" readonly="1"
+                                   invisible="not renewed_to_id"/>
+                            <button name="action_view_renewal" type="object"
+                                    string="عرض العقد المُجدَّد"
+                                    class="btn-secondary"
+                                    invisible="not renewed_to_id"/>
+                            <button name="action_view_original" type="object"
+                                    string="عرض العقد الأصلي"
+                                    class="btn-secondary"
+                                    invisible="not renewed_from_id"/>
+                        </group>
+                    </group>
+
+                    <div class="alert alert-warning" role="alert"
+                         invisible="not auto_renew or not rent_freeze_warning">
+                        <strong>تنبيه:</strong>
+                        العقار في الرياض — قانون تجميد الإيجار يمنع أي زيادة
+                        حتى سبتمبر 2030. ستُتجاهل نسبة الزيادة عند التجديد.
+                    </div>
+
+                    <div class="alert alert-info" role="alert"
+                         invisible="not auto_renew">
+                        <strong>التجديد التلقائي مُفعَّل:</strong>
+                        سيُنشأ عقد جديد قبل
+                        <field name="renewal_notice_days" readonly="1"/> يوماً
+                        من تاريخ انتهاء العقد بمدة
+                        <field name="renewal_period_months" readonly="1"/> أشهر.
+                    </div>
+                </page>
+
+                <!-- معلومات الانتهاء -->
+                <page string="الانتهاء والتجديد" name="expiry_tab">
+                    <group string="حالة العقد">
+                        <group>
+                            <field name="start_date" readonly="1"/>
+                            <field name="end_date" readonly="1"/>
+                            <field name="sa_days_to_expiry" readonly="1"
+                                   string="أيام حتى الانتهاء"/>
+                        </group>
+                        <group>
+                            <field name="ejar_contract_number" readonly="1"/>
+                            <field name="sa_ejar_status" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <div class="alert alert-warning" role="alert"
+                         invisible="sa_days_to_expiry &gt; 30 or sa_days_to_expiry &lt; 0">
+                        <strong>تنبيه:</strong>
+                        عقد الإيجار ينتهي خلال
+                        <field name="sa_days_to_expiry" readonly="1"/> يوماً.
+                        يرجى التواصل مع المستأجر بشأن التجديد.
+                    </div>
+
+                    <div class="alert alert-danger" role="alert"
+                         invisible="sa_days_to_expiry &gt;= 0">
+                        <strong>انتهى العقد!</strong>
+                        يجب إنهاء العقد رسمياً أو تجديده.
+                    </div>
+
+                </page>
+
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- ═══════════════════════════════════════════════════════
+             الفئات (Categories) — تظهر في user form كـ radio buttons
+             ═══════════════════════════════════════════════════════ -->
+        <record id="module_category_pms_staff" model="ir.module.category">
+            <field name="name">إدارة العقارات — الموظفون</field>
+            <field name="description">أدوار الموظفين الداخليين لشركة إدارة العقارات</field>
+            <field name="sequence">100</field>
+        </record>
+
+        <record id="module_category_pms_special" model="ir.module.category">
+            <field name="name">إدارة العقارات — أدوار خاصة</field>
+            <field name="description">المالك / الفني / المستأجر — أدوار محدودة الصلاحيات</field>
+            <field name="sequence">101</field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             الفئة 1: الموظفون — هرمية (4 مستويات)
+             Agent → Accountant → Manager → Admin
+             ═══════════════════════════════════════════════════════ -->
+
+        <!-- Level 1: موظف خدمة عملاء -->
+        <record id="group_pms_agent" model="res.groups">
+            <field name="name">موظف خدمة عملاء</field>
+            <field name="category_id" ref="module_category_pms_staff"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">يفتح طلبات الصيانة، يتابع المستأجرين، يصل لقراءة الفواتير</field>
+        </record>
+
+        <!-- Level 2: محاسب عقارات (يشمل صلاحيات Agent) -->
+        <record id="group_pms_accountant" model="res.groups">
+            <field name="name">محاسب عقارات</field>
+            <field name="category_id" ref="module_category_pms_staff"/>
+            <field name="implied_ids" eval="[
+                (4, ref('group_pms_agent')),
+                (4, ref('account.group_account_invoice'))
+            ]"/>
+            <field name="comment">إدارة الفواتير، الدفعات، التقارير المالية. لا يعدّل العقود.</field>
+        </record>
+
+        <!-- Level 3: مدير العقارات (يشمل Accountant + Agent) -->
+        <record id="group_pms_manager" model="res.groups">
+            <field name="name">مدير العقارات</field>
+            <field name="category_id" ref="module_category_pms_staff"/>
+            <field name="implied_ids" eval="[
+                (4, ref('group_pms_accountant')),
+                (4, ref('account.group_account_user'))
+            ]"/>
+            <field name="comment">إدارة كاملة للعقارات، العقود، الصيانة، المعاينات</field>
+        </record>
+
+        <!-- Level 4: مدير نظام إدارة العقارات (يشمل Manager + System) -->
+        <record id="group_pms_admin" model="res.groups">
+            <field name="name">مدير نظام إدارة العقارات</field>
+            <field name="category_id" ref="module_category_pms_staff"/>
+            <field name="implied_ids" eval="[
+                (4, ref('group_pms_manager')),
+                (4, ref('base.group_system'))
+            ]"/>
+            <field name="comment">صلاحيات كاملة على النظام بما فيها الإعدادات والمستخدمين</field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             الفئة 2: الأدوار الخاصة — مستقلة (لا هرمية بينها)
+             ═══════════════════════════════════════════════════════ -->
+
+        <!-- مالك عقار (مستخدم داخلي) -->
+        <record id="group_pms_owner" model="res.groups">
+            <field name="name">مالك عقار (داخلي)</field>
+            <field name="category_id" ref="module_category_pms_special"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">يرى عقاراته فقط (read-only) + التقارير المالية الخاصة به</field>
+        </record>
+
+        <!-- فني صيانة -->
+        <record id="group_pms_technician" model="res.groups">
+            <field name="name">فني صيانة</field>
+            <field name="category_id" ref="module_category_pms_special"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">يرى أوامر العمل المُسنَدة إليه فقط، يحدّث الحالات والتكاليف</field>
+        </record>
+
+        <!-- مستأجر (بوابة) -->
+        <record id="group_pms_tenant_portal" model="res.groups">
+            <field name="name">مستأجر (بوابة)</field>
+            <field name="category_id" ref="module_category_pms_special"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_portal'))]"/>
+            <field name="comment">وصول للبوابة /my فقط — عقده ودفعاته وطلبات صيانته</field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             منح الـ admin الافتراضي صلاحية مدير نظام PMS تلقائياً
+             ═══════════════════════════════════════════════════════ -->
+        <record id="base.user_admin" model="res.users">
+            <field name="groups_id" eval="[(4, ref('group_pms_admin'))]"/>
+        </record>
+
+    </data>
+</odoo>

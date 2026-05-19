@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Extend res.partner form with profile tabs -->
+    <record id="view_res_partner_profile_form" model="ir.ui.view">
+        <field name="name">res.partner.profile.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Profile completion badge after name -->
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="profile_completion" widget="progressbar"
+                       options="{'current_value': 'profile_completion', 'max_value': 100}"
+                       string="اكتمال الملف"/>
+                <field name="verification_state" widget="badge"
+                       decoration-success="verification_state == 'verified'"
+                       decoration-warning="verification_state == 'pending'"
+                       decoration-danger="verification_state == 'rejected'"
+                       decoration-muted="verification_state == 'unverified'"/>
+            </xpath>
+
+            <!-- Add new tabs inside the notebook -->
+            <xpath expr="//notebook" position="inside">
+
+                <!-- Personal Info tab -->
+                <page string="المعلومات الشخصية" name="profile_personal">
+                    <group>
+                        <group string="البيانات الشخصية">
+                            <field name="gender"/>
+                            <field name="date_of_birth"/>
+                            <field name="bio"/>
+                        </group>
+                    </group>
+                </page>
+
+                <!-- National Address tab -->
+                <page string="العنوان الوطني" name="profile_address">
+                    <group>
+                        <group string="العنوان القصير (Short Address)">
+                            <field name="sa_national_address"/>
+                        </group>
+                        <group string="تفاصيل العنوان">
+                            <field name="sa_region_id"/>
+                            <field name="city"/>
+                            <field name="sa_district"/>
+                            <field name="sa_building_no"/>
+                            <field name="sa_unit_no"/>
+                            <field name="sa_additional_no"/>
+                            <field name="sa_postal_code"/>
+                        </group>
+                    </group>
+                </page>
+
+                <!-- Verification tab -->
+                <page string="التوثيق" name="profile_verification">
+                    <field name="verification_ids" mode="tree">
+                        <tree decoration-success="state == 'verified'"
+                              decoration-danger="state == 'rejected'"
+                              decoration-warning="state == 'submitted'">
+                            <field name="id_type"/>
+                            <field name="id_number"/>
+                            <field name="id_expiry"/>
+                            <field name="submission_date"/>
+                            <field name="verified_date"/>
+                            <field name="state" widget="badge"
+                                   decoration-success="state == 'verified'"
+                                   decoration-danger="state == 'rejected'"
+                                   decoration-warning="state == 'submitted'"/>
+                            <field name="rejection_reason" optional="hide"/>
+                            <button name="action_submit" string="تقديم" type="object"
+                                    invisible="state not in ('draft','rejected')"
+                                    icon="fa-check"/>
+                        </tree>
+                    </field>
+                </page>
+
+                <!-- Documents tab -->
+                <page string="الوثائق" name="profile_documents">
+                    <field name="document_ids" mode="tree">
+                        <tree decoration-danger="state == 'expired'"
+                              decoration-warning="state == 'expiring_soon'">
+                            <field name="doc_type"/>
+                            <field name="name"/>
+                            <field name="upload_date"/>
+                            <field name="expiry_date"/>
+                            <field name="state" widget="badge"
+                                   decoration-success="state == 'active'"
+                                   decoration-warning="state == 'expiring_soon'"
+                                   decoration-danger="state == 'expired'"
+                                   decoration-muted="state == 'archived'"/>
+                        </tree>
+                    </field>
+                </page>
+
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Profiles management list view -->
+    <record id="view_res_partner_profiles_list" model="ir.ui.view">
+        <field name="name">res.partner.profiles.list</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="email"/>
+                <field name="phone"/>
+                <field name="verification_state" widget="badge"
+                       decoration-success="verification_state == 'verified'"
+                       decoration-warning="verification_state == 'pending'"
+                       decoration-danger="verification_state == 'rejected'"
+                       decoration-muted="verification_state == 'unverified'"/>
+                <field name="profile_completion" widget="progressbar"
+                       options="{'current_value': 'profile_completion', 'max_value': 100}"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Admin: all users -->
+    <record id="action_partner_profiles" model="ir.actions.act_window">
+        <field name="name">الملفات الشخصية</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5,0,0),(0,0,{'view_mode':'tree','view_id':ref('view_res_partner_profiles_list')})]"/>
+        <field name="domain">[('user_ids','!=',False)]</field>
+        <field name="context">{'default_active': True}</field>
+    </record>
+
+    <!-- Self-service: current user's profile only -->
+    <record id="action_my_profile" model="ir.actions.act_window">
+        <field name="name">حسابي</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">form</field>
+        <field name="domain">[('user_ids', 'in', [uid])]</field>
+        <field name="context">{'create': False, 'delete': False}</field>
+    </record>
+
+</odoo>

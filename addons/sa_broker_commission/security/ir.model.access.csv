@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sa_broker_commission,sa.broker.commission,model_sa_broker_commission,base.group_user,1,1,1,0
+access_sa_broker_commission_mgr,sa.broker.commission manager,model_sa_broker_commission,base.group_system,1,1,1,1
+access_sa_broker_commission_line,sa.broker.commission.line,model_sa_broker_commission_line,base.group_user,1,1,1,0
+access_sa_broker_commission_line_mgr,sa.broker.commission.line manager,model_sa_broker_commission_line,base.group_system,1,1,1,1

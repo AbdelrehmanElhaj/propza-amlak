@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_property_tenancy" model="ir.sequence">
+            <field name="name">عقد إيجار</field>
+            <field name="code">property.tenancy</field>
+            <field name="prefix">RNT/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_property_inspection" model="ir.sequence">
+            <field name="name">معاينة عقار</field>
+            <field name="code">sa.property.inspection</field>
+            <field name="prefix">INS/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

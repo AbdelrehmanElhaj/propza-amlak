@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_maintenance_requests"
+              name="طلبات الصيانة"
+              parent="menu_maintenance_root"
+              action="action_request"
+              sequence="10"/>
+
+    <menuitem id="menu_maintenance_urgent"
+              name="عاجلة"
+              parent="menu_maintenance_root"
+              action="action_request_urgent"
+              sequence="20"/>
+
+    <menuitem id="menu_maintenance_work_orders"
+              name="أوامر العمل"
+              parent="menu_maintenance_root"
+              action="action_work_order"
+              sequence="25"/>
+
+    <menuitem id="menu_maintenance_contracts"
+              name="عقود الصيانة الدورية"
+              parent="menu_maintenance_root"
+              action="action_contract"
+              sequence="28"/>
+
+    <menuitem id="menu_maintenance_technicians"
+              name="المقاولون والفنيون"
+              parent="menu_maintenance_root"
+              action="action_technicians"
+              sequence="30"/>
+
+    <menuitem id="menu_maintenance_config"
+              name="الإعدادات"
+              parent="menu_maintenance_root"
+              sequence="100"/>
+
+    <menuitem id="menu_maintenance_skills"
+              name="التخصصات"
+              parent="menu_maintenance_config"
+              action="action_skill"
+              sequence="10"/>
+
+</odoo>

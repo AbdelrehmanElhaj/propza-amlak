@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- "أعمالي" — landing menu للفني تحت قائمة الصيانة -->
+    <menuitem id="menu_my_work_orders"
+              name="أعمالي"
+              parent="sa_maintenance.menu_maintenance_root"
+              action="action_my_work_orders"
+              sequence="5"
+              groups="sa_security.group_pms_technician,sa_security.group_pms_admin"/>
+
+</odoo>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_sa_tenancy_renewal_wizard" model="ir.ui.view">
+        <field name="name">sa.tenancy.renewal.wizard.form</field>
+        <field name="model">sa.tenancy.renewal.wizard</field>
+        <field name="arch" type="xml">
+            <form string="تجديد عقد الإيجار">
+                <!-- Riyadh freeze alert -->
+                <div class="alert alert-warning" role="alert"
+                     invisible="not rent_freeze_active">
+                    <strong>تجميد الإيجار مُفعَّل:</strong>
+                    العقار يقع في الرياض، وزيادة الإيجار ممنوعة قانونياً
+                    حتى سبتمبر 2030 وفق قانون تجميد الإيجار (سبتمبر 2025).
+                </div>
+
+                <div class="alert alert-danger" role="alert"
+                     invisible="not rent_freeze_warning">
+                    <strong>خطأ:</strong>
+                    لا يمكن زيادة الإيجار. الرجاء إعادة النسبة إلى 0٪.
+                </div>
+
+                <group string="العقد الأصلي">
+                    <group>
+                        <field name="tenancy_id" readonly="1"/>
+                        <field name="property_id" readonly="1"/>
+                        <field name="partner_id" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="current_rent" readonly="1"/>
+                        <field name="rent_freeze_active" readonly="1"
+                               invisible="not rent_freeze_active"/>
+                    </group>
+                </group>
+
+                <group string="تفاصيل التجديد">
+                    <group>
+                        <field name="new_start_date"/>
+                        <field name="period_months"/>
+                        <field name="new_end_date" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="rent_increase_pct"
+                               readonly="rent_freeze_active"/>
+                        <field name="new_rent"/>
+                        <field name="rent_freeze_warning" invisible="1"/>
+                    </group>
+                </group>
+
+                <group string="ملاحظات">
+                    <field name="notes" nolabel="1"
+                           placeholder="ملاحظات إضافية على التجديد..."/>
+                </group>
+
+                <footer>
+                    <button name="action_renew" string="تجديد العقد"
+                            type="object" class="btn-primary"
+                            invisible="rent_freeze_warning"/>
+                    <button string="إلغاء" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

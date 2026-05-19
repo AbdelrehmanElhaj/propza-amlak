@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_settings_sa_sadad" model="ir.ui.view">
+        <field name="name">res.config.settings.sa.sadad</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <div class="app_settings_block" data-string="إعدادات SADAD"
+                     string="SADAD Settings" data-key="sa_sadad"
+                     groups="base.group_system,sa_security.group_pms_admin">
+                    <h2>إعدادات SADAD</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <label for="sa_sadad_biller_code"/>
+                                <div class="text-muted">رمز المُصدِر المعتمد من SAMA. للاختبار 9999.</div>
+                                <div class="content-group mt8">
+                                    <field name="sa_sadad_biller_code" class="oe_inline" style="width:120px"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <label for="sa_sadad_expiry_days"/>
+                                <div class="text-muted">عدد الأيام قبل انتهاء صلاحية الفاتورة.</div>
+                                <div class="content-group mt8">
+                                    <field name="sa_sadad_expiry_days" class="oe_inline" style="width:80px"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <label for="sa_sadad_webhook_token"/>
+                                <div class="text-muted">
+                                    التوكن المُتوقَّع في header X-Sadad-Token. أنشئ توكن قوي للإنتاج.
+                                </div>
+                                <div class="content-group mt8">
+                                    <field name="sa_sadad_webhook_token" class="oe_inline" style="width:400px"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

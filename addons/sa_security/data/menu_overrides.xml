@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- ═══════════════════════════════════════════════════════
+             إخفاء قوائم الإدارة من Owner / Technician / Tenant
+             ═══════════════════════════════════════════════════════ -->
+
+        <!-- لوحة المالكين: للموظفين فقط (manager + admin) -->
+        <record id="sa_rental_cycle.menu_owner_dashboard" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('group_pms_manager')])]"/>
+        </record>
+
+        <!-- الأطراف (إدارة جهات الاتصال): الموظفين فقط (agent+) -->
+        <record id="sa_property_base.menu_pms_parties_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('group_pms_agent')])]"/>
+        </record>
+
+        <record id="sa_property_base.menu_pms_owners" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('group_pms_agent')])]"/>
+        </record>
+
+        <record id="sa_property_base.menu_pms_tenants" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('group_pms_agent')])]"/>
+        </record>
+
+        <record id="sa_property_base.menu_pms_brokers" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('group_pms_agent')])]"/>
+        </record>
+
+        <!-- تحليل الإيرادات + التقارير: للموظفين (agent+) -->
+        <!-- المالك له تقاريره الخاصة عبر record rules — هذه قوائم إدارية شاملة -->
+        <record id="sa_rental_cycle.menu_revenue_analytics" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('group_pms_agent')])]"/>
+        </record>
+
+        <record id="sa_rental_cycle.menu_pms_reports_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('group_pms_agent')])]"/>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             قائمة الصيانة — المالك يرى طلبات عقاراته فقط
+             ═══════════════════════════════════════════════════════ -->
+
+        <!-- أوامر العمل: agent + technician (الفني يحتاجها) -->
+        <record id="sa_maintenance.menu_maintenance_work_orders" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('group_pms_agent'),
+                ref('group_pms_technician'),
+            ])]"/>
+        </record>
+
+        <!-- عقود الصيانة الدورية: manager فقط -->
+        <record id="sa_maintenance.menu_maintenance_contracts" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('group_pms_manager')])]"/>
+        </record>
+
+        <!-- المقاولون والفنيون: agent+ (إدارة الموردين) -->
+        <record id="sa_maintenance.menu_maintenance_technicians" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('group_pms_agent')])]"/>
+        </record>
+
+        <!-- الإعدادات + التخصصات: manager فقط -->
+        <record id="sa_maintenance.menu_maintenance_config" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('group_pms_manager')])]"/>
+        </record>
+
+        <record id="sa_maintenance.menu_maintenance_skills" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('group_pms_manager')])]"/>
+        </record>
+
+        <!-- تحليل التكاليف: accountant+ (مالي) -->
+        <record id="sa_maintenance.menu_maintenance_analytics" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('group_pms_accountant')])]"/>
+        </record>
+
+        <!-- معاينات العقارات (القائمة المستقلة): للموظفين (agent+) -->
+        <record id="sa_property_base.menu_pms_inspections" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('group_pms_agent')])]"/>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             قوائم Top-level أخرى — staff only
+             ═══════════════════════════════════════════════════════ -->
+
+        <!-- دورة الإيجار: workflow داخلي للموظفين -->
+        <record id="sa_rental_cycle.menu_sa_rental_cycle" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('group_pms_agent')])]"/>
+        </record>
+
+        <!-- جهات الاتصال (Contacts الافتراضية): manager فقط -->
+        <record id="contacts.menu_contacts" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('group_pms_manager')])]"/>
+        </record>
+
+        <!-- Apps + Settings: admin فقط -->
+        <record id="base.menu_management" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('group_pms_admin'),
+                ref('base.group_system'),
+            ])]"/>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             تقييد الـ root menus حسب الأدوار
+             ═══════════════════════════════════════════════════════ -->
+
+        <!-- إدارة العقارات: للمدراء + المحاسبين + الموظفين + الملاك
+             (الفني لا يحتاجها — له قائمة الصيانة فقط) -->
+        <record id="sa_property_base.menu_pms_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('group_pms_admin'),
+                ref('group_pms_manager'),
+                ref('group_pms_accountant'),
+                ref('group_pms_agent'),
+                ref('group_pms_owner'),
+            ])]"/>
+        </record>
+
+        <!-- الصيانة: المدراء + المحاسبين + الموظفين + الملاك + الفنيين -->
+        <record id="sa_maintenance.menu_maintenance_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('group_pms_admin'),
+                ref('group_pms_manager'),
+                ref('group_pms_accountant'),
+                ref('group_pms_agent'),
+                ref('group_pms_owner'),
+                ref('group_pms_technician'),
+            ])]"/>
+        </record>
+
+    </data>
+</odoo>

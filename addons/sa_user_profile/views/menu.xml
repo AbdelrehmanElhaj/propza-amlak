@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         حسابي — قائمة رئيسية (كل المستخدمين الداخليين)
+         ═══════════════════════════════════════════════════════════ -->
+
+    <menuitem id="menu_user_profile_root"
+              name="حسابي"
+              sequence="65"
+              web_icon="sa_user_profile,static/description/icon.png"
+              groups="base.group_user"/>
+
+    <!-- الملف الشخصي للمستخدم الحالي فقط -->
+    <menuitem id="menu_my_profile"
+              name="ملفي الشخصي"
+              parent="menu_user_profile_root"
+              action="action_my_profile"
+              sequence="10"/>
+
+    <menuitem id="menu_my_verifications"
+              name="توثيقاتي"
+              parent="menu_user_profile_root"
+              action="action_my_verification"
+              sequence="20"/>
+
+    <menuitem id="menu_my_documents"
+              name="وثائقي"
+              parent="menu_user_profile_root"
+              action="action_my_document"
+              sequence="30"/>
+
+    <!-- ── إدارة (للمدراء والمشرفين فقط) ── -->
+    <menuitem id="menu_profile_admin_root"
+              name="إدارة الملفات"
+              parent="menu_user_profile_root"
+              sequence="90"
+              groups="base.group_system,sa_security.group_pms_admin,sa_security.group_pms_manager"/>
+
+    <menuitem id="menu_all_profiles"
+              name="كل الملفات الشخصية"
+              parent="menu_profile_admin_root"
+              action="action_partner_profiles"
+              sequence="10"/>
+
+    <menuitem id="menu_all_verifications"
+              name="طلبات التوثيق"
+              parent="menu_profile_admin_root"
+              action="action_sa_user_verification"
+              sequence="20"/>
+
+    <menuitem id="menu_all_documents"
+              name="وثائق المستخدمين"
+              parent="menu_profile_admin_root"
+              action="action_sa_user_document"
+              sequence="30"/>
+
+</odoo>

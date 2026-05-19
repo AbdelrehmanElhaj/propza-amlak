@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ─── إضافة tab "العمولات" على form العقد ─────────────────── -->
+    <record id="view_tenancy_form_commissions" model="ir.ui.view">
+        <field name="name">property.tenancy.form.commissions</field>
+        <field name="model">property.tenancy</field>
+        <field name="inherit_id" ref="sa_property_base.view_property_tenancy_form"/>
+        <field name="priority">35</field>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="عمولات الوسطاء" name="commissions_tab">
+                    <div style="margin-bottom:12px">
+                        <button name="action_create_commission"
+                                type="object" string="عمولة وسيط جديدة"
+                                class="btn-primary"
+                                icon="fa-plus"/>
+                    </div>
+                    <field name="commission_ids" nolabel="1">
+                        <tree decoration-success="state == 'paid'"
+                              decoration-warning="state == 'partial'"
+                              decoration-info="state == 'confirmed'">
+                            <field name="name"/>
+                            <field name="broker_partner_id"/>
+                            <field name="commission_type"/>
+                            <field name="commission_amount" sum="إجمالي"/>
+                            <field name="paid_amount" sum="المُسدَّد"/>
+                            <field name="state" widget="badge"/>
+                        </tree>
+                    </field>
+
+                    <group invisible="not commission_ids">
+                        <field name="commission_count" readonly="1"/>
+                        <field name="total_commissions" readonly="1"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

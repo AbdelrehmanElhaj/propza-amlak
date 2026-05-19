@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         سجل التدقيق الموحَّد — يجمع mail.message للموديولات الـ PMS
+         ═══════════════════════════════════════════════════════════ -->
+
+    <record id="view_audit_log_tree" model="ir.ui.view">
+        <field name="name">mail.message.audit.tree</field>
+        <field name="model">mail.message</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <tree string="سجل التدقيق" create="0" edit="0" delete="0"
+                  default_order="date desc">
+                <field name="date"/>
+                <field name="author_id" string="المستخدم"/>
+                <field name="model" string="الموديل"/>
+                <field name="res_id" string="السجل"/>
+                <field name="record_name" string="المرجع"/>
+                <field name="message_type" widget="badge"/>
+                <field name="subject"/>
+                <field name="body" widget="html"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_audit_log_search" model="ir.ui.view">
+        <field name="name">mail.message.audit.search</field>
+        <field name="model">mail.message</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="author_id"/>
+                <field name="model"/>
+                <field name="record_name"/>
+                <field name="subject"/>
+                <separator/>
+                <filter name="filt_tenancy" string="عقود الإيجار"
+                        domain="[('model','=','property.tenancy')]"/>
+                <filter name="filt_payment" string="الدفعات"
+                        domain="[('model','=','sa.rent.payment')]"/>
+                <filter name="filt_invoice" string="الفواتير"
+                        domain="[('model','=','account.move')]"/>
+                <filter name="filt_account_payment" string="سندات الدفع"
+                        domain="[('model','=','account.payment')]"/>
+                <filter name="filt_maintenance" string="طلبات الصيانة"
+                        domain="[('model','=','sa.maintenance.request')]"/>
+                <filter name="filt_inspection" string="المعاينات"
+                        domain="[('model','=','sa.property.inspection')]"/>
+                <separator/>
+                <filter name="filt_today" string="اليوم"
+                        domain="[('date','&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="filt_7d" string="آخر 7 أيام"
+                        domain="[('date','&gt;=', (context_today() - relativedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                <filter name="filt_30d" string="آخر 30 يوم"
+                        domain="[('date','&gt;=', (context_today() - relativedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="تجميع حسب">
+                    <filter name="g_user"  string="المستخدم"
+                            context="{'group_by':'author_id'}"/>
+                    <filter name="g_model" string="الموديل"
+                            context="{'group_by':'model'}"/>
+                    <filter name="g_date"  string="اليوم"
+                            context="{'group_by':'date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_audit_log" model="ir.actions.act_window">
+        <field name="name">سجل التدقيق (PMS)</field>
+        <field name="res_model">mail.message</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_audit_log_tree"/>
+        <field name="search_view_id" ref="view_audit_log_search"/>
+        <field name="domain">[('model', 'in', [
+            'property.tenancy',
+            'property.property',
+            'sa.rent.payment',
+            'account.move',
+            'account.payment',
+            'sa.maintenance.request',
+            'sa.maintenance.work_order',
+            'sa.maintenance.contract',
+            'sa.property.inspection',
+        ])]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">سجل التدقيق</p>
+            <p>كل التغييرات على عقود الإيجار، الدفعات، الفواتير، الصيانة، والمعاينات
+               مع تواريخ ومستخدمين — متوافق مع متطلبات ZATCA Phase 2.</p>
+        </field>
+    </record>
+
+    <!-- ─── شاشة آخر تسجيل دخول للمستخدمين ─────────────────────── -->
+    <record id="view_users_last_login_tree" model="ir.ui.view">
+        <field name="name">res.users.last.login.tree</field>
+        <field name="model">res.users</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <tree string="آخر تسجيل دخول" create="0" edit="0" delete="0">
+                <field name="name"/>
+                <field name="login"/>
+                <field name="pms_role_label" string="الدور"/>
+                <field name="login_date" string="آخر دخول"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_users_last_login" model="ir.actions.act_window">
+        <field name="name">آخر تسجيل دخول</field>
+        <field name="res_model">res.users</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_users_last_login_tree"/>
+        <field name="domain">[('groups_id.category_id.name', 'in', [
+            'إدارة العقارات — الموظفون',
+            'إدارة العقارات — أدوار خاصة'
+        ])]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         القوائم تحت "إدارة الصلاحيات (PMS)"
+         ═══════════════════════════════════════════════════════════ -->
+
+    <menuitem id="menu_audit_log"
+              name="سجل التدقيق"
+              parent="menu_pms_security_root"
+              action="action_audit_log"
+              sequence="80"/>
+
+    <menuitem id="menu_users_last_login"
+              name="آخر تسجيل دخول"
+              parent="menu_pms_security_root"
+              action="action_users_last_login"
+              sequence="85"/>
+
+</odoo>

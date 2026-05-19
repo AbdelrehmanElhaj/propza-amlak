@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sa_rent_payment,sa.rent.payment,model_sa_rent_payment,base.group_user,1,1,1,0
+access_sa_rent_payment_mgr,sa.rent.payment manager,model_sa_rent_payment,base.group_system,1,1,1,1
+access_sa_rental_alert,sa.rental.alert,model_sa_rental_alert,base.group_user,1,0,0,0
+access_sa_rental_alert_mgr,sa.rental.alert manager,model_sa_rental_alert,base.group_system,1,1,1,1
+access_sa_payment_wizard,sa.payment.wizard,model_sa_payment_wizard,base.group_user,1,1,1,0
+access_sa_end_tenancy_wizard,sa.end.tenancy.wizard,model_sa_end_tenancy_wizard,base.group_user,1,1,1,0
+access_sa_end_tenancy_deduction_line,sa.end.tenancy.deduction.line,model_sa_end_tenancy_deduction_line,base.group_user,1,1,1,1
+access_sa_tenancy_renewal_wizard,sa.tenancy.renewal.wizard,model_sa_tenancy_renewal_wizard,base.group_user,1,1,1,0

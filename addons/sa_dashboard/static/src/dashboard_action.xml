@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="sa_dashboard.PmsDashboardAction">
+        <div class="o_action_manager o_pms_dashboard_wrapper" style="height:100%;width:100%;padding:0;margin:0;background:#f5f7fa;">
+            <iframe src="/pms/dashboard"
+                    style="width:100%;height:100%;border:0;display:block;"
+                    title="لوحة تحكم إدارة العقارات"/>
+        </div>
+    </t>
+
+</templates>

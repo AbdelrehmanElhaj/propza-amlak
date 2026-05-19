@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sa_user_verification_admin,sa.user.verification admin,model_sa_user_verification,sa_security.group_pms_admin,1,1,1,1
+access_sa_user_verification_manager,sa.user.verification manager,model_sa_user_verification,sa_security.group_pms_manager,1,1,1,1
+access_sa_user_verification_user,sa.user.verification user,model_sa_user_verification,base.group_user,1,1,1,0
+access_sa_user_verification_portal,sa.user.verification portal,model_sa_user_verification,base.group_portal,1,1,1,0
+access_sa_user_document_admin,sa.user.document admin,model_sa_user_document,sa_security.group_pms_admin,1,1,1,1
+access_sa_user_document_manager,sa.user.document manager,model_sa_user_document,sa_security.group_pms_manager,1,1,1,1
+access_sa_user_document_user,sa.user.document user,model_sa_user_document,base.group_user,1,1,1,0
+access_sa_user_document_portal,sa.user.document portal,model_sa_user_document,base.group_portal,1,1,1,0

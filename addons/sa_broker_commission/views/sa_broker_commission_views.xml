@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ─── List ──────────────────────────────────────────────── -->
+    <record id="view_broker_commission_tree" model="ir.ui.view">
+        <field name="name">sa.broker.commission.list</field>
+        <field name="model">sa.broker.commission</field>
+        <field name="arch" type="xml">
+            <tree string="عمولات الوسطاء"
+                  decoration-success="state == 'paid'"
+                  decoration-warning="state == 'partial'"
+                  decoration-info="state == 'confirmed'"
+                  decoration-muted="state in ('draft','cancelled')">
+                <field name="name"/>
+                <field name="date_signed"/>
+                <field name="broker_partner_id"/>
+                <field name="tenancy_id"/>
+                <field name="property_id"/>
+                <field name="annual_rent" sum="إجمالي الإيجار السنوي"/>
+                <field name="commission_type"/>
+                <field name="commission_amount" sum="إجمالي العمولات"/>
+                <field name="paid_amount" sum="المُسدَّد"/>
+                <field name="remaining_amount" sum="المتبقي"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'paid'"
+                       decoration-warning="state == 'partial'"
+                       decoration-info="state == 'confirmed'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ─── Form ──────────────────────────────────────────────── -->
+    <record id="view_broker_commission_form" model="ir.ui.view">
+        <field name="name">sa.broker.commission.form</field>
+        <field name="model">sa.broker.commission</field>
+        <field name="arch" type="xml">
+            <form string="عمولة وسيط">
+                <header>
+                    <button name="action_confirm" string="تأكيد"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_cancel" string="إلغاء"
+                            type="object"
+                            invisible="state in ('cancelled','paid')"/>
+                    <button name="action_set_to_draft" string="إعادة لـ مسودة"
+                            type="object"
+                            invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirmed,partial,paid"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_lines" type="object"
+                                class="oe_stat_button" icon="fa-list"
+                                invisible="not line_ids">
+                            <span>دفعات العمولة</span>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="الأطراف">
+                            <field name="broker_partner_id"
+                                   options="{'no_create': True}"/>
+                            <field name="tenancy_id"
+                                   options="{'no_create': True}"/>
+                            <field name="property_id" readonly="1"/>
+                            <field name="tenant_partner_id" readonly="1"/>
+                            <field name="owner_partner_id" readonly="1"/>
+                            <field name="date_signed"/>
+                        </group>
+                        <group string="قيمة العمولة">
+                            <field name="annual_rent" readonly="1"/>
+                            <field name="commission_type" widget="radio"/>
+                            <field name="commission_rate"
+                                   invisible="commission_type != 'percentage'"/>
+                            <field name="fixed_amount"
+                                   invisible="commission_type != 'fixed'"/>
+                            <field name="commission_amount" readonly="1"
+                                   class="o_form_label_required"/>
+                            <field name="payment_schedule"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="حالة الدفع">
+                            <field name="paid_amount" readonly="1"/>
+                            <field name="remaining_amount" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="جدول الدفعات" name="lines">
+                            <field name="line_ids" readonly="state == 'draft'">
+                                <tree decoration-success="state == 'paid'"
+                                      decoration-info="state == 'billed'"
+                                      decoration-muted="state == 'cancelled'">
+                                    <field name="description"/>
+                                    <field name="due_date"/>
+                                    <field name="amount" sum="إجمالي"/>
+                                    <field name="bill_id" readonly="1"/>
+                                    <field name="payment_id" readonly="1"/>
+                                    <field name="state" widget="badge"/>
+                                    <button name="action_create_bill" type="object"
+                                            string="إنشاء فاتورة"
+                                            class="btn-primary btn-sm"
+                                            invisible="state != 'pending'"/>
+                                    <button name="action_register_payment" type="object"
+                                            string="تسجيل دفع"
+                                            class="btn-primary btn-sm"
+                                            invisible="state != 'billed'"/>
+                                    <button name="action_mark_paid" type="object"
+                                            string="مُسدَّد يدوياً"
+                                            class="btn-secondary btn-sm"
+                                            invisible="state == 'paid'"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="ملاحظات" name="notes">
+                            <field name="notes" nolabel="1"
+                                   placeholder="أي تفاصيل إضافية حول العقد..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ─── Search ────────────────────────────────────────────── -->
+    <record id="view_broker_commission_search" model="ir.ui.view">
+        <field name="name">sa.broker.commission.search</field>
+        <field name="model">sa.broker.commission</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="broker_partner_id"/>
+                <field name="tenancy_id"/>
+                <field name="property_id"/>
+                <separator/>
+                <filter name="filt_pending" string="قيد التحصيل"
+                        domain="[('state','in',['confirmed','partial'])]"/>
+                <filter name="filt_paid"    string="مدفوعة"
+                        domain="[('state','=','paid')]"/>
+                <filter name="filt_draft"   string="مسودة"
+                        domain="[('state','=','draft')]"/>
+                <separator/>
+                <filter name="filt_year" string="هذه السنة"
+                        domain="[('date_signed','&gt;=', (context_today().replace(month=1, day=1)).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="تجميع حسب">
+                    <filter name="g_broker"   string="الوسيط"
+                            context="{'group_by':'broker_partner_id'}"/>
+                    <filter name="g_state"    string="الحالة"
+                            context="{'group_by':'state'}"/>
+                    <filter name="g_signed"   string="تاريخ التوقيع"
+                            context="{'group_by':'date_signed:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ─── Pivot + graph ─────────────────────────────────────── -->
+    <record id="view_broker_commission_graph" model="ir.ui.view">
+        <field name="name">sa.broker.commission.graph</field>
+        <field name="model">sa.broker.commission</field>
+        <field name="arch" type="xml">
+            <graph string="تحليل العمولات" type="bar">
+                <field name="broker_partner_id" type="row"/>
+                <field name="commission_amount" type="measure"/>
+                <field name="paid_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_broker_commission_pivot" model="ir.ui.view">
+        <field name="name">sa.broker.commission.pivot</field>
+        <field name="model">sa.broker.commission</field>
+        <field name="arch" type="xml">
+            <pivot string="تحليل العمولات">
+                <field name="broker_partner_id" type="row"/>
+                <field name="date_signed" interval="month" type="col"/>
+                <field name="commission_amount" type="measure"/>
+                <field name="paid_amount" type="measure"/>
+                <field name="remaining_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ─── Action ────────────────────────────────────────────── -->
+    <record id="action_broker_commission" model="ir.actions.act_window">
+        <field name="name">عمولات الوسطاء</field>
+        <field name="res_model">sa.broker.commission</field>
+        <field name="view_mode">tree,form,graph,pivot</field>
+        <field name="search_view_id" ref="view_broker_commission_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">إنشاء عقد عمولة جديد</p>
+            <p>سجّل عمولات الوسطاء الذين أتوا بمستأجرين، وتابع الدفعات حتى الإغلاق.</p>
+        </field>
+    </record>
+
+    <!-- ─── Line views (drill-down) ──────────────────────────── -->
+    <record id="view_broker_commission_line_tree" model="ir.ui.view">
+        <field name="name">sa.broker.commission.line.list</field>
+        <field name="model">sa.broker.commission.line</field>
+        <field name="arch" type="xml">
+            <tree string="دفعات عمولة"
+                  decoration-success="state == 'paid'"
+                  decoration-info="state == 'billed'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="commission_id"/>
+                <field name="broker_partner_id"/>
+                <field name="tenancy_id"/>
+                <field name="description"/>
+                <field name="due_date"/>
+                <field name="amount" sum="إجمالي"/>
+                <field name="bill_id"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>

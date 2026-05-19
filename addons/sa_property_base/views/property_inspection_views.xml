@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ─── List ──────────────────────────────────────────────── -->
+    <record id="view_inspection_tree" model="ir.ui.view">
+        <field name="name">sa.property.inspection.list</field>
+        <field name="model">sa.property.inspection</field>
+        <field name="arch" type="xml">
+            <tree string="معاينات العقارات"
+                  decoration-success="state == 'signed'"
+                  decoration-info="state == 'completed'"
+                  decoration-muted="state == 'cancelled'"
+                  decoration-danger="general_condition == 'damaged'"
+                  decoration-warning="general_condition == 'poor'">
+                <field name="name"/>
+                <field name="inspection_date"/>
+                <field name="inspection_type"/>
+                <field name="property_id"/>
+                <field name="tenancy_id"/>
+                <field name="tenant_partner_id"/>
+                <field name="inspector_id"/>
+                <field name="general_condition"/>
+                <field name="total_damages_cost" sum="إجمالي الأضرار"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'signed'"
+                       decoration-info="state == 'completed'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ─── Form ──────────────────────────────────────────────── -->
+    <record id="view_inspection_form" model="ir.ui.view">
+        <field name="name">sa.property.inspection.form</field>
+        <field name="model">sa.property.inspection</field>
+        <field name="arch" type="xml">
+            <form string="معاينة عقار">
+                <header>
+                    <button name="action_complete" string="إكمال المعاينة"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_sign" string="توقيع"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'completed'"/>
+                    <button name="action_cancel" string="إلغاء"
+                            type="object"
+                            invisible="state in ('cancelled','signed')"/>
+                    <button name="action_set_to_draft" string="إعادة لـ مسودة"
+                            type="object"
+                            invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,completed,signed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="inspection_type"/>
+                            <field name="inspection_date"/>
+                            <field name="inspector_id"/>
+                        </group>
+                        <group>
+                            <field name="property_id"
+                                   options="{'no_create': True}"/>
+                            <field name="tenancy_id"
+                                   options="{'no_create': True}"/>
+                            <field name="tenant_partner_id" readonly="1"/>
+                            <field name="owner_partner_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="الحالة العامة">
+                            <field name="general_condition" widget="radio"/>
+                        </group>
+                        <group string="إجمالي التكاليف">
+                            <field name="total_damages_cost" readonly="1"
+                                   class="o_form_label_required"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="بنود المعاينة" name="lines">
+                            <field name="line_ids">
+                                <tree editable="bottom"
+                                      decoration-danger="condition in ('damaged','missing')"
+                                      decoration-warning="condition == 'needs_repair'">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="room"/>
+                                    <field name="room_other"
+                                           invisible="room != 'other'"/>
+                                    <field name="item"/>
+                                    <field name="condition"/>
+                                    <field name="damage_cost" sum="إجمالي"/>
+                                    <field name="image" widget="image"
+                                           options="{'size': [60, 60]}"/>
+                                    <field name="notes"/>
+                                </tree>
+                                <form string="بند معاينة">
+                                    <sheet>
+                                        <group>
+                                            <group>
+                                                <field name="room"/>
+                                                <field name="room_other"
+                                                       invisible="room != 'other'"/>
+                                                <field name="item"/>
+                                                <field name="condition"/>
+                                                <field name="damage_cost"/>
+                                            </group>
+                                            <group>
+                                                <field name="image" widget="image"/>
+                                            </group>
+                                        </group>
+                                        <group>
+                                            <field name="notes" nolabel="1"/>
+                                        </group>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="ملاحظات عامة" name="notes">
+                            <field name="general_notes" nolabel="1"
+                                   placeholder="أي ملاحظات إضافية حول حالة العقار..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ─── Search ────────────────────────────────────────────── -->
+    <record id="view_inspection_search" model="ir.ui.view">
+        <field name="name">sa.property.inspection.search</field>
+        <field name="model">sa.property.inspection</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="property_id"/>
+                <field name="tenancy_id"/>
+                <field name="tenant_partner_id"/>
+                <field name="inspector_id"/>
+                <separator/>
+                <filter name="filt_move_in"  string="استلام"
+                        domain="[('inspection_type','=','move_in')]"/>
+                <filter name="filt_move_out" string="تسليم"
+                        domain="[('inspection_type','=','move_out')]"/>
+                <filter name="filt_interim"  string="دورية"
+                        domain="[('inspection_type','=','interim')]"/>
+                <separator/>
+                <filter name="filt_draft"     string="مسودة"
+                        domain="[('state','=','draft')]"/>
+                <filter name="filt_completed" string="مكتملة"
+                        domain="[('state','=','completed')]"/>
+                <filter name="filt_signed"    string="موقَّعة"
+                        domain="[('state','=','signed')]"/>
+                <separator/>
+                <filter name="filt_with_damages" string="بها أضرار"
+                        domain="[('total_damages_cost','&gt;',0)]"/>
+                <group expand="0" string="تجميع حسب">
+                    <filter name="g_type"     string="النوع"
+                            context="{'group_by':'inspection_type'}"/>
+                    <filter name="g_state"    string="الحالة"
+                            context="{'group_by':'state'}"/>
+                    <filter name="g_property" string="العقار"
+                            context="{'group_by':'property_id'}"/>
+                    <filter name="g_inspector" string="القائم بالمعاينة"
+                            context="{'group_by':'inspector_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ─── Action ────────────────────────────────────────────── -->
+    <record id="action_property_inspection" model="ir.actions.act_window">
+        <field name="name">معاينات العقارات</field>
+        <field name="res_model">sa.property.inspection</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_inspection_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">إنشاء تقرير معاينة جديد</p>
+            <p>تقارير حالة العقار وقت الاستلام/التسليم — تُستخدم في احتساب
+               الخصومات من الضمان عند إنهاء العقد.</p>
+        </field>
+    </record>
+
+    <!-- ─── Inheritance: add Inspections tab to tenancy form ──── -->
+    <record id="view_tenancy_form_inspection" model="ir.ui.view">
+        <field name="name">property.tenancy.form.inspection</field>
+        <field name="model">property.tenancy</field>
+        <field name="inherit_id" ref="view_property_tenancy_form"/>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="المعاينات" name="inspections_tab">
+                    <div style="margin-bottom:12px">
+                        <button name="action_create_inspection"
+                                type="object" string="معاينة جديدة"
+                                class="btn-primary"
+                                icon="fa-plus"/>
+                    </div>
+                    <field name="inspection_ids" nolabel="1">
+                        <tree decoration-info="state == 'completed'"
+                              decoration-success="state == 'signed'"
+                              decoration-muted="state == 'cancelled'"
+                              decoration-danger="general_condition == 'damaged'">
+                            <field name="name"/>
+                            <field name="inspection_date"/>
+                            <field name="inspection_type"/>
+                            <field name="general_condition"/>
+                            <field name="total_damages_cost" sum="إجمالي"/>
+                            <field name="inspector_id"/>
+                            <field name="state" widget="badge"
+                                   decoration-success="state == 'signed'"
+                                   decoration-info="state == 'completed'"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ─── Menu ──────────────────────────────────────────────── -->
+    <menuitem id="menu_pms_inspections"
+              name="معاينات العقارات"
+              parent="menu_pms_root"
+              action="action_property_inspection"
+              sequence="25"/>
+
+</odoo>

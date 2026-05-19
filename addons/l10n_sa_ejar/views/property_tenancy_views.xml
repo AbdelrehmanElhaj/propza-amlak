@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_property_tenancy_form_sa_inherit" model="ir.ui.view">
+        <field name="name">property.tenancy.form.sa.ejar</field>
+        <field name="model">property.tenancy</field>
+        <field name="inherit_id" ref="sa_property_base.view_property_tenancy_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Add Saudi / Ejar tab -->
+            <xpath expr="//notebook" position="inside">
+                <page string="إيجار والهوية" name="ejar_tab">
+                    <!-- Hidden fields needed for invisible expressions -->
+                    <field name="rent_freeze_warning" invisible="1"/>
+                    <field name="ejar_contract_id" invisible="1"/>
+
+                    <!-- Rent freeze warning -->
+                    <div class="alert alert-warning" role="alert"
+                         invisible="not rent_freeze_warning">
+                        <strong>تحذير:</strong>
+                        قيمة الإيجار المدخلة أعلى من آخر إيجار مسجل في إيجار.
+                        الرياض: مجمّد الإيجار 5 سنوات من سبتمبر 2025.
+                    </div>
+
+                    <group string="هوية المستأجر">
+                        <group>
+                            <field name="tenant_id_type"/>
+                            <field name="tenant_national_id"/>
+                            <field name="tenant_id_expiry"/>
+                        </group>
+                        <group>
+                            <field name="payment_method"/>
+                            <field name="sadad_invoice_number"
+                                   invisible="payment_method != 'sadad'"/>
+                        </group>
+                    </group>
+
+                    <group string="إعدادات العقد">
+                        <group>
+                            <field name="ejar_payment_schedule"/>
+                            <field name="sublease_allowed"/>
+                            <field name="ejar_fee_bearer"/>
+                        </group>
+                        <group>
+                            <field name="ejar_doc_fee" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="ربط إيجار"
+                           invisible="not ejar_contract_id">
+                        <group>
+                            <field name="ejar_contract_id" readonly="1"/>
+                            <field name="ejar_contract_number" readonly="1"/>
+                            <field name="ejar_contract_status" readonly="1"/>
+                        </group>
+                    </group>
+
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

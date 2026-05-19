@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ═══ 14 Saudi Administrative Regions ═══ -->
+
+        <record id="region_riyadh" model="sa.region">
+            <field name="name">Riyadh Region</field>
+            <field name="name_ar">منطقة الرياض</field>
+            <field name="code">RUH</field>
+            <field name="capital">Riyadh</field>
+            <field name="capital_ar">الرياض</field>
+        </record>
+
+        <record id="region_makkah" model="sa.region">
+            <field name="name">Makkah Al-Mukarramah Region</field>
+            <field name="name_ar">منطقة مكة المكرمة</field>
+            <field name="code">MKH</field>
+            <field name="capital">Makkah</field>
+            <field name="capital_ar">مكة المكرمة</field>
+        </record>
+
+        <record id="region_madinah" model="sa.region">
+            <field name="name">Al-Madinah Al-Munawwarah Region</field>
+            <field name="name_ar">منطقة المدينة المنورة</field>
+            <field name="code">MED</field>
+            <field name="capital">Madinah</field>
+            <field name="capital_ar">المدينة المنورة</field>
+        </record>
+
+        <record id="region_eastern" model="sa.region">
+            <field name="name">Eastern Province</field>
+            <field name="name_ar">المنطقة الشرقية</field>
+            <field name="code">EAS</field>
+            <field name="capital">Dammam</field>
+            <field name="capital_ar">الدمام</field>
+        </record>
+
+        <record id="region_asir" model="sa.region">
+            <field name="name">Asir Region</field>
+            <field name="name_ar">منطقة عسير</field>
+            <field name="code">ASR</field>
+            <field name="capital">Abha</field>
+            <field name="capital_ar">أبها</field>
+        </record>
+
+        <record id="region_tabuk" model="sa.region">
+            <field name="name">Tabuk Region</field>
+            <field name="name_ar">منطقة تبوك</field>
+            <field name="code">TBK</field>
+            <field name="capital">Tabuk</field>
+            <field name="capital_ar">تبوك</field>
+        </record>
+
+        <record id="region_hail" model="sa.region">
+            <field name="name">Hail Region</field>
+            <field name="name_ar">منطقة حائل</field>
+            <field name="code">HAL</field>
+            <field name="capital">Hail</field>
+            <field name="capital_ar">حائل</field>
+        </record>
+
+        <record id="region_northern" model="sa.region">
+            <field name="name">Northern Borders Region</field>
+            <field name="name_ar">منطقة الحدود الشمالية</field>
+            <field name="code">NBR</field>
+            <field name="capital">Arar</field>
+            <field name="capital_ar">عرعر</field>
+        </record>
+
+        <record id="region_jazan" model="sa.region">
+            <field name="name">Jazan Region</field>
+            <field name="name_ar">منطقة جازان</field>
+            <field name="code">JZN</field>
+            <field name="capital">Jazan</field>
+            <field name="capital_ar">جازان</field>
+        </record>
+
+        <record id="region_najran" model="sa.region">
+            <field name="name">Najran Region</field>
+            <field name="name_ar">منطقة نجران</field>
+            <field name="code">NJR</field>
+            <field name="capital">Najran</field>
+            <field name="capital_ar">نجران</field>
+        </record>
+
+        <record id="region_al_baha" model="sa.region">
+            <field name="name">Al-Baha Region</field>
+            <field name="name_ar">منطقة الباحة</field>
+            <field name="code">BAH</field>
+            <field name="capital">Al-Baha</field>
+            <field name="capital_ar">الباحة</field>
+        </record>
+
+        <record id="region_al_jawf" model="sa.region">
+            <field name="name">Al-Jawf Region</field>
+            <field name="name_ar">منطقة الجوف</field>
+            <field name="code">JWF</field>
+            <field name="capital">Sakaka</field>
+            <field name="capital_ar">سكاكا</field>
+        </record>
+
+        <record id="region_qassim" model="sa.region">
+            <field name="name">Al-Qassim Region</field>
+            <field name="name_ar">منطقة القصيم</field>
+            <field name="code">QSM</field>
+            <field name="capital">Buraidah</field>
+            <field name="capital_ar">بريدة</field>
+        </record>
+
+        <record id="region_al_jouf" model="sa.region">
+            <field name="name">Al-Jouf Region</field>
+            <field name="name_ar">منطقة الجوف</field>
+            <field name="code">ALJ</field>
+            <field name="capital">Sakaka</field>
+            <field name="capital_ar">سكاكا</field>
+        </record>
+
+        <!-- ═══ Major Cities ═══ -->
+
+        <!-- Riyadh Region Cities -->
+        <record id="city_riyadh" model="sa.city">
+            <field name="name">Riyadh</field>
+            <field name="name_ar">الرياض</field>
+            <field name="region_id" ref="region_riyadh"/>
+            <field name="rent_freeze">True</field>
+        </record>
+        <record id="city_kharj" model="sa.city">
+            <field name="name">Al-Kharj</field>
+            <field name="name_ar">الخرج</field>
+            <field name="region_id" ref="region_riyadh"/>
+        </record>
+        <record id="city_diriyah" model="sa.city">
+            <field name="name">Diriyah</field>
+            <field name="name_ar">الدرعية</field>
+            <field name="region_id" ref="region_riyadh"/>
+        </record>
+
+        <!-- Makkah Region Cities -->
+        <record id="city_makkah" model="sa.city">
+            <field name="name">Makkah</field>
+            <field name="name_ar">مكة المكرمة</field>
+            <field name="region_id" ref="region_makkah"/>
+        </record>
+        <record id="city_jeddah" model="sa.city">
+            <field name="name">Jeddah</field>
+            <field name="name_ar">جدة</field>
+            <field name="region_id" ref="region_makkah"/>
+        </record>
+        <record id="city_taif" model="sa.city">
+            <field name="name">Taif</field>
+            <field name="name_ar">الطائف</field>
+            <field name="region_id" ref="region_makkah"/>
+        </record>
+
+        <!-- Eastern Province Cities -->
+        <record id="city_dammam" model="sa.city">
+            <field name="name">Dammam</field>
+            <field name="name_ar">الدمام</field>
+            <field name="region_id" ref="region_eastern"/>
+        </record>
+        <record id="city_khobar" model="sa.city">
+            <field name="name">Al-Khobar</field>
+            <field name="name_ar">الخبر</field>
+            <field name="region_id" ref="region_eastern"/>
+        </record>
+        <record id="city_dhahran" model="sa.city">
+            <field name="name">Dhahran</field>
+            <field name="name_ar">الظهران</field>
+            <field name="region_id" ref="region_eastern"/>
+        </record>
+        <record id="city_jubail" model="sa.city">
+            <field name="name">Jubail</field>
+            <field name="name_ar">الجبيل</field>
+            <field name="region_id" ref="region_eastern"/>
+        </record>
+        <record id="city_qatif" model="sa.city">
+            <field name="name">Qatif</field>
+            <field name="name_ar">القطيف</field>
+            <field name="region_id" ref="region_eastern"/>
+        </record>
+
+        <!-- Madinah -->
+        <record id="city_madinah" model="sa.city">
+            <field name="name">Madinah</field>
+            <field name="name_ar">المدينة المنورة</field>
+            <field name="region_id" ref="region_madinah"/>
+        </record>
+        <record id="city_yanbu" model="sa.city">
+            <field name="name">Yanbu</field>
+            <field name="name_ar">ينبع</field>
+            <field name="region_id" ref="region_madinah"/>
+        </record>
+
+        <!-- Other major cities -->
+        <record id="city_abha" model="sa.city">
+            <field name="name">Abha</field>
+            <field name="name_ar">أبها</field>
+            <field name="region_id" ref="region_asir"/>
+        </record>
+        <record id="city_tabuk" model="sa.city">
+            <field name="name">Tabuk</field>
+            <field name="name_ar">تبوك</field>
+            <field name="region_id" ref="region_tabuk"/>
+        </record>
+        <record id="city_hail" model="sa.city">
+            <field name="name">Hail</field>
+            <field name="name_ar">حائل</field>
+            <field name="region_id" ref="region_hail"/>
+        </record>
+        <record id="city_buraidah" model="sa.city">
+            <field name="name">Buraidah</field>
+            <field name="name_ar">بريدة</field>
+            <field name="region_id" ref="region_qassim"/>
+        </record>
+
+    </data>
+</odoo>

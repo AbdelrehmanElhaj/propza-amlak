@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_work_order_tree" model="ir.ui.view">
+        <field name="name">sa.maintenance.work_order.list</field>
+        <field name="model">sa.maintenance.work_order</field>
+        <field name="arch" type="xml">
+            <tree string="أوامر العمل"
+                  decoration-info="state == 'scheduled'"
+                  decoration-warning="state == 'in_progress'"
+                  decoration-success="state == 'done'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="request_id"/>
+                <field name="property_id"/>
+                <field name="technician_id"/>
+                <field name="scheduled_date"/>
+                <field name="duration_actual"/>
+                <field name="total_cost" sum="إجمالي التكلفة"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-info="state in ('scheduled','in_progress')"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_work_order_form" model="ir.ui.view">
+        <field name="name">sa.maintenance.work_order.form</field>
+        <field name="model">sa.maintenance.work_order</field>
+        <field name="arch" type="xml">
+            <form string="أمر عمل">
+                <header>
+                    <button name="action_schedule" string="جدولة"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_start" string="بدء التنفيذ"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'scheduled'"/>
+                    <button name="action_done" string="إنجاز"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'in_progress'"/>
+                    <button name="action_cancel" string="إلغاء"
+                            type="object"
+                            invisible="state in ('done','cancelled')"/>
+                    <button name="action_set_to_draft" string="إعادة لـ مسودة"
+                            type="object"
+                            invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,scheduled,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="request_id"/>
+                            <field name="property_id" readonly="1"/>
+                            <field name="technician_id"/>
+                        </group>
+                        <group>
+                            <field name="scheduled_date"/>
+                            <field name="duration_planned"/>
+                            <field name="actual_start" readonly="1"/>
+                            <field name="actual_end" readonly="1"/>
+                            <field name="duration_actual" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="الوصف">
+                        <field name="description" nolabel="1"/>
+                    </group>
+                    <notebook>
+                        <page string="التكاليف" name="cost">
+                            <group>
+                                <group>
+                                    <field name="materials_cost"/>
+                                    <field name="labor_cost"/>
+                                    <field name="transport_cost"/>
+                                </group>
+                                <group>
+                                    <field name="total_cost" readonly="1"/>
+                                    <field name="bill_id" readonly="1"
+                                           invisible="not bill_id"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="ملاحظات الفني" name="notes">
+                            <field name="notes" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_work_order" model="ir.actions.act_window">
+        <field name="name">أوامر العمل</field>
+        <field name="res_model">sa.maintenance.work_order</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

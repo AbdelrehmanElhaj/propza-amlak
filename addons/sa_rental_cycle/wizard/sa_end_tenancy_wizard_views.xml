@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_sa_end_tenancy_wizard" model="ir.ui.view">
+        <field name="name">sa.end.tenancy.wizard.form</field>
+        <field name="model">sa.end.tenancy.wizard</field>
+        <field name="arch" type="xml">
+            <form string="إنهاء عقد الإيجار">
+                <!-- ─── Outstanding warning ─────────────────────── -->
+                <div class="alert alert-danger" role="alert"
+                     invisible="outstanding_balance == 0">
+                    <strong>تحذير:</strong>
+                    يوجد رصيد إيجار غير مسدد:
+                    <field name="outstanding_balance" readonly="1"/> ريال —
+                    يجب تسوية الدفعات قبل إنهاء العقد.
+                </div>
+
+                <!-- ─── Basic info ──────────────────────────────── -->
+                <group string="بيانات الإنهاء">
+                    <group>
+                        <field name="tenancy_id" readonly="1"/>
+                        <field name="end_date"/>
+                        <field name="end_reason"/>
+                        <field name="property_condition"/>
+                    </group>
+                    <group>
+                        <field name="outstanding_balance" readonly="1"/>
+                        <field name="deposit_amount" readonly="1"
+                               string="قيمة الضمان"/>
+                    </group>
+                </group>
+
+                <!-- ─── Inspection import ───────────────────────── -->
+                <group string="استيراد من معاينة التسليم">
+                    <field name="move_out_inspection_id"
+                           options="{'no_create': True}"/>
+                    <button name="action_import_from_inspection"
+                            type="object" string="استيراد بنود التلف كخصومات"
+                            class="btn-secondary"
+                            invisible="not move_out_inspection_id"/>
+                </group>
+
+                <!-- ─── Deduction lines + totals ────────────────── -->
+                <notebook>
+                    <page string="بنود الخصم" name="deductions">
+                        <field name="deduction_line_ids">
+                            <tree editable="bottom">
+                                <field name="description"/>
+                                <field name="category"/>
+                                <field name="amount" sum="إجمالي"/>
+                                <field name="inspection_line_id"
+                                       optional="hide" readonly="1"/>
+                            </tree>
+                        </field>
+
+                        <!-- Totals card -->
+                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;padding:12px;background:var(--color-background-secondary);border-radius:8px">
+                            <div>
+                                <div style="font-size:11px;color:var(--color-text-secondary)">قيمة الضمان</div>
+                                <div style="font-size:18px;font-weight:500">
+                                    <field name="deposit_amount" readonly="1"/> ريال
+                                </div>
+                            </div>
+                            <div>
+                                <div style="font-size:11px;color:var(--color-text-secondary)">إجمالي الخصومات</div>
+                                <div style="font-size:18px;font-weight:500;color:var(--color-text-warning)">
+                                    <field name="total_deductions" readonly="1"/> ريال
+                                </div>
+                            </div>
+                            <div>
+                                <div style="font-size:11px;color:var(--color-text-secondary)">المُسترد للمستأجر</div>
+                                <div style="font-size:18px;font-weight:500;color:var(--color-text-success)">
+                                    <field name="refund_amount" readonly="1"/> ريال
+                                </div>
+                            </div>
+                        </div>
+
+                        <group>
+                            <field name="forfeit_remaining"/>
+                        </group>
+                    </page>
+
+                    <page string="القيود المحاسبية" name="accounting">
+                        <group>
+                            <group string="إصدار المستندات">
+                                <field name="create_refund_payment"/>
+                                <field name="create_deduction_invoice"/>
+                            </group>
+                        </group>
+                        <div class="alert alert-info" role="alert">
+                            <strong>ملاحظة:</strong>
+                            <ul>
+                                <li>سند الإرجاع: account.payment outbound من حساب البنك للمستأجر</li>
+                                <li>فاتورة الخصومات: out_invoice على حساب 500007 (Space Rental Income)</li>
+                            </ul>
+                        </div>
+                    </page>
+
+                    <page string="ملاحظات" name="notes">
+                        <field name="notes" nolabel="1"
+                               placeholder="ملاحظات إضافية حول الإنهاء..."/>
+                    </page>
+                </notebook>
+
+                <footer>
+                    <button name="action_end_tenancy" string="إنهاء العقد"
+                            type="object" class="btn-danger"/>
+                    <button string="إلغاء" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

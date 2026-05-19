@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_ejar_sync_wizard_form" model="ir.ui.view">
+        <field name="name">ejar.sync.wizard.form</field>
+        <field name="model">ejar.sync.wizard</field>
+        <field name="arch" type="xml">
+            <form string="مزامنة مع إيجار">
+                <group>
+                    <field name="action"/>
+                    <field name="simulation_mode" readonly="1"/>
+                </group>
+                <group string="بيانات التجديد"
+                       invisible="action != 'renew'">
+                    <field name="new_end_date"/>
+                    <field name="new_rent"/>
+                </group>
+                <div class="alert alert-info" role="alert"
+                     invisible="not simulation_mode">
+                    وضع المحاكاة مفعّل — لن يتم إرسال بيانات حقيقية لإيجار
+                </div>
+                <footer>
+                    <button name="action_execute" string="تنفيذ" type="object" class="btn-primary"/>
+                    <button string="إلغاء" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ejar_sync_wizard" model="ir.actions.act_window">
+        <field name="name">مزامنة إيجار</field>
+        <field name="res_model">ejar.sync.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ─── List ──────────────────────────────────────────────── -->
+    <record id="view_sadad_invoice_tree" model="ir.ui.view">
+        <field name="name">sa.sadad.invoice.list</field>
+        <field name="model">sa.sadad.invoice</field>
+        <field name="arch" type="xml">
+            <tree string="فواتير SADAD"
+                  decoration-success="state == 'paid'"
+                  decoration-warning="state == 'pending'"
+                  decoration-muted="state in ('cancelled','expired')">
+                <field name="name"/>
+                <field name="bill_number"/>
+                <field name="rent_payment_id"/>
+                <field name="partner_id"/>
+                <field name="property_id"/>
+                <field name="amount" sum="إجمالي"/>
+                <field name="issue_date"/>
+                <field name="expiry_date"/>
+                <field name="paid_date"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'paid'"
+                       decoration-warning="state == 'pending'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ─── Form ──────────────────────────────────────────────── -->
+    <record id="view_sadad_invoice_form" model="ir.ui.view">
+        <field name="name">sa.sadad.invoice.form</field>
+        <field name="model">sa.sadad.invoice</field>
+        <field name="arch" type="xml">
+            <form string="فاتورة SADAD">
+                <header>
+                    <button name="action_simulate_payment" string="محاكاة سداد"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'pending'"
+                            confirm="هذا يُحاكي السداد ويحدّث دفعة الإيجار. متابعة؟"/>
+                    <button name="action_cancel" string="إلغاء"
+                            type="object"
+                            invisible="state != 'pending'"/>
+                    <button name="action_regenerate_qr" string="إعادة توليد QR"
+                            type="object"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="pending,paid"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3 style="color:#2c5aa0">
+                            <field name="bill_number" readonly="1" class="oe_inline"/>
+                        </h3>
+                    </div>
+                    <group>
+                        <group string="بيانات الفاتورة">
+                            <field name="rent_payment_id" readonly="1"/>
+                            <field name="tenancy_id" readonly="1"/>
+                            <field name="property_id" readonly="1"/>
+                            <field name="partner_id" readonly="1"/>
+                            <field name="amount" readonly="1"
+                                   class="o_form_label_required"/>
+                        </group>
+                        <group string="التواريخ والرموز">
+                            <field name="issue_date" readonly="1"/>
+                            <field name="expiry_date"/>
+                            <field name="biller_code"/>
+                        </group>
+                    </group>
+
+                    <group string="بيانات السداد"
+                           invisible="state != 'paid'">
+                        <group>
+                            <field name="paid_date" readonly="1"/>
+                            <field name="payment_channel" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="payment_ref" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="QR Code">
+                        <field name="qr_code" widget="image"
+                               options="{'size': [200, 200]}" readonly="1"/>
+                        <field name="qr_payload" readonly="1"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ─── Search ────────────────────────────────────────────── -->
+    <record id="view_sadad_invoice_search" model="ir.ui.view">
+        <field name="name">sa.sadad.invoice.search</field>
+        <field name="model">sa.sadad.invoice</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="bill_number"/>
+                <field name="rent_payment_id"/>
+                <field name="partner_id"/>
+                <separator/>
+                <filter name="filt_pending" string="قيد الانتظار"
+                        domain="[('state','=','pending')]"/>
+                <filter name="filt_paid" string="مدفوعة"
+                        domain="[('state','=','paid')]"/>
+                <filter name="filt_expired" string="منتهية الصلاحية"
+                        domain="[('state','=','expired')]"/>
+                <group expand="0" string="تجميع حسب">
+                    <filter name="g_state" string="الحالة"
+                            context="{'group_by':'state'}"/>
+                    <filter name="g_partner" string="المستأجر"
+                            context="{'group_by':'partner_id'}"/>
+                    <filter name="g_issue" string="تاريخ الإصدار"
+                            context="{'group_by':'issue_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ─── Action ────────────────────────────────────────────── -->
+    <record id="action_sadad_invoice" model="ir.actions.act_window">
+        <field name="name">فواتير SADAD</field>
+        <field name="res_model">sa.sadad.invoice</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_sadad_invoice_search"/>
+        <field name="context">{'search_default_filt_pending': 1}</field>
+    </record>
+
+    <!-- ─── Public pay simulator templates ────────────────────── -->
+    <template id="sadad_pay_simulator">
+        <html dir="rtl" lang="ar">
+            <head>
+                <meta charset="utf-8"/>
+                <title>دفع SADAD</title>
+                <link rel="stylesheet" href="/web/static/lib/bootstrap/dist/css/bootstrap.css"/>
+                <style>
+                    body { background:#f5f7fa; padding:30px; font-family:'Segoe UI',Arial,sans-serif; direction:rtl; text-align:right; }
+                    .container { max-width:600px; margin:0 auto; background:white; padding:30px; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,0.08); }
+                    .header { text-align:center; padding-bottom:20px; border-bottom:2px solid #f0f0f0; margin-bottom:20px; }
+                    .amount { font-size:36px; font-weight:700; color:#2c5aa0; text-align:center; margin:20px 0; }
+                    table { width:100%; }
+                    table td { padding:10px; border-bottom:1px solid #eee; }
+                    table th { padding:10px; text-align:right; color:#6c757d; font-weight:500; width:35%; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h2 style="color:#1a3a5c;margin:0">SADAD</h2>
+                        <div style="color:#6c757d;font-size:13px">منظومة المدفوعات السعودية</div>
+                    </div>
+
+                    <div class="amount">
+                        <span t-out="invoice.amount"/> ر.س
+                    </div>
+
+                    <table>
+                        <tr>
+                            <th>رقم الفاتورة</th>
+                            <td><span t-out="invoice.bill_number"/></td>
+                        </tr>
+                        <tr>
+                            <th>المرجع</th>
+                            <td><span t-out="invoice.name"/></td>
+                        </tr>
+                        <tr>
+                            <th>المستأجر</th>
+                            <td><span t-out="invoice.partner_id.name"/></td>
+                        </tr>
+                        <tr>
+                            <th>العقار</th>
+                            <td><span t-out="invoice.property_id.display_name"/></td>
+                        </tr>
+                        <tr>
+                            <th>تاريخ الإصدار</th>
+                            <td><span t-out="invoice.issue_date"/></td>
+                        </tr>
+                        <tr>
+                            <th>صلاحية حتى</th>
+                            <td><span t-out="invoice.expiry_date"/></td>
+                        </tr>
+                        <tr>
+                            <th>الحالة</th>
+                            <td>
+                                <span t-if="invoice.state == 'pending'" style="color:#ff9800">⏳ في انتظار السداد</span>
+                                <span t-if="invoice.state == 'paid'" style="color:#198754">✓ مدفوعة</span>
+                                <span t-if="invoice.state == 'expired'" style="color:#dc3545">✗ منتهية الصلاحية</span>
+                                <span t-if="invoice.state == 'cancelled'" style="color:#6c757d">ملغاة</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <t t-if="invoice.state == 'pending'">
+                        <form t-attf-action="/sadad/pay/{{invoice.bill_number}}/confirm" method="post" style="margin-top:20px;text-align:center">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <button type="submit" class="btn btn-primary btn-lg" style="padding:14px 40px">
+                                ✓ تأكيد الدفع (محاكاة)
+                            </button>
+                        </form>
+                        <p style="text-align:center;color:#6c757d;font-size:12px;margin-top:12px">
+                            هذه صفحة محاكاة. الـ SADAD الحقيقي يُحوَّل من بنكك.
+                        </p>
+                    </t>
+                </div>
+            </body>
+        </html>
+    </template>
+
+    <template id="sadad_pay_success">
+        <html dir="rtl" lang="ar">
+            <head>
+                <meta charset="utf-8"/>
+                <title>تم الدفع</title>
+                <link rel="stylesheet" href="/web/static/lib/bootstrap/dist/css/bootstrap.css"/>
+                <style>
+                    body { background:#f5f7fa; padding:30px; font-family:'Segoe UI',Arial,sans-serif; direction:rtl; text-align:right; }
+                    .container { max-width:600px; margin:0 auto; background:white; padding:30px; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,0.08); text-align:center; }
+                    .checkmark { font-size:80px; color:#198754; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="checkmark">✓</div>
+                    <h2 style="color:#198754">تم الدفع بنجاح</h2>
+                    <p>المبلغ <strong><span t-out="invoice.amount"/></strong> ر.س</p>
+                    <p>رقم الفاتورة: <span t-out="invoice.bill_number"/></p>
+                    <p>المرجع: <span t-out="invoice.payment_ref"/></p>
+                    <p style="color:#6c757d;font-size:12px;margin-top:30px">
+                        تم تحديث دفعة الإيجار في النظام تلقائياً.
+                    </p>
+                </div>
+            </body>
+        </html>
+    </template>
+
+    <template id="sadad_pay_not_found">
+        <html dir="rtl" lang="ar">
+            <head>
+                <meta charset="utf-8"/>
+                <title>غير موجود</title>
+                <link rel="stylesheet" href="/web/static/lib/bootstrap/dist/css/bootstrap.css"/>
+            </head>
+            <body style="background:#f5f7fa;padding:30px;direction:rtl;text-align:right;font-family:'Segoe UI',Arial">
+                <div style="max-width:500px;margin:0 auto;background:white;padding:30px;border-radius:12px;text-align:center">
+                    <h2 style="color:#dc3545">رقم الفاتورة غير موجود</h2>
+                    <p>تأكد من إدخال رقم فاتورة SADAD صحيح.</p>
+                </div>
+            </body>
+        </html>
+    </template>
+
+</odoo>

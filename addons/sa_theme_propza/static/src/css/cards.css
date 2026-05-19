@@ -1,0 +1,277 @@
+/* ===========================
+   PROPZA THEME - Card Styles
+   =========================== */
+
+/* Card Base */
+.card {
+    background-color: var(--propza-bg-primary);
+    border: 1px solid var(--propza-gray-200);
+    border-radius: var(--propza-radius-xl);
+    padding: var(--propza-space-6);
+    box-shadow: var(--propza-shadow-sm);
+    transition: all var(--propza-transition-base);
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    box-shadow: var(--propza-shadow-md);
+    transform: translateY(-2px);
+}
+
+/* Card Header */
+.card-header {
+    padding: var(--propza-space-4) var(--propza-space-6);
+    margin: -var(--propza-space-6) -var(--propza-space-6) var(--propza-space-4) -var(--propza-space-6);
+    background-color: var(--propza-bg-secondary);
+    border-bottom: 1px solid var(--propza-gray-200);
+    border-radius: var(--propza-radius-xl) var(--propza-radius-xl) 0 0;
+}
+
+.card-header h3,
+.card-header h4,
+.card-header h5 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--propza-space-2);
+}
+
+/* Card Body */
+.card-body {
+    flex: 1;
+}
+
+.card-body:first-child {
+    padding-top: 0;
+}
+
+/* Card Footer */
+.card-footer {
+    padding: var(--propza-space-4) var(--propza-space-6);
+    margin: var(--propza-space-4) -var(--propza-space-6) -var(--propza-space-6) -var(--propza-space-6);
+    background-color: var(--propza-bg-secondary);
+    border-top: 1px solid var(--propza-gray-200);
+    border-radius: 0 0 var(--propza-radius-xl) var(--propza-radius-xl);
+    display: flex;
+    gap: var(--propza-space-2);
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Card Variations */
+.card-primary {
+    border-color: var(--propza-primary);
+    border-width: 2px;
+}
+
+.card-primary .card-header {
+    background-color: var(--propza-primary);
+    color: var(--propza-text-inverse);
+}
+
+.card-success {
+    border-color: var(--propza-success);
+    border-width: 2px;
+}
+
+.card-success .card-header {
+    background-color: var(--propza-success);
+    color: var(--propza-text-inverse);
+}
+
+.card-danger {
+    border-color: var(--propza-danger);
+    border-width: 2px;
+}
+
+.card-danger .card-header {
+    background-color: var(--propza-danger);
+    color: var(--propza-text-inverse);
+}
+
+.card-warning {
+    border-color: var(--propza-warning);
+    border-width: 2px;
+}
+
+.card-warning .card-header {
+    background-color: var(--propza-warning);
+    color: var(--propza-text-inverse);
+}
+
+.card-info {
+    border-color: var(--propza-info);
+    border-width: 2px;
+}
+
+.card-info .card-header {
+    background-color: var(--propza-info);
+    color: var(--propza-text-inverse);
+}
+
+/* Flat Card (no shadow, minimal border) */
+.card-flat {
+    box-shadow: none;
+    border: 1px solid var(--propza-gray-200);
+}
+
+.card-flat:hover {
+    box-shadow: none;
+    border-color: var(--propza-primary);
+}
+
+/* Transparent Card */
+.card-transparent {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+/* Compact Card */
+.card-compact {
+    padding: var(--propza-space-4);
+}
+
+.card-compact .card-header {
+    padding: var(--propza-space-3) var(--propza-space-4);
+    margin: -var(--propza-space-4) -var(--propza-space-4) var(--propza-space-3) -var(--propza-space-4);
+}
+
+.card-compact .card-footer {
+    padding: var(--propza-space-3) var(--propza-space-4);
+    margin: var(--propza-space-3) -var(--propza-space-4) -var(--propza-space-4) -var(--propza-space-4);
+}
+
+/* KPI Card */
+.card-kpi {
+    background: linear-gradient(135deg, var(--propza-primary) 0%, var(--propza-primary-light) 100%);
+    border: none;
+    color: var(--propza-text-inverse);
+    padding: var(--propza-space-8);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-kpi::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+.card-kpi-value {
+    font-size: var(--propza-text-4xl);
+    font-weight: var(--propza-font-bold);
+    margin-bottom: var(--propza-space-2);
+    position: relative;
+    z-index: 1;
+}
+
+.card-kpi-label {
+    font-size: var(--propza-text-sm);
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+}
+
+.card-kpi-change {
+    font-size: var(--propza-text-sm);
+    margin-top: var(--propza-space-2);
+    position: relative;
+    z-index: 1;
+}
+
+/* Property Card */
+.card-property {
+    overflow: hidden;
+}
+
+.card-property-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    margin: -var(--propza-space-6) -var(--propza-space-6) var(--propza-space-4) -var(--propza-space-6);
+}
+
+.card-property-badge {
+    display: inline-block;
+    background-color: var(--propza-primary);
+    color: var(--propza-text-inverse);
+    padding: var(--propza-space-2) var(--propza-space-3);
+    border-radius: var(--propza-radius-full);
+    font-size: var(--propza-text-xs);
+    font-weight: var(--propza-font-semibold);
+    margin-bottom: var(--propza-space-2);
+}
+
+.card-property-title {
+    font-size: var(--propza-text-lg);
+    font-weight: var(--propza-font-bold);
+    margin-bottom: var(--propza-space-2);
+}
+
+.card-property-details {
+    display: flex;
+    gap: var(--propza-space-4);
+    margin-bottom: var(--propza-space-4);
+    font-size: var(--propza-text-sm);
+}
+
+.card-property-detail {
+    flex: 1;
+    padding-bottom: var(--propza-space-2);
+    border-bottom: 1px solid var(--propza-gray-200);
+}
+
+.card-property-detail-label {
+    color: var(--propza-text-tertiary);
+    font-size: var(--propza-text-xs);
+    margin-bottom: var(--propza-space-1);
+}
+
+.card-property-detail-value {
+    font-weight: var(--propza-font-semibold);
+    color: var(--propza-text-primary);
+}
+
+/* Grid of Cards */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--propza-space-6);
+}
+
+@media (max-width: 768px) {
+    .card-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
+/* Card Overlays */
+.card-overlay {
+    position: relative;
+    overflow: hidden;
+}
+
+.card-overlay::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+    opacity: 0;
+    transition: opacity var(--propza-transition-base);
+}
+
+.card-overlay:hover::after {
+    opacity: 1;
+}

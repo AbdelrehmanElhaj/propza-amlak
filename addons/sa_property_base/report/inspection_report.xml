@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ─── Action ──────────────────────────────────────────────── -->
+    <record id="action_report_inspection" model="ir.actions.report">
+        <field name="name">تقرير المعاينة</field>
+        <field name="model">sa.property.inspection</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">sa_property_base.report_inspection</field>
+        <field name="report_file">sa_property_base.report_inspection</field>
+        <field name="print_report_name">'تقرير معاينة %s' % (object.name or '')</field>
+        <field name="binding_model_id" ref="model_sa_property_inspection"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- ─── Template ────────────────────────────────────────────── -->
+    <template id="report_inspection">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page" dir="rtl" style="direction:rtl;text-align:right">
+                        <h2 style="text-align:center;margin-bottom:20px">
+                            تقرير معاينة العقار
+                        </h2>
+
+                        <!-- ─── Header ─────────────────────────── -->
+                        <div style="margin-bottom:20px;padding:12px;border:1px solid #ddd;border-radius:6px">
+                            <table class="table table-sm" style="margin-bottom:0">
+                                <tr>
+                                    <th style="width:25%">رقم التقرير</th>
+                                    <td><span t-field="doc.name"/></td>
+                                    <th style="width:25%">النوع</th>
+                                    <td><span t-field="doc.inspection_type"/></td>
+                                </tr>
+                                <tr>
+                                    <th>تاريخ المعاينة</th>
+                                    <td><span t-field="doc.inspection_date"/></td>
+                                    <th>القائم بالمعاينة</th>
+                                    <td><span t-field="doc.inspector_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <th>العقار</th>
+                                    <td colspan="3">
+                                        <span t-field="doc.property_id.display_name"/>
+                                    </td>
+                                </tr>
+                                <tr t-if="doc.tenancy_id">
+                                    <th>عقد الإيجار</th>
+                                    <td><span t-field="doc.tenancy_id.name"/></td>
+                                    <th>المستأجر</th>
+                                    <td><span t-field="doc.tenant_partner_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <th>المالك</th>
+                                    <td><span t-field="doc.owner_partner_id.name"/></td>
+                                    <th>الحالة العامة</th>
+                                    <td>
+                                        <span t-field="doc.general_condition"
+                                              t-options='{"widget": "selection"}'/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- ─── General notes ────────────────────── -->
+                        <div t-if="doc.general_notes" style="margin-bottom:20px;padding:12px;background:#f9f9f9;border-radius:6px">
+                            <h5 style="margin-top:0">ملاحظات عامة</h5>
+                            <p style="margin-bottom:0;white-space:pre-wrap">
+                                <span t-field="doc.general_notes"/>
+                            </p>
+                        </div>
+
+                        <!-- ─── Total damages ────────────────────── -->
+                        <div style="padding:12px;background:#fff3e0;border-radius:6px;margin-bottom:20px;text-align:center">
+                            <div style="font-size:11px;color:#ef6c00">إجمالي تكلفة الأضرار</div>
+                            <div style="font-size:24px;font-weight:600;color:#ef6c00">
+                                <span t-field="doc.total_damages_cost"/> ر.س
+                            </div>
+                        </div>
+
+                        <!-- ─── Lines grouped by room ──────────── -->
+                        <h4 style="margin-top:20px;margin-bottom:10px">بنود المعاينة</h4>
+                        <t t-set="rooms" t-value="set(doc.line_ids.mapped('room'))"/>
+                        <t t-foreach="rooms" t-as="room_key">
+                            <t t-set="room_lines" t-value="doc.line_ids.filtered(lambda l: l.room == room_key)"/>
+                            <t t-set="first_line" t-value="room_lines[0]"/>
+                            <h5 style="margin-top:16px;background:#f5f5f5;padding:8px;border-radius:4px">
+                                <span t-esc="dict(first_line._fields['room'].selection).get(room_key, room_key)"/>
+                            </h5>
+                            <table class="table table-bordered table-sm" style="font-size:11px">
+                                <thead style="background:#fafafa">
+                                    <tr>
+                                        <th style="width:30%">العنصر</th>
+                                        <th style="width:15%">الحالة</th>
+                                        <th style="width:15%">التكلفة (ر.س)</th>
+                                        <th style="width:25%">ملاحظات</th>
+                                        <th style="width:15%">صورة</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="room_lines" t-as="line">
+                                        <td><span t-field="line.item"/></td>
+                                        <td>
+                                            <span t-field="line.condition"
+                                                  t-options='{"widget": "selection"}'/>
+                                        </td>
+                                        <td><span t-field="line.damage_cost"/></td>
+                                        <td style="white-space:pre-wrap">
+                                            <span t-field="line.notes"/>
+                                        </td>
+                                        <td>
+                                            <img t-if="line.image"
+                                                 t-att-src="image_data_uri(line.image)"
+                                                 style="max-width:80px;max-height:80px"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </t>
+
+                        <!-- ─── Signatures ──────────────────────── -->
+                        <div style="margin-top:40px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:30px">
+                            <div style="text-align:center">
+                                <div style="border-top:1px solid #333;padding-top:6px">القائم بالمعاينة</div>
+                                <div style="font-size:11px;color:#666;margin-top:4px">
+                                    <span t-field="doc.inspector_id.name"/>
+                                </div>
+                            </div>
+                            <div style="text-align:center">
+                                <div style="border-top:1px solid #333;padding-top:6px">المستأجر</div>
+                                <div style="font-size:11px;color:#666;margin-top:4px"
+                                     t-if="doc.tenant_partner_id">
+                                    <span t-field="doc.tenant_partner_id.name"/>
+                                </div>
+                            </div>
+                            <div style="text-align:center">
+                                <div style="border-top:1px solid #333;padding-top:6px">المالك / الإدارة</div>
+                                <div style="font-size:11px;color:#666;margin-top:4px">
+                                    <span t-field="doc.owner_partner_id.name"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

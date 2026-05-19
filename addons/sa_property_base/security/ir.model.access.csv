@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_property_property_user,property.property user,model_property_property,base.group_user,1,1,1,0
+access_property_property_manager,property.property manager,model_property_property,base.group_system,1,1,1,1
+access_property_tenancy_user,property.tenancy user,model_property_tenancy,base.group_user,1,1,1,0
+access_property_tenancy_manager,property.tenancy manager,model_property_tenancy,base.group_system,1,1,1,1
+access_property_inspection_user,sa.property.inspection user,model_sa_property_inspection,base.group_user,1,1,1,0
+access_property_inspection_manager,sa.property.inspection manager,model_sa_property_inspection,base.group_system,1,1,1,1
+access_property_inspection_line_user,sa.property.inspection.line user,model_sa_property_inspection_line,base.group_user,1,1,1,1
+access_property_inspection_line_manager,sa.property.inspection.line manager,model_sa_property_inspection_line,base.group_system,1,1,1,1

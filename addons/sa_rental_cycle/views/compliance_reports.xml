@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         تقارير الإدارة والمحاسبة (للحوكمة + المراجعة + ZATCA)
+         ═══════════════════════════════════════════════════════════ -->
+
+    <!-- ─── (1) الإيرادات حسب العقار + المالك (Pivot) ─────────── -->
+    <record id="action_report_revenue_by_owner" model="ir.actions.act_window">
+        <field name="name">الإيرادات حسب المالك</field>
+        <field name="res_model">sa.rent.payment</field>
+        <field name="view_mode">pivot,graph,tree</field>
+        <field name="domain">[('payment_type','=','rent')]</field>
+        <field name="context">{
+            'pivot_measures': ['amount', 'amount_paid', 'balance'],
+            'pivot_row_groupby': ['property_id'],
+            'pivot_column_groupby': ['due_date:year']
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">تقرير الإيرادات</p>
+            <p>عرض تفاعلي للدفعات حسب العقار / المالك / السنة.
+               مفيد لإعداد الإقرارات السنوية والمراجعة المالية.</p>
+        </field>
+    </record>
+
+    <!-- ─── (2) العقود السارية (Active Contracts Roster) ──────── -->
+    <record id="view_active_tenancies_roster_tree" model="ir.ui.view">
+        <field name="name">property.tenancy.roster.tree</field>
+        <field name="model">property.tenancy</field>
+        <field name="arch" type="xml">
+            <tree string="العقود السارية"
+                  decoration-warning="sa_days_to_expiry &lt;= 60 and sa_days_to_expiry &gt; 0"
+                  decoration-danger="sa_days_to_expiry &lt;= 0"
+                  create="0">
+                <field name="name"/>
+                <field name="property_id"/>
+                <field name="partner_id"/>
+                <field name="owner_partner_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="rent_amount" sum="إجمالي الإيجار"/>
+                <field name="deposit_amount" sum="إجمالي الضمانات"/>
+                <field name="sa_total_paid" sum="مدفوع"/>
+                <field name="sa_total_balance" sum="رصيد"/>
+                <field name="sa_days_to_expiry" string="أيام للانتهاء"/>
+                <field name="sa_cycle_state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_active_tenancies_roster" model="ir.actions.act_window">
+        <field name="name">سجل العقود السارية</field>
+        <field name="res_model">property.tenancy</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_active_tenancies_roster_tree"/>
+        <field name="domain">[('state','=','running')]</field>
+        <field name="context">{
+            'search_default_group_owner': 1
+        }</field>
+    </record>
+
+    <!-- ─── (3) العقود المنتهية صلاحيتها (للمتابعة) ────────────── -->
+    <record id="action_expired_tenancies" model="ir.actions.act_window">
+        <field name="name">عقود تنتهي خلال 60 يوم</field>
+        <field name="res_model">property.tenancy</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[
+            ('state','=','running'),
+            ('end_date','&lt;=', (context_today() + relativedelta(days=60)).strftime('%Y-%m-%d')),
+            ('end_date','&gt;=', context_today().strftime('%Y-%m-%d')),
+            ('renewed_to_id','=',False)
+        ]</field>
+    </record>
+
+    <!-- ─── (4) سجل الدفعات المتأخرة (Aging Report) ────────────── -->
+    <record id="view_overdue_aging_pivot" model="ir.ui.view">
+        <field name="name">sa.rent.payment.aging.pivot</field>
+        <field name="model">sa.rent.payment</field>
+        <field name="arch" type="xml">
+            <pivot string="تحليل تقادم المتأخرات" sample="1">
+                <field name="property_id" type="row"/>
+                <field name="tenant_id" type="row"/>
+                <field name="balance" type="measure"/>
+                <field name="days_overdue" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_overdue_aging" model="ir.actions.act_window">
+        <field name="name">تحليل تقادم المتأخرات</field>
+        <field name="res_model">sa.rent.payment</field>
+        <field name="view_mode">pivot,tree</field>
+        <field name="view_ids" eval="[
+            (5, 0, 0),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_overdue_aging_pivot')}),
+            (0, 0, {'view_mode': 'tree'}),
+        ]"/>
+        <field name="domain">[
+            ('state','in',['overdue','pending']),
+            ('due_date','&lt;', context_today().strftime('%Y-%m-%d'))
+        ]</field>
+    </record>
+
+    <!-- ─── (5) تحليل الصيانة الشهري (cross-module dep on sa_maintenance) ── -->
+    <!-- Already in sa_maintenance/views/maintenance_request_views.xml as
+         action_request_analytics — referenced here for the reports menu. -->
+
+    <!-- ─── المجموعة: قائمة "التقارير" تحت "إدارة العقارات" ──── -->
+    <menuitem id="menu_pms_reports_root"
+              name="التقارير"
+              parent="sa_property_base.menu_pms_root"
+              sequence="50"/>
+
+    <menuitem id="menu_report_revenue_by_owner"
+              name="الإيرادات حسب المالك"
+              parent="menu_pms_reports_root"
+              action="action_report_revenue_by_owner"
+              sequence="10"/>
+
+    <menuitem id="menu_active_tenancies_roster"
+              name="سجل العقود السارية"
+              parent="menu_pms_reports_root"
+              action="action_active_tenancies_roster"
+              sequence="20"/>
+
+    <menuitem id="menu_expired_tenancies"
+              name="عقود تنتهي قريباً"
+              parent="menu_pms_reports_root"
+              action="action_expired_tenancies"
+              sequence="30"/>
+
+    <menuitem id="menu_overdue_aging"
+              name="تقادم المتأخرات"
+              parent="menu_pms_reports_root"
+              action="action_overdue_aging"
+              sequence="40"/>
+
+</odoo>

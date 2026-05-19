@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sa_sadad_invoice,sa.sadad.invoice,model_sa_sadad_invoice,base.group_user,1,1,1,0
+access_sa_sadad_invoice_mgr,sa.sadad.invoice manager,model_sa_sadad_invoice,base.group_system,1,1,1,1
+access_sa_sadad_invoice_tenant,sa.sadad.invoice tenant portal,model_sa_sadad_invoice,sa_security.group_pms_tenant_portal,1,0,0,0

@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        
+        <!-- Main Layout Template -->
+        <template id="propza_web_layout" inherit_id="web.layout" name="Propza Modern Theme Layout">
+            <!-- Saudi-First identity: Tajawal + Inter from Google Fonts -->
+            <xpath expr="//head" position="inside">
+                <link rel="preconnect" href="https://fonts.googleapis.com"/>
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap"/>
+            </xpath>
+            <xpath expr="//html" position="attributes">
+                <attribute name="data-theme">light</attribute>
+                <attribute name="class">propza-theme</attribute>
+            </xpath>
+        </template>
+
+        <!-- Dashboard Template -->
+        <template id="propza_dashboard_template" name="Propza Dashboard">
+            <div class="dashboard">
+                <!-- KPI Section -->
+                <div class="dashboard-section">
+                    <h2 class="dashboard-section-title">Key Performance Indicators</h2>
+                    <div class="kpi-row">
+                        <!-- KPI cards will be populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="dashboard-section">
+                    <h2 class="dashboard-section-title">Analytics</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2">
+                        <!-- Chart containers -->
+                    </div>
+                </div>
+
+                <!-- Reports Section -->
+                <div class="dashboard-section">
+                    <h2 class="dashboard-section-title">Recent Activities</h2>
+                    <div class="card">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Activity</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Activities will be populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Theme Header Template -->
+        <template id="propza_theme_header" name="Propza Theme Header">
+            <nav class="navbar">
+                <div class="navbar-brand">
+                    <span>Propza</span>
+                </div>
+                <div class="navbar-nav">
+                    <div class="nav-item">
+                        <a href="#" class="nav-link active">Dashboard</a>
+                    </div>
+                </div>
+                <button class="theme-toggle" title="Toggle Dark Mode"></button>
+            </nav>
+        </template>
+
+        <!-- Sidebar Template -->
+        <template id="propza_theme_sidebar" name="Propza Theme Sidebar">
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h3>Menu</h3>
+                    <button class="sidebar-toggle"></button>
+                </div>
+                <nav>
+                    <ul class="sidebar-nav">
+                        <li class="sidebar-nav-item">
+                            <a href="#" class="sidebar-nav-link active">
+                                <span class="sidebar-nav-link-icon">📊</span>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-nav-item">
+                            <a href="#" class="sidebar-nav-link">
+                                <span class="sidebar-nav-link-icon">🏠</span>
+                                <span>Properties</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-nav-item">
+                            <a href="#" class="sidebar-nav-link">
+                                <span class="sidebar-nav-link-icon">👥</span>
+                                <span>Tenants</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-nav-item">
+                            <a href="#" class="sidebar-nav-link">
+                                <span class="sidebar-nav-link-icon">💰</span>
+                                <span>Payments</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-nav-item">
+                            <a href="#" class="sidebar-nav-link">
+                                <span class="sidebar-nav-link-icon">🔧</span>
+                                <span>Maintenance</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
+        </template>
+
+        <!-- Loading Spinner Template -->
+        <template id="propza_loading_spinner" name="Propza Loading Spinner">
+            <div class="spinner"></div>
+        </template>
+
+        <!-- Alert Template -->
+        <template id="propza_alert" name="Propza Alert">
+            <div class="alert alert-info" role="alert">
+                <div class="alert-icon">ℹ️</div>
+                <div class="alert-content">
+                    <h4 class="alert-title">Alert Title</h4>
+                    <p class="alert-message">Alert message content goes here.</p>
+                </div>
+                <button class="alert-close">×</button>
+            </div>
+        </template>
+
+        <!-- Modal Template -->
+        <template id="propza_modal" name="Propza Modal">
+            <div class="modal">
+                <div class="modal-backdrop"></div>
+                <div class="modal-dialog">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Modal Title</h5>
+                        <button class="modal-close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Modal content goes here -->
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button class="btn btn-primary">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- KPI Card Template -->
+        <template id="propza_kpi_card" name="Propza KPI Card">
+            <div class="card card-kpi">
+                <div class="kpi-content">
+                    <div class="kpi-icon">📊</div>
+                    <div class="kpi-label">Total Revenue</div>
+                    <div class="kpi-value">$125,430</div>
+                    <span class="kpi-change positive">12.5%</span>
+                </div>
+            </div>
+        </template>
+
+        <!-- Property Card Template -->
+        <template id="propza_property_card" name="Propza Property Card">
+            <div class="card card-property">
+                <img src="/path/to/image.jpg" alt="Property" class="card-property-image"/>
+                <span class="card-property-badge">For Rent</span>
+                <h3 class="card-property-title">Modern Apartment</h3>
+                <div class="card-property-details">
+                    <div class="card-property-detail">
+                        <div class="card-property-detail-label">Bedrooms</div>
+                        <div class="card-property-detail-value">3</div>
+                    </div>
+                    <div class="card-property-detail">
+                        <div class="card-property-detail-label">Area (sqft)</div>
+                        <div class="card-property-detail-value">2,500</div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Data Table Template -->
+        <template id="propza_data_table" name="Propza Data Table">
+            <div class="datatable">
+                <div class="datatable-header">
+                    <div class="datatable-search">
+                        <input type="text" placeholder="Search..."/>
+                    </div>
+                    <div class="datatable-filters">
+                        <button class="btn btn-sm btn-outline">Filter</button>
+                    </div>
+                </div>
+                <div class="datatable-body">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Column 1</th>
+                                <th>Column 2</th>
+                                <th>Column 3</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Table rows go here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="datatable-footer">
+                    <div class="datatable-info">Showing 1 to 10 of 100 entries</div>
+                    <ul class="pagination">
+                        <li class="pagination-item">
+                            <a href="#" class="pagination-link">Previous</a>
+                        </li>
+                        <li class="pagination-item">
+                            <a href="#" class="pagination-link active">1</a>
+                        </li>
+                        <li class="pagination-item">
+                            <a href="#" class="pagination-link">Next</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </template>
+
+    </data>
+</odoo>

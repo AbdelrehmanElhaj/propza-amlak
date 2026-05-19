@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_partner_form_technician" model="ir.ui.view">
+        <field name="name">res.partner.form.technician</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <!-- Add a 'KSA Roles' page with all role flags + technician details -->
+            <xpath expr="//notebook" position="inside">
+                <page string="أدوار سعودية" name="sa_roles">
+                    <group string="الأدوار">
+                        <group>
+                            <field name="is_property_owner"/>
+                            <field name="is_tenant"/>
+                            <field name="is_broker"/>
+                            <field name="is_technician"/>
+                        </group>
+                        <group invisible="not is_broker">
+                            <field name="broker_license"/>
+                        </group>
+                    </group>
+                    <group string="بيانات المقاول"
+                           invisible="not is_technician">
+                        <group>
+                            <field name="sa_skill_ids" widget="many2many_tags"
+                                   options="{'color_field': 'color'}"/>
+                            <field name="sa_hourly_rate"/>
+                            <field name="sa_call_out_fee"/>
+                        </group>
+                        <group>
+                            <field name="sa_response_hours"/>
+                            <field name="sa_active_request_count" readonly="1"/>
+                            <field name="sa_total_request_count" readonly="1"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Action: list of technicians -->
+    <record id="action_technicians" model="ir.actions.act_window">
+        <field name="name">المقاولون والفنيون</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('is_technician','=',True)]</field>
+        <field name="context">{'default_is_technician': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">إضافة مقاول/فني جديد</p>
+            <p>قائمة المقاولين والفنيين مع تخصصاتهم وأسعار خدماتهم.</p>
+        </field>
+    </record>
+
+</odoo>

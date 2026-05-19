@@ -1,0 +1,182 @@
+/* ===========================
+   PROPZA — Base Styles
+   Fonts: Tajawal (AR+EN) + Inter fallback
+   =========================== */
+
+/* === Reset === */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+    text-size-adjust: 100%;
+}
+
+body {
+    font-family: var(--propza-font-primary);
+    font-size: var(--propza-text-base);
+    line-height: var(--propza-leading-normal);
+    color: var(--propza-text-primary);
+    background-color: var(--propza-bg-secondary);
+    transition: background-color var(--propza-transition-base),
+                color var(--propza-transition-base);
+}
+
+/* === Headings === */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--propza-font-primary);
+    font-weight: var(--propza-font-bold);
+    line-height: var(--propza-leading-tight);
+    color: var(--propza-text-primary);
+    margin-bottom: var(--propza-space-3);
+    letter-spacing: -0.01em;
+}
+
+h1 { font-size: var(--propza-text-4xl); font-weight: var(--propza-font-extrabold); }
+h2 { font-size: var(--propza-text-3xl); }
+h3 { font-size: var(--propza-text-2xl); }
+h4 { font-size: var(--propza-text-xl); }
+h5 { font-size: var(--propza-text-lg); }
+h6 { font-size: var(--propza-text-base); font-weight: var(--propza-font-semibold); }
+
+/* === Body Text === */
+p {
+    margin-bottom: var(--propza-space-4);
+    color: var(--propza-text-secondary);
+    line-height: var(--propza-leading-relaxed);
+}
+
+p:last-child { margin-bottom: 0; }
+
+/* === Links === */
+a {
+    color: var(--propza-primary);
+    text-decoration: none;
+    transition: color var(--propza-transition-fast);
+}
+
+a:hover {
+    color: var(--propza-primary-light);
+    text-decoration: underline;
+    text-decoration-color: var(--propza-accent);
+    text-underline-offset: 3px;
+}
+
+a:active  { opacity: 0.8; }
+a[disabled] { color: var(--propza-gray-400); cursor: not-allowed; opacity: 0.5; }
+
+/* === Lists === */
+ul, ol {
+    margin-inline-start: var(--propza-space-6);
+    margin-bottom: var(--propza-space-4);
+}
+
+li {
+    margin-bottom: var(--propza-space-2);
+    color: var(--propza-text-secondary);
+}
+
+/* === Code === */
+code, pre {
+    font-family: var(--propza-font-mono);
+    font-size: 0.9em;
+    background-color: var(--propza-gray-100);
+    border-radius: var(--propza-radius-md);
+}
+
+code {
+    padding: var(--propza-space-1) var(--propza-space-2);
+    color: var(--propza-primary);
+    background-color: rgba(27, 94, 59, 0.08);
+}
+
+pre {
+    padding: var(--propza-space-4);
+    overflow-x: auto;
+    margin-bottom: var(--propza-space-4);
+    border: 1px solid var(--propza-border);
+}
+
+pre code {
+    background-color: transparent;
+    color: var(--propza-text-primary);
+    padding: 0;
+}
+
+/* === Blockquote === */
+blockquote {
+    border-inline-start: 4px solid var(--propza-accent);
+    padding-inline-start: var(--propza-space-4);
+    margin: var(--propza-space-4) 0;
+    color: var(--propza-text-secondary);
+    font-style: italic;
+}
+
+/* === HR === */
+hr {
+    border: 0;
+    height: 1px;
+    background: linear-gradient(
+        to right,
+        transparent,
+        var(--propza-border),
+        transparent
+    );
+    margin: var(--propza-space-8) 0;
+}
+
+/* === Images === */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* === Selection === */
+::selection {
+    background-color: rgba(var(--propza-primary-rgb), 0.18);
+    color: var(--propza-primary-dark);
+}
+
+::-moz-selection {
+    background-color: rgba(var(--propza-primary-rgb), 0.18);
+    color: var(--propza-primary-dark);
+}
+
+/* === Scrollbar === */
+::-webkit-scrollbar       { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--propza-bg-tertiary); }
+::-webkit-scrollbar-thumb {
+    background: var(--propza-gray-300);
+    border-radius: var(--propza-radius-full);
+    border: 2px solid var(--propza-bg-tertiary);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--propza-primary-lighter); }
+
+/* === Focus === */
+:focus-visible {
+    outline: 2px solid var(--propza-accent);
+    outline-offset: 3px;
+    border-radius: var(--propza-radius-sm);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--propza-accent);
+    outline-offset: 3px;
+}
+
+/* === Arabic/RTL global defaults === */
+[dir="rtl"], [lang="ar"] {
+    font-family: 'Tajawal', sans-serif;
+    letter-spacing: 0;
+}

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- ═══════════════════════════════════════════════════════
+             OWNER RULES — يرى عقاراته وعقوده ودفعاته فقط
+             ═══════════════════════════════════════════════════════ -->
+
+        <record id="rule_property_owner_own" model="ir.rule">
+            <field name="name">Owner: own properties only</field>
+            <field name="model_id" ref="sa_property_base.model_property_property"/>
+            <field name="domain_force">[('owner_partner_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_pms_owner'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="rule_tenancy_owner_own" model="ir.rule">
+            <field name="name">Owner: own tenancies only</field>
+            <field name="model_id" ref="sa_property_base.model_property_tenancy"/>
+            <field name="domain_force">[('owner_partner_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_pms_owner'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="rule_payment_owner_own" model="ir.rule">
+            <field name="name">Owner: own payments only</field>
+            <field name="model_id" ref="sa_rental_cycle.model_sa_rent_payment"/>
+            <field name="domain_force">[('tenancy_id.owner_partner_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_pms_owner'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="rule_maintenance_owner_own" model="ir.rule">
+            <field name="name">Owner: maintenance for own properties</field>
+            <field name="model_id" ref="sa_maintenance.model_sa_maintenance_request"/>
+            <field name="domain_force">[('property_id.owner_partner_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_pms_owner'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="rule_workorder_owner_own" model="ir.rule">
+            <field name="name">Owner: work orders for own properties</field>
+            <field name="model_id" ref="sa_maintenance.model_sa_maintenance_work_order"/>
+            <field name="domain_force">[('property_id.owner_partner_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_pms_owner'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="rule_inspection_owner_own" model="ir.rule">
+            <field name="name">Owner: inspections for own properties</field>
+            <field name="model_id" ref="sa_property_base.model_sa_property_inspection"/>
+            <field name="domain_force">[('property_id.owner_partner_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_pms_owner'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="rule_contract_owner_own" model="ir.rule">
+            <field name="name">Owner: maintenance contracts for own properties</field>
+            <field name="model_id" ref="sa_maintenance.model_sa_maintenance_contract"/>
+            <field name="domain_force">[('property_ids.owner_partner_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_pms_owner'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             TECHNICIAN RULES — يرى أوامره المُسنَدة فقط
+             ═══════════════════════════════════════════════════════ -->
+
+        <record id="rule_workorder_tech_assigned" model="ir.rule">
+            <field name="name">Technician: assigned work orders only</field>
+            <field name="model_id" ref="sa_maintenance.model_sa_maintenance_work_order"/>
+            <field name="domain_force">[('technician_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_pms_technician'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="rule_request_tech_assigned" model="ir.rule">
+            <field name="name">Technician: requests with assigned work orders</field>
+            <field name="model_id" ref="sa_maintenance.model_sa_maintenance_request"/>
+            <field name="domain_force">[('work_order_ids.technician_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_pms_technician'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- (مُلغاة: الفنيون يصلون للعقار عبر أمر العمل، لا حاجة لقاعدة منفصلة) -->
+
+        <!-- ═══════════════════════════════════════════════════════
+             TENANT PORTAL RULES — يرى عقده ودفعاته وطلباته فقط
+             ═══════════════════════════════════════════════════════ -->
+
+        <record id="rule_tenancy_tenant_own" model="ir.rule">
+            <field name="name">Tenant: own tenancy only</field>
+            <field name="model_id" ref="sa_property_base.model_property_tenancy"/>
+            <field name="domain_force">[('partner_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_pms_tenant_portal'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="rule_payment_tenant_own" model="ir.rule">
+            <field name="name">Tenant: own payments only</field>
+            <field name="model_id" ref="sa_rental_cycle.model_sa_rent_payment"/>
+            <field name="domain_force">[('tenancy_id.partner_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_pms_tenant_portal'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="rule_maintenance_tenant_own" model="ir.rule">
+            <field name="name">Tenant: own maintenance requests</field>
+            <field name="model_id" ref="sa_maintenance.model_sa_maintenance_request"/>
+            <field name="domain_force">[('partner_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_pms_tenant_portal'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="rule_property_tenant_own" model="ir.rule">
+            <field name="name">Tenant: own rented property only</field>
+            <field name="model_id" ref="sa_property_base.model_property_property"/>
+            <field name="domain_force">[('tenancy_ids.partner_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_pms_tenant_portal'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="rule_inspection_tenant_own" model="ir.rule">
+            <field name="name">Tenant: inspections of own tenancy</field>
+            <field name="model_id" ref="sa_property_base.model_sa_property_inspection"/>
+            <field name="domain_force">[('tenant_partner_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_pms_tenant_portal'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

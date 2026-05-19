@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ─── Action ──────────────────────────────────────────────── -->
+    <record id="action_report_tenant_statement" model="ir.actions.report">
+        <field name="name">كشف حساب المستأجر</field>
+        <field name="model">property.tenancy</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">sa_rental_cycle.report_tenant_statement</field>
+        <field name="report_file">sa_rental_cycle.report_tenant_statement</field>
+        <field name="print_report_name">'كشف حساب %s' % (object.name or '')</field>
+        <field name="binding_model_id" ref="sa_property_base.model_property_tenancy"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- ─── Template ────────────────────────────────────────────── -->
+    <template id="report_tenant_statement">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page" dir="rtl" style="direction:rtl;text-align:right">
+                        <h2 style="text-align:center;margin-bottom:20px">
+                            كشف حساب المستأجر
+                        </h2>
+
+                        <!-- ─── Tenancy header ─────────────────────── -->
+                        <div style="margin-bottom:20px;padding:12px;border:1px solid #ddd;border-radius:6px">
+                            <table class="table table-sm" style="margin-bottom:0">
+                                <tr>
+                                    <th style="width:25%">رقم العقد</th>
+                                    <td><span t-field="doc.name"/></td>
+                                    <th style="width:25%">الحالة</th>
+                                    <td><span t-field="doc.state"/></td>
+                                </tr>
+                                <tr>
+                                    <th>المستأجر</th>
+                                    <td><span t-field="doc.partner_id.name"/></td>
+                                    <th>المالك</th>
+                                    <td><span t-field="doc.owner_partner_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <th>العقار</th>
+                                    <td colspan="3"><span t-field="doc.property_id.display_name"/></td>
+                                </tr>
+                                <tr>
+                                    <th>تاريخ البداية</th>
+                                    <td><span t-field="doc.start_date"/></td>
+                                    <th>تاريخ النهاية</th>
+                                    <td><span t-field="doc.end_date"/></td>
+                                </tr>
+                                <tr>
+                                    <th>قيمة الإيجار</th>
+                                    <td>
+                                        <span t-field="doc.rent_amount"
+                                              t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </td>
+                                    <th>الضمان</th>
+                                    <td>
+                                        <span t-field="doc.deposit_amount"
+                                              t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- ─── Summary stats ───────────────────────── -->
+                        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px">
+                            <div style="padding:10px;border:1px solid #ddd;border-radius:6px;text-align:center">
+                                <div style="font-size:11px;color:#666">إجمالي المستحق</div>
+                                <div style="font-size:18px;font-weight:600">
+                                    <span t-field="doc.sa_total_due"/> ر.س
+                                </div>
+                            </div>
+                            <div style="padding:10px;border:1px solid #ddd;border-radius:6px;text-align:center">
+                                <div style="font-size:11px;color:#666">إجمالي المدفوع</div>
+                                <div style="font-size:18px;font-weight:600;color:#2e7d32">
+                                    <span t-field="doc.sa_total_paid"/> ر.س
+                                </div>
+                            </div>
+                            <div style="padding:10px;border:1px solid #ddd;border-radius:6px;text-align:center">
+                                <div style="font-size:11px;color:#666">الرصيد المتبقي</div>
+                                <div style="font-size:18px;font-weight:600;color:#c62828">
+                                    <span t-field="doc.sa_total_balance"/> ر.س
+                                </div>
+                            </div>
+                            <div style="padding:10px;border:1px solid #ddd;border-radius:6px;text-align:center">
+                                <div style="font-size:11px;color:#666">دفعات متأخرة</div>
+                                <div style="font-size:18px;font-weight:600;color:#ef6c00">
+                                    <span t-field="doc.sa_overdue_count"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ─── Payment schedule ─────────────────── -->
+                        <h4 style="margin-top:20px;margin-bottom:10px">جدول الدفعات</h4>
+                        <table class="table table-bordered table-sm" style="font-size:12px">
+                            <thead style="background:#f5f5f5">
+                                <tr>
+                                    <th>#</th>
+                                    <th>الفترة</th>
+                                    <th>تاريخ الاستحقاق</th>
+                                    <th>النوع</th>
+                                    <th>المستحق</th>
+                                    <th>المدفوع</th>
+                                    <th>الرصيد</th>
+                                    <th>تاريخ الدفع</th>
+                                    <th>الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="counter" t-value="0"/>
+                                <t t-foreach="doc.sa_payment_ids.sorted(key=lambda p: p.due_date or '')"
+                                   t-as="pay">
+                                    <t t-set="counter" t-value="counter + 1"/>
+                                    <tr>
+                                        <td><t t-out="counter"/></td>
+                                        <td><span t-field="pay.period_label"/></td>
+                                        <td><span t-field="pay.due_date"/></td>
+                                        <td><span t-field="pay.payment_type"/></td>
+                                        <td><span t-field="pay.amount"/></td>
+                                        <td><span t-field="pay.amount_paid"/></td>
+                                        <td><span t-field="pay.balance"/></td>
+                                        <td><span t-field="pay.payment_date"/></td>
+                                        <td><span t-field="pay.state"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot style="background:#f5f5f5;font-weight:600">
+                                <tr>
+                                    <td colspan="4" style="text-align:left">الإجمالي</td>
+                                    <td><span t-field="doc.sa_total_due"/></td>
+                                    <td><span t-field="doc.sa_total_paid"/></td>
+                                    <td><span t-field="doc.sa_total_balance"/></td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <!-- ─── Deposit summary ──────────────────── -->
+                        <h4 style="margin-top:20px;margin-bottom:10px">الضمان</h4>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>الحالة</th>
+                                <td><span t-field="doc.deposit_state"/></td>
+                                <th>تاريخ الاستلام</th>
+                                <td><span t-field="doc.deposit_date_paid"/></td>
+                            </tr>
+                            <tr>
+                                <th>القيمة</th>
+                                <td><span t-field="doc.deposit_amount"/> ر.س</td>
+                                <th>المُسترد</th>
+                                <td><span t-field="doc.deposit_returned_amount"/> ر.س</td>
+                            </tr>
+                            <tr>
+                                <th>المُصادَر</th>
+                                <td><span t-field="doc.deposit_forfeited_amount"/> ر.س</td>
+                                <th>المتبقي</th>
+                                <td><span t-field="doc.deposit_remaining"/> ر.س</td>
+                            </tr>
+                        </table>
+
+                        <!-- ─── Footer ──────────────────────────── -->
+                        <div style="margin-top:30px;padding:12px;border-top:2px solid #333;font-size:11px;color:#666">
+                            <p>هذا الكشف يعكس بيانات العقد كما هي في النظام بتاريخ
+                               <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d')"/>.</p>
+                            <p>للاستفسارات يرجى التواصل مع إدارة العقارات.</p>
+                        </div>
+
+                        <div style="margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:40px">
+                            <div style="text-align:center">
+                                <div style="border-top:1px solid #333;padding-top:6px">المالك / الإدارة</div>
+                            </div>
+                            <div style="text-align:center">
+                                <div style="border-top:1px solid #333;padding-top:6px">المستأجر</div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>
