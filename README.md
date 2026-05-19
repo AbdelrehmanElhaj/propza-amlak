@@ -1,0 +1,1 @@
+# propza-amlak
