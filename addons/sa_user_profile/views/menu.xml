@@ -7,7 +7,7 @@
 
     <menuitem id="menu_user_profile_root"
               name="حسابي"
-              sequence="65"
+              sequence="50"
               web_icon="sa_user_profile,static/description/icon.png"
               groups="base.group_user"/>
 

@@ -2,6 +2,6 @@
 <odoo>
     <menuitem id="menu_maintenance_root"
               name="الصيانة"
-              sequence="60"
+              sequence="40"
               web_icon="sa_maintenance,static/description/icon.png"/>
 </odoo>

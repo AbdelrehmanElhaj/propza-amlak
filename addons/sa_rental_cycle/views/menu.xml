@@ -1,28 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Top-level: دورة الإيجار -->
+    <!-- Merged into إدارة العقارات as a sub-group (sequence 30) -->
     <menuitem id="menu_sa_rental_cycle"
-              name="دورة الإيجار"
-              action="action_sa_rent_payments"
-              sequence="92"/>
+              name="الدفعات"
+              parent="sa_property_base.menu_pms_root"
+              sequence="30"/>
 
-    <!-- Children of دورة الإيجار -->
+    <menuitem id="menu_sa_all_payments"
+              name="جميع الدفعات"
+              parent="menu_sa_rental_cycle"
+              action="action_sa_rent_payments"
+              sequence="10"/>
+
     <menuitem id="menu_sa_overdue_payments"
               name="دفعات متأخرة"
               parent="menu_sa_rental_cycle"
               action="action_sa_rent_payments_overdue"
-              sequence="10"/>
+              sequence="20"/>
 
-    <!-- Maintenance menu removed — moved to sa_maintenance module.
-         Odoo will auto-clean the orphan menu record on upgrade. -->
-
-    <!-- Re-parent l10n_sa_ejar's Ejar contracts menu under دورة الإيجار.
-         Possible only here because sa_rental_cycle depends on l10n_sa_ejar
-         (l10n_sa_ejar's menu loads first; we override its parent). -->
-    <record id="l10n_sa_ejar.menu_ejar_contracts" model="ir.ui.menu">
-        <field name="parent_id" ref="sa_rental_cycle.menu_sa_rental_cycle"/>
-        <field name="sequence">30</field>
-    </record>
+    <!-- عقود إيجار stays under menu_ejar_root (l10n_sa_ejar default) -->
 
 </odoo>

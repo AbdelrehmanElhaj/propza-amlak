@@ -7,11 +7,11 @@
         <field name="tag">pms_dashboard_action</field>
     </record>
 
-    <!-- Top placement under "إدارة العقارات" -->
+    <!-- Standalone top-level app — first item on the home screen -->
     <menuitem id="menu_pms_dashboard"
               name="لوحة التحكم"
-              parent="sa_property_base.menu_pms_root"
               action="action_pms_dashboard_client"
-              sequence="1"/>
+              sequence="10"
+              web_icon="sa_dashboard,static/description/icon.png"/>
 
 </odoo>
