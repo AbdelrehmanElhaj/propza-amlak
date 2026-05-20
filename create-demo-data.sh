@@ -1348,13 +1348,72 @@ comm4.action_confirm()
 env.cr.commit()
 
 # ══════════════════════════════════════════════════════════════════════════
-# 12 — عقود إيجار (نظام ECRS)  (Ejar ECRS Contracts — 3 sample records)
+# 12 — عقود إيجار (نظام ECRS)  (Ejar ECRS Contracts — 6 records, all states)
 # ══════════════════════════════════════════════════════════════════════════
 print("إنشاء عقود إيجار ECRS... (Creating Ejar ECRS contracts...)")
 
 SAR_curr = env['res.currency'].search([('name', '=', 'SAR')], limit=1)
 
-# ع.إيجار-١ — فيلا الروضة: حالة building (جارٍ الإعداد)
+# ── Helpers ─────────────────────────────────────────────────────────────
+def ejar_party(contract, role, entity_type, full_name_ar, id_type, id_number,
+               mobile, iban=False, nationality='SA', sync_state='pending',
+               cr_number=False, unified_number=False):
+    vals = {
+        'contract_id':  contract.id,
+        'role':         role,
+        'entity_type':  entity_type,
+        'full_name_ar': full_name_ar,
+        'id_type':      id_type,
+        'id_number':    id_number,
+        'mobile':       mobile,
+        'nationality':  nationality,
+    }
+    if iban:           vals['iban']           = iban
+    if cr_number:      vals['cr_number']      = cr_number
+    if unified_number: vals['unified_number'] = unified_number
+    rec = env['ejar.contract.party'].create(vals)
+    if sync_state != 'pending':
+        rec.write({'sync_state': sync_state})
+    return rec
+
+def ejar_unit(contract, property_rec, unit_number, unit_type, area,
+              floor_number=0, bedrooms=0, bathrooms=0, finishing='finished',
+              furnishing='unfurnished', sync_state='pending'):
+    rec = env['ejar.contract.unit'].create({
+        'contract_id':  contract.id,
+        'property_id':  property_rec.id,
+        'unit_number':  unit_number,
+        'unit_type':    unit_type,
+        'area':         area,
+        'floor_number': floor_number,
+        'bedrooms':     bedrooms,
+        'bathrooms':    bathrooms,
+        'finishing':    finishing,
+        'furnishing':   furnishing,
+    })
+    if sync_state != 'pending':
+        rec.write({'sync_state': sync_state})
+    return rec
+
+def sync_log(contract, action, direction, endpoint, http_method,
+             http_status, duration_ms, status='success',
+             request_body=None, response_body=None, error_message=None):
+    return env['ejar.sync.log'].create({
+        'company_id':    company.id,
+        'contract_id':   contract.id,
+        'action':        action,
+        'direction':     direction,
+        'http_method':   http_method,
+        'endpoint':      endpoint,
+        'http_status':   http_status,
+        'duration_ms':   duration_ms,
+        'status':        status,
+        'request_body':  request_body or False,
+        'response_body': response_body or False,
+        'error_message': error_message or False,
+    })
+
+# ── ع.إيجار-١  فيلا الروضة — building (جارٍ الإعداد) ────────────────
 ec1 = env['ejar.contract'].create({
     'brokerage_profile_id': ejar_profile.id,
     'tenancy_id':           t1.id,
@@ -1373,9 +1432,47 @@ ec1 = env['ejar.contract'].create({
     'brokerage_fee_paid_by':'lessor',
 })
 ec1.action_start_building()
+ejar_party(ec1, 'lessor', 'individual', 'محمد بن عبدالله القحطاني',
+           'national_id', '1023456789', '+966501234001',
+           iban='SA0380000000608010167519')
+ejar_party(ec1, 'tenant', 'individual', 'خالد بن عبدالله الراشدي',
+           'national_id', '1098765432', '+966503100001')
+ejar_unit(ec1, prop1, 'فيلا-١٢', 'villa', 450.0,
+          floor_number=0, bedrooms=5, bathrooms=4,
+          finishing='finished', furnishing='unfurnished')
 
-# ع.إيجار-٢ — شقة العليا: حالة submitted (بانتظار الموافقة من إيجار)
+# ── ع.إيجار-٢  شقة الملقا — ready (جاهز للإرسال) ────────────────────
 ec2 = env['ejar.contract'].create({
+    'brokerage_profile_id': ejar_profile.id,
+    'tenancy_id':           t3.id,
+    'contract_type':        'residential',
+    'contract_sub_type':    'main',
+    'use_type':             'residential_families',
+    'start_date':           t3.start_date,
+    'end_date':             t3.end_date,
+    'rent_amount':          48000.0,
+    'currency_id':          SAR_curr.id,
+    'payment_schedule':     'monthly',
+    'payment_option':       'mada',
+    'sublease_allowed':     False,
+    'ejar_fees_paid_by':    'brokerage_office',
+    'brokerage_fee':        1200.0,
+    'brokerage_fee_paid_by':'lessor',
+})
+ec2.action_start_building()
+ec2.action_mark_ready()
+ejar_party(ec2, 'lessor', 'individual', 'محمد بن عبدالله القحطاني',
+           'national_id', '1023456789', '+966501234001',
+           iban='SA0380000000608010167519', sync_state='synced')
+ejar_party(ec2, 'tenant', 'individual', 'نورة سعد الحمدان',
+           'national_id', '1067891234', '+966503100003',
+           sync_state='synced')
+ejar_unit(ec2, prop5, 'ملقا-٧أ', 'apartment', 160.0,
+          floor_number=7, bedrooms=3, bathrooms=2,
+          finishing='finished', furnishing='unfurnished', sync_state='synced')
+
+# ── ع.إيجار-٣  شقة العليا — submitted (بانتظار موافقة إيجار) ─────────
+ec3 = env['ejar.contract'].create({
     'brokerage_profile_id': ejar_profile.id,
     'tenancy_id':           t2.id,
     'contract_type':        'residential',
@@ -1389,15 +1486,34 @@ ec2 = env['ejar.contract'].create({
     'payment_option':       'bank_transfer',
     'sublease_allowed':     False,
     'ejar_fees_paid_by':    'brokerage_office',
-    'ejar_contract_id':     'DEMO-EJAR-CONTRACT-002',
+    'brokerage_fee':        1125.0,
+    'brokerage_fee_paid_by':'lessor',
+    'ejar_contract_id':     'DEMO-EJAR-CONTRACT-003',
     'ejar_contract_number': '1234567890',
 })
-ec2.action_start_building()
-# Manually push to submitted state for demo
-ec2.write({'ejar_status': 'submitted', 'ejar_last_sync': today})
+ec3.action_start_building()
+ec3.write({'ejar_status': 'submitted',
+           'ejar_last_sync': today,
+           'submit_attempt': 1})
+ejar_party(ec3, 'lessor', 'individual', 'محمد بن عبدالله القحطاني',
+           'national_id', '1023456789', '+966501234001',
+           iban='SA0380000000608010167519', sync_state='synced')
+ejar_party(ec3, 'tenant', 'individual', 'عمر محمد الفاروق',
+           'national_id', '1034512678', '+966503100002',
+           sync_state='synced')
+ejar_unit(ec3, prop4, 'عليا-٣ب', 'apartment', 140.0,
+          floor_number=3, bedrooms=3, bathrooms=2,
+          finishing='finished', furnishing='semi_finished', sync_state='synced')
+sync_log(ec3, 'contract_submit', 'outbound',
+         '/ecrs/api/v1/contracts', 'POST', 200, 842,
+         request_body='{"contractType":"RESIDENTIAL","startDate":"' + str(t2.start_date) + '"}',
+         response_body='{"status":"ACCEPTED","contractId":"DEMO-EJAR-CONTRACT-003"}')
+sync_log(ec3, 'contract_poll', 'outbound',
+         '/ecrs/api/v1/contracts/DEMO-EJAR-CONTRACT-003/status', 'GET', 200, 310,
+         response_body='{"status":"PENDING_APPROVAL"}')
 
-# ع.إيجار-٣ — مكتب بيزنس باي: حالة approved (موافق عليه)
-ec3 = env['ejar.contract'].create({
+# ── ع.إيجار-٤  مكتب بيزنس باي — approved (موافق عليه) ───────────────
+ec4 = env['ejar.contract'].create({
     'brokerage_profile_id': ejar_profile.id,
     'tenancy_id':           t5.id,
     'contract_type':        'commercial',
@@ -1411,14 +1527,104 @@ ec3 = env['ejar.contract'].create({
     'payment_option':       'bank_transfer',
     'sublease_allowed':     False,
     'ejar_fees_paid_by':    'brokerage_office',
-    'ejar_contract_id':     'DEMO-EJAR-CONTRACT-003',
-    'ejar_contract_number': '9876543210',
     'brokerage_fee':        3000.0,
     'brokerage_fee_paid_by':'lessor',
+    'ejar_contract_id':     'DEMO-EJAR-CONTRACT-004',
+    'ejar_contract_number': '9876543210',
 })
-ec3.action_start_building()
-# Manually push to approved state for demo
-ec3.write({'ejar_status': 'approved', 'ejar_last_sync': today})
+ec4.action_start_building()
+ec4.write({'ejar_status': 'approved',
+           'ejar_last_sync': today,
+           'submit_attempt': 1,
+           'poll_count': 3})
+ejar_party(ec4, 'lessor', 'organization', 'شركة الواحة للتطوير العقاري',
+           'national_id', '1010345678', '+966114001400',
+           iban='SA1020000005678901234567',
+           cr_number='1010345678', unified_number='1010345678',
+           sync_state='synced')
+ejar_party(ec4, 'tenant', 'individual', 'أحمد يوسف العمري',
+           'national_id', '1055443322', '+966503100005',
+           sync_state='synced')
+ejar_unit(ec4, prop9, 'بيزنس-باي-٢٠١', 'office', 280.0,
+          floor_number=20, bedrooms=0, bathrooms=2,
+          finishing='finished', furnishing='furnish_new', sync_state='synced')
+sync_log(ec4, 'contract_submit', 'outbound',
+         '/ecrs/api/v1/contracts', 'POST', 200, 763,
+         response_body='{"status":"ACCEPTED","contractId":"DEMO-EJAR-CONTRACT-004"}')
+sync_log(ec4, 'contract_poll', 'outbound',
+         '/ecrs/api/v1/contracts/DEMO-EJAR-CONTRACT-004/status', 'GET', 200, 295,
+         response_body='{"status":"PENDING_APPROVAL"}')
+sync_log(ec4, 'contract_poll', 'outbound',
+         '/ecrs/api/v1/contracts/DEMO-EJAR-CONTRACT-004/status', 'GET', 200, 278,
+         response_body='{"status":"PENDING_APPROVAL"}')
+sync_log(ec4, 'webhook_received', 'inbound',
+         '/ejar/webhook', 'POST', 200, 45,
+         request_body='{"event":"contract.approved","contractNumber":"9876543210"}',
+         response_body='{"received":true}')
+
+# ── ع.إيجار-٥  شقة الحمراء — rejected (مرفوض) ───────────────────────
+ec5 = env['ejar.contract'].create({
+    'brokerage_profile_id': ejar_profile.id,
+    'tenancy_id':           t4.id,
+    'contract_type':        'residential',
+    'contract_sub_type':    'main',
+    'use_type':             'residential_families',
+    'start_date':           t4.start_date,
+    'end_date':             t4.end_date,
+    'rent_amount':          42000.0,
+    'currency_id':          SAR_curr.id,
+    'payment_schedule':     'annual',
+    'payment_option':       'bank_transfer',
+    'sublease_allowed':     False,
+    'ejar_fees_paid_by':    'brokerage_office',
+    'brokerage_fee':        1050.0,
+    'brokerage_fee_paid_by':'lessor',
+    'ejar_contract_id':     'DEMO-EJAR-CONTRACT-005',
+})
+ec5.action_start_building()
+ec5.write({
+    'ejar_status':      'rejected',
+    'ejar_last_sync':   today,
+    'submit_attempt':   1,
+    'rejection_reason': 'رقم الهوية غير مطابق لسجلات نظام أبشر. يرجى مراجعة بيانات المستأجر وإعادة التقديم.',
+})
+ejar_party(ec5, 'lessor', 'individual', 'فاطمة بنت سعد الزهراني',
+           'national_id', '1056789012', '+966502234002',
+           iban='SA4420000001234567891234', sync_state='synced')
+ejar_party(ec5, 'tenant', 'individual', 'عائشة أحمد مالك',
+           'iqama', '2123456789', '+966503100004',
+           nationality='PK', sync_state='failed')
+ejar_unit(ec5, prop6, 'حمراء-١٥', 'apartment', 130.0,
+          floor_number=2, bedrooms=3, bathrooms=2,
+          finishing='finished', furnishing='semi_finished', sync_state='synced')
+sync_log(ec5, 'contract_submit', 'outbound',
+         '/ecrs/api/v1/contracts', 'POST', 200, 891,
+         response_body='{"status":"ACCEPTED","contractId":"DEMO-EJAR-CONTRACT-005"}')
+sync_log(ec5, 'webhook_received', 'inbound',
+         '/ejar/webhook', 'POST', 200, 38,
+         request_body='{"event":"contract.rejected","reason":"ID_MISMATCH"}',
+         status='error',
+         error_message='رقم الهوية غير مطابق لسجلات نظام أبشر')
+
+# ── ع.إيجار-٦  المحل التجاري — draft (مسودة) ────────────────────────
+ec6 = env['ejar.contract'].create({
+    'brokerage_profile_id': ejar_profile.id,
+    'tenancy_id':           t7.id,
+    'contract_type':        'commercial',
+    'contract_sub_type':    'main',
+    'use_type':             'commercial',
+    'start_date':           t7.start_date,
+    'end_date':             t7.end_date,
+    'rent_amount':          55000.0,
+    'currency_id':          SAR_curr.id,
+    'payment_schedule':     'biannual',
+    'payment_option':       'cheque',
+    'sublease_allowed':     False,
+    'ejar_fees_paid_by':    'brokerage_office',
+    'brokerage_fee':        1375.0,
+    'brokerage_fee_paid_by':'lessor',
+})
+# Stays as draft — no action called
 
 env.cr.commit()
 
@@ -1646,7 +1852,13 @@ print(f"  طلبات الصيانة   / Maint Reqs:  8  (متنوعة الحال
 print(f"  أوامر العمل     / Work Orders: 4  (١ مجدول، ٢ منجز، ١ قيد التنفيذ)")
 print(f"  عقود الصيانة    / Maint Conts: 2  (تكييف + سباكة، نشطة)")
 print(f"  عمولات الوسطاء  / Commissions: 4  (جميعها مؤكدة ومدفوعة)")
-print(f"  عقود إيجار ECRS / Ejar Contracts: {env['ejar.contract'].search_count([])}  (building، submitted، approved)")
+print(f"  عقود إيجار ECRS / Ejar Contracts: {env['ejar.contract'].search_count([])}  (draft، building، ready، submitted، approved، rejected)")
+_party_count = env['ejar.contract.party'].search_count([])
+_unit_count  = env['ejar.contract.unit'].search_count([])
+_log_count   = env['ejar.sync.log'].search_count([])
+print(f"    أطراف العقود  / Contract Parties: {_party_count}  (مؤجرون + مستأجرون)")
+print(f"    وحدات العقود  / Contract Units:   {_unit_count}  (فلل + شقق + مكاتب)")
+print(f"    سجلات API     / Sync Logs:        {_log_count}  (صادر/وارد، نجاح/خطأ)")
 print(f"  توثيق الهوية    / Verifications: {env['sa.user.verification'].search_count([])}  (٦ موثَّق، ٢ مقدَّم، ٢ مسودة/مرفوض)")
 print(f"  وثائق المستخدمين / Documents:  {env['sa.user.document'].search_count([])}  (هويات، عقود، خطابات راتب)")
 print(f"  المستخدمون       / Users:      23  (كلمة المرور: demo)")
