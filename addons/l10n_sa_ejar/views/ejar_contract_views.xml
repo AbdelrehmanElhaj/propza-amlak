@@ -92,6 +92,7 @@
                 </header>
 
                 <sheet>
+                    <field name="rent_freeze_warning" invisible="1"/>
                     <div class="alert alert-warning" role="alert"
                          invisible="not rent_freeze_warning">
                         <i class="fa fa-exclamation-triangle"/> &#160;
