@@ -8,17 +8,12 @@
             <form string="مزامنة مع إيجار">
                 <group>
                     <field name="action"/>
-                    <field name="simulation_mode" readonly="1"/>
                 </group>
                 <group string="بيانات التجديد"
                        invisible="action != 'renew'">
                     <field name="new_end_date"/>
                     <field name="new_rent"/>
                 </group>
-                <div class="alert alert-info" role="alert"
-                     invisible="not simulation_mode">
-                    وضع المحاكاة مفعّل — لن يتم إرسال بيانات حقيقية لإيجار
-                </div>
                 <footer>
                     <button name="action_execute" string="تنفيذ" type="object" class="btn-primary"/>
                     <button string="إلغاء" class="btn-secondary" special="cancel"/>
