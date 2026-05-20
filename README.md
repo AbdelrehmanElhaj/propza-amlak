@@ -1,6 +1,6 @@
-# propza-amlak Property Management System
+# Propza — Saudi Property Management System
 
-A Saudi-first property management system built on **Odoo 17**, covering the full real estate lifecycle: properties, tenancies, rent collection, maintenance, broker commissions, SADAD payments, and a self-service tenant portal — with deep compliance for the Saudi market (Ejar, ZATCA, Riyadh rent freeze).
+A Saudi-first property management platform built on **Odoo 17**, covering the full real estate lifecycle: properties, tenancies, rent collection, maintenance, broker commissions, and deep integration with the **Ejar ECRS** platform — all purpose-built for the Saudi market.
 
 ---
 
@@ -14,6 +14,7 @@ A Saudi-first property management system built on **Odoo 17**, covering the full
 - [Demo Database](#demo-database)
 - [Scripts Reference](#scripts-reference)
 - [Configuration](#configuration)
+- [Ejar ECRS Integration](#ejar-ecrs-integration)
 - [Roles & Permissions](#roles--permissions)
 - [Saudi Compliance](#saudi-compliance)
 - [Development Guide](#development-guide)
@@ -22,40 +23,40 @@ A Saudi-first property management system built on **Odoo 17**, covering the full
 
 ## Overview
 
-Propza replaces generic property management add-ons with a system purpose-built for the Saudi rental market. Key design decisions:
+Propza replaces generic property management add-ons with a system purpose-built for the Saudi rental market.
 
-- **No vendor lock-in** — thin `sa_property_base` core that other modules extend cleanly
-- **Arabic-first** — all UI labels, email templates, and data in Arabic; locale `ar_001`, timezone `Asia/Riyadh`, currency SAR
-- **Saudi regulations built in** — Riyadh rent freeze (2025–2030), Ejar contract tracking, tenant national ID / Iqama, ZATCA audit trail
-- **Role-aware** — 7 RBAC groups with enforced record rules; every user sees only what they are authorised to see
+- **Arabic-first** — all UI labels, templates, and data in Arabic; locale `ar_001`, timezone `Asia/Riyadh`, currency SAR
+- **Saudi regulations built in** — Riyadh rent freeze (2025–2030), Ejar ECRS contract registration, NID/Iqama validation, IBAN in SA format, VAT
+- **Async Ejar integration** — non-blocking contract submission via OCA `queue_job`; webhook callbacks with HMAC-SHA256 validation; circuit breaker per company
+- **Role-aware** — 7 RBAC groups with ORM-level record rules; API access also restricted
+- **No vendor lock-in** — thin `sa_property_base` core extended cleanly by all other modules
 
 ---
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│  sa_dashboard   sa_portal   sa_mobile_tech   sa_notifications   │  ← Presentation layer
-├─────────────────────────────────────────────────────────────────┤
-│        sa_broker_commission        sa_sadad                     │  ← Financial integrations
-├─────────────────────────────────────────────────────────────────┤
-│                    sa_rental_cycle                              │  ← Full rental workflow
-├────────────────────┬────────────────────────────────────────────┤
-│     sa_property    │           sa_maintenance                   │  ← Domain models
-├────────────────────┴────────────────────────────────────────────┤
-│             l10n_sa_ejar      sa_security                       │  ← Localisation & RBAC
-├─────────────────────────────────────────────────────────────────┤
-│                    sa_property_base                             │  ← Foundation
-├─────────────────────────────────────────────────────────────────┤
-│             Odoo 17  (account, mail, portal, contacts)          │  ← Core Odoo
-└─────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│  sa_dashboard   sa_portal   sa_mobile_tech   sa_notifications    │  ← Presentation
+├──────────────────────────────────────────────────────────────────┤
+│         sa_broker_commission        sa_sadad                     │  ← Financial
+├──────────────────────────────────────────────────────────────────┤
+│                     sa_rental_cycle                              │  ← Rental workflow
+├────────────────────┬─────────────────────────────────────────────┤
+│     sa_property    │            sa_maintenance                   │  ← Domain models
+├────────────────────┴─────────────────────────────────────────────┤
+│          l10n_sa_ejar        sa_security    sa_user_profile      │  ← Localisation & RBAC
+├──────────────────────────────────────────────────────────────────┤
+│                     sa_property_base                             │  ← Foundation
+├──────────────────────────────────────────────────────────────────┤
+│          Odoo 17  (account, mail, portal, queue_job)             │  ← Core
+└──────────────────────────────────────────────────────────────────┘
 ```
 
-**Module load order** (dependency graph):
-
+**Dependency graph:**
 ```
 sa_property_base
-├── l10n_sa_ejar
+├── l10n_sa_ejar          (+ queue_job)
 │   └── sa_property
 │       └── sa_rental_cycle
 │           ├── sa_broker_commission
@@ -63,6 +64,7 @@ sa_property_base
 │           └── sa_sadad
 ├── sa_maintenance
 │   └── sa_mobile_tech
+├── sa_user_profile
 ├── sa_dashboard
 └── sa_security
     └── sa_portal
@@ -72,267 +74,173 @@ sa_property_base
 
 ## Module Reference
 
-### 1. `sa_property_base` — Foundation
+### `sa_property_base` — Foundation
 
-The minimal core. Defines the two central models and the root menu entry that all other modules extend.
-
-| Model | Purpose |
-|-------|---------|
-| `property.property` | A physical real estate unit (address, type, owner, area) |
-| `property.tenancy` | A rental contract linking a property, tenant, and payment schedule |
-| `property.inspection` | Move-in / move-out condition reports with room-by-room line items |
-
-**Key features**
-- Sequences for property and tenancy references
-- Mail thread & activity mixin on all models (full chatter)
-- Inspection PDF report and lease contract PDF report
-- Hides Odoo's default Discuss menu (clean app grid)
-
----
-
-### 2. `l10n_sa_ejar` — Saudi Localisation & Ejar Integration
-
-Adds all Saudi-specific fields and the Ejar platform connector.
-
-**Fields added to `property.property`**
-- `deed_number` — رقم الصك (property title deed)
-- `national_address` — رقم العنوان الوطني
-- `sa_region_id` → `sa.region` (14 official Saudi administrative regions)
-
-**Fields added to `property.tenancy`**
-- `tenant_id_type` — national_id / iqama / gcc / commercial
-- `tenant_national_id` — ID or Iqama number
-- `ejar_contract_number` — Ejar reference
-- `ejar_status` — pending / registered / active / expired
-- `sadad_reference` — SADAD payment code
-
-**Ejar sync wizard** — credentials-ready connector (development mode returns mock data; production requires REGA API key).
-
-**Riyadh rent freeze** — `_check_rent_freeze()` constraint enforced on all Riyadh (`sa_region_id.code = 'RI'`) property tenancy renewals; blocks any `renewal_rent_increase_pct > 0` until September 2030.
-
----
-
-### 3. `sa_property` — Property & Tenancy Views
-
-Extends base models with Saudi-specific views and property types.
-
-**Property types** (loaded via `sa_property_types.xml`):
-`villa` · `apartment` · `floor` · `annex` · `land` · `shop` · `office` · `warehouse`
-
-**Adds to views**
-- Full Saudi property form (deed, national address, region, area m²)
-- Tenancy form with identity section (ID type, number, expiry, Iqama scan)
-- Kanban and list views for both models
-
----
-
-### 4. `sa_rental_cycle` — Complete Rental Workflow
-
-The end-to-end rental operations module. Central to the system.
-
-**Payment schedule**
-- Generated automatically on tenancy confirmation based on frequency (monthly / quarterly / semi-annual / annual)
-- Each line is a `sa.rent.payment` record with due date, amount, and status
-
-**Payment statuses**
-| Status | Meaning |
-|--------|---------|
-| `draft` | Not yet due |
-| `due` | Due today or past due |
-| `paid` | Collected (linked to `account.payment`) |
-| `overdue` | Past due with no payment |
-| `partial` | Partially collected |
-
-**Wizards**
-- `sa.payment.wizard` — record a rent payment; generates journal entry
-- `sa.end.tenancy.wizard` — terminate a contract; reconciles deposit, final dues
-- `sa.tenancy.renewal.wizard` — renew with optional rent increase (blocked for Riyadh)
-
-**Owner dashboard** — Kanban view per owner showing income, occupancy, and arrears across their portfolio.
-
-**Compliance reports**
-- Active contracts register (with colour-coded expiry)
-- Revenue by owner (pivot)
-- Contracts expiring within 60 days
-- Arrears aging (pivot)
-- Tenant account statement (PDF)
-
-**Scheduled job** — `sa_rental_cron` runs daily to flip `draft` → `due` and `due` → `overdue` based on today's date.
-
----
-
-### 5. `sa_maintenance` — Maintenance Management
-
-Full maintenance lifecycle from request to completion, including contractor management.
-
-**Models**
+Minimal Saudi-shaped core. Defines the two central models and the root menu entry.
 
 | Model | Purpose |
 |-------|---------|
-| `sa.maintenance.request` | A reported issue (category, priority, property, tenant) |
-| `sa.maintenance.work_order` | Assigned work to a specific technician |
-| `sa.maintenance.contract` | Periodic maintenance agreement (monthly, quarterly, annual) |
+| `property.property` | Physical real estate unit — address, type, owner, area, deed |
+| `property.tenancy` | Rental contract linking property, tenant, and payment schedule |
+| `sa.property.inspection` | Move-in / move-out condition reports with room-by-room line items |
+
+---
+
+### `l10n_sa_ejar` — Ejar ECRS Integration
+
+Full async integration with the Saudi Ejar platform (ECRS v4).
+
+**Core models**
+
+| Model | Purpose |
+|-------|---------|
+| `ejar.brokerage.profile` | Office identity registered with Ejar (CR, VAT, license, address) |
+| `ejar.contract` | Ejar contract record with 9-state machine |
+| `ejar.contract.party` | Lessors, tenants, and representatives per contract |
+| `ejar.contract.unit` | Property units linked to each contract |
+| `ejar.sync.log` | Immutable audit log for every outbound API call and inbound webhook |
+
+**Ejar contract states**
+```
+draft → building → ready → submitting → submitted → approved
+                                      ↘ rejected
+                                               ↘ expired / cancelled
+```
+
+**Async processing via `queue_job`**
+- Three dedicated queue channels: `root.ejar.contracts`, `root.ejar.polling`, `root.ejar.documents`
+- Per-job retry with exponential back-off (up to 20 retries for polling)
+- Dead-letter handling: on permanent failure, contract resets to `ready` + Odoo activity created
+
+**Webhook support**
+- Endpoint: `POST /ejar/webhook`
+- HMAC-SHA256 signature validation
+- Replay attack prevention (±300 s timestamp window)
+- Idempotent processing via `idempotency_key`
+- Events: `contract.approved`, `contract.rejected`, `acknowledgement.completed`, `document.verification`, `status.update`
+
+**Saudi compliance fields on `property.property` and `property.tenancy`**
+- `deed_number` — رقم الصك
+- `national_address_code` — رقم العنوان الوطني
+- `sa_region_id` → `sa.region` (14 official Saudi regions)
+- `sa_city_id` → `sa.city`
+- `tenant_id_type` / `tenant_national_id` — NID, Iqama, GCC ID
+- `ejar_payment_schedule` — monthly / quarterly / biannual / annual
+
+---
+
+### `sa_property` — Property & Tenancy Views
+
+Extends base models with full Saudi-specific views.
+
+**Property subtypes:** `villa` · `apartment` · `floor` · `annex` · `land` · `shop` · `office` · `warehouse`
+
+---
+
+### `sa_rental_cycle` — Complete Rental Workflow
+
+End-to-end rental operations: payment schedules, wizards, owner dashboard, compliance reports.
+
+**Payment statuses:** `draft` · `pending` · `paid` · `overdue` · `partial`
+
+**Wizards:** payment recording · tenancy termination · renewal (with Riyadh rent-freeze guard)
+
+**Scheduled job:** `sa_rental_cron` — daily flip of `pending` → `overdue`
+
+---
+
+### `sa_maintenance` — Maintenance Management
+
+| Model | Purpose |
+|-------|---------|
+| `sa.maintenance.request` | Reported issue (category, priority, property, tenant) |
+| `sa.maintenance.work_order` | Work assigned to a specific technician |
+| `sa.maintenance.contract` | Periodic maintenance agreement |
 | `sa.maintenance.skill` | Technician speciality taxonomy |
 
-**Request categories**: `plumbing` · `electrical` · `ac` · `painting` · `carpentry` · `civil` · `other`
+**Categories:** `plumbing` · `electrical` · `ac` · `painting` · `carpentry` · `civil` · `other`
 
-**Request state machine**
-```
-new → approved → scheduled → in_progress → done
-                                         ↘ cancelled
-```
-
-**Cost tracking** — Three cost lines per request: materials, labour, transportation. Cost bearer: `owner` or `tenant`.
-
-**Attachments** — Before/after photos, contractor quotations, invoices stored as `ir.attachment`.
-
-**Maintenance contracts** — Periodic contracts with automatic request generation via `action_generate_request()`. Cron can auto-generate at interval.
-
-**Technician / contractor partner fields**
-- `is_technician` — boolean on `res.partner`
-- `sa_skill_ids` — many2many to `sa.maintenance.skill`
-- `sa_hourly_rate`, `sa_call_out_fee`, `sa_response_hours`
+**State machine:** `new → approved → scheduled → in_progress → done`
 
 ---
 
-### 6. `sa_mobile_tech` — Field Technician Mobile UI
+### `sa_user_profile` — Tenant Profile & Identity
 
-Mobile-optimised Odoo interface for technicians in the field.
+Extended profile fields on `res.partner` for tenants and owners.
 
-- Kanban "My Work Today" view — swipe-friendly, sorted by scheduled time
-- Single-column form with large action buttons (`Start` / `Done` / `Upload Photo`)
-- Before/after photo capture widget per work order
-- Responsive CSS for phone screen widths
-- Default landing page is the technician's kanban (no app grid)
-- Restricted to `group_pms_technician`
+- Gender, date of birth, bio
+- Saudi national address fields (region, district, building number, postal code)
+- `sa.user.verification` — KYC workflow: `draft → submitted → verified / rejected`
+- `sa.user.document` — document vault (national ID, lease contract, salary letter, etc.)
 
 ---
 
-### 7. `sa_broker_commission` — Broker Commissions
+### `sa_broker_commission` — Broker Commissions
 
-Links broker partners to tenancy contracts and manages the commission financial flow.
+Links broker partners to tenancy contracts and manages commission payment flow.
 
-**Commission model** (`sa.broker.commission`)
-- Linked to a `property.tenancy` and a broker `res.partner`
-- Commission basis: `percentage` (% of annual rent) or `fixed` (SAR amount)
-- Payment patterns: `one_time` · `monthly` · `installment`
-- State machine: `draft` → `confirmed` → `paid`
+**Commission basis:** `percentage` (% of annual rent) or `fixed` (SAR amount)
 
-**Financial flow**
-1. Confirm commission → payment schedule generated
-2. Per payment line → "Create Invoice" → Odoo vendor bill (`account.move` type `in_invoice`)
-3. Post bill → Register payment → commission line flips to `paid`
+**Payment patterns:** `on_signup` · `monthly` · `split`
 
-**Reports**
-- Monthly broker commission summary
-- Annual broker commission report
+**Financial flow:** Confirm → payment schedule → create vendor bill → post → register payment
 
 ---
 
-### 8. `sa_notifications` — Automated Alerts
+### `sa_notifications` — Automated Arabic Alerts
 
-Seven Arabic email templates with configurable cron triggers.
-
-| Template | Trigger |
-|----------|---------|
-| تذكير دفعة الإيجار | 7 days before due date |
-| تنبيه متأخرات الإيجار | Day of / after overdue |
-| تنبيه انتهاء العقد | 60 / 30 / 14 days before expiry |
-| تأكيد طلب الصيانة | On maintenance request creation (to tenant) |
-| إسناد أمر العمل | On work order assignment (to technician) |
-| إتمام الصيانة | On work order completion (to tenant) |
-| تجديد تلقائي للعقد | On auto-renewal trigger |
-
-**Settings** — 9 toggle switches under `Settings → إدارة العقارات — التنبيهات` to enable/disable each category independently.
+Seven email templates with configurable cron triggers: rent reminders, overdue alerts, contract expiry warnings, maintenance confirmations, technician assignments.
 
 ---
 
-### 9. `sa_sadad` — SADAD Payment Simulator
+### `sa_sadad` — SADAD Payment Simulator
 
-Simulates the Saudi SADAD payment network for development and demo purposes.
+Simulates the Saudi SADAD payment network for development and demo. Webhook endpoint auto-marks `sa.rent.payment` as paid on callback.
 
-**`sa.sadad.invoice` model**
-- 15-digit SADAD invoice number (auto-sequenced)
-- Biller code configurable in settings
-- QR code generated from invoice data
-- Validity period configurable (default 7 days)
-- Webhook endpoint (`/sadad/webhook`) simulates SADAD callback and auto-marks `sa.rent.payment` as paid
-
-**PDF receipt** — Arabic-formatted payment receipt with QR code.
-
-> **Production note:** Real SADAD integration requires an agreement with SAMA and a bank partnership. This module is a functional simulator only.
+> **Production note:** Real SADAD integration requires an agreement with SAMA and a bank partnership.
 
 ---
 
-### 10. `sa_dashboard` — KPI Dashboard
+### `sa_dashboard` — KPI Dashboard
 
-Interactive single-page dashboard embedded inside Odoo (not a new browser tab).
-
-**KPI cards**
-- إجمالي العقارات — total properties
-- عقود سارية — active tenancies
-- إيرادات هذا الشهر — current month revenue (SAR)
-- متأخرات — total overdue rent (SAR)
-
-**Charts** (Chart.js)
-- 12-month revenue trend line
-- Property occupancy donut (occupied vs available)
-- Maintenance cost by category bar chart
-
-**Tables**
-- Top 5 overdue tenants (amount + days overdue)
-- Top 5 contracts expiring soon (date + property)
-
-All data respects `sa_security` record rules — owners see only their portfolio; managers see all.
+Single-page dashboard: KPI cards (properties, active tenancies, monthly revenue, arrears), 12-month revenue trend, occupancy donut, maintenance cost chart, overdue tenant list. All data respects record rules.
 
 ---
 
-### 11. `sa_portal` — Tenant Self-Service Portal
-
-Four Odoo portal pages accessible at `/my/...` after tenant portal login.
+### `sa_portal` — Tenant Self-Service Portal
 
 | URL | Content |
 |-----|---------|
 | `/my/contracts` | Lease agreement list + property details |
-| `/my/payments` | Payment schedule, stat cards, account statement |
-| `/my/maintenance` | Maintenance request list + new request form |
+| `/my/payments` | Payment schedule and account statement |
+| `/my/maintenance` | Maintenance requests + new request form |
 | `/my/inspections` | Inspection reports (read-only) |
-
-Data is filtered by `sa_security` record rules so tenants only see their own records.
 
 ---
 
-### 12. `sa_security` — RBAC & Record Rules
+### `sa_mobile_tech` — Field Technician Mobile UI
 
-Central security module. All other modules depend on the groups defined here.
+Mobile-optimised kanban ("My Work Today") with swipe-friendly work orders, before/after photo capture, and large action buttons. Restricted to `group_pms_technician`.
 
-**Groups (7 roles)**
+---
 
-| Group | Arabic | Access Level |
-|-------|--------|-------------|
-| `group_pms_admin` | مدير النظام | Full access to all models + settings |
-| `group_pms_manager` | مدير العقارات | All operational data; no system settings |
-| `group_pms_accountant` | المحاسب | Financial records; read-only on properties |
-| `group_pms_agent` | موظف خدمة عملاء | Read + create; limited write |
-| `group_pms_owner` | مالك عقار | Own properties, tenancies, maintenance only |
-| `group_pms_technician` | فني صيانة | Assigned work orders and requests only |
-| `group_pms_tenant` | مستأجر (بوابة) | Portal access (`/my/...`) to own records |
+### `sa_security` — RBAC & Record Rules
 
-**Record rules** (enforced at ORM level)
-- Owners see only properties where `owner_partner_id = current_user.partner_id`
-- Technicians see only work orders where `technician_id = current_user.partner_id`
-- Portal tenants see only tenancies / payments / maintenance where `partner_id = current_user.partner_id`
+Central security module. Seven roles enforced at ORM level.
 
-**Additional features**
-- Audit log (`pms.audit.log`) — every model write tracked with user, timestamp, field, old/new value
-- Last login tracking per user
-- Permission matrix page (HTML) — visual overview of role × model × CRUD
+| Group | Arabic | Scope |
+|-------|--------|-------|
+| `group_pms_admin` | مدير النظام | Full access + settings |
+| `group_pms_manager` | مدير العقارات | All operational data |
+| `group_pms_accountant` | المحاسب | Financial records |
+| `group_pms_agent` | موظف خدمة عملاء | Read + create |
+| `group_pms_owner` | مالك عقار | Own portfolio only |
+| `group_pms_technician` | فني صيانة | Assigned work orders only |
+| `group_pms_tenant_portal` | مستأجر (بوابة) | Portal `/my/…` own records only |
 
 ---
 
 ## Infrastructure
-
-### Stack
 
 | Component | Image | Port |
 |-----------|-------|------|
@@ -345,10 +253,10 @@ Central security module. All other modules depend on the groups defined here.
 |--------|-------|---------|
 | `odoo-db-data` | PostgreSQL data dir | Database persistence |
 | `odoo-web-data` | `/var/lib/odoo` | Filestore (attachments, sessions) |
-| `./addons` | `/mnt/extra-addons` | Custom module hot-reload |
+| `./addons` | `/mnt/extra-addons` | Custom modules |
 | `./config` | `/etc/odoo` | `odoo.conf` |
 
-### `odoo.conf` defaults
+### `odoo.conf` key settings
 
 ```ini
 admin_passwd = admin@123
@@ -358,9 +266,12 @@ db_user = odoo17
 db_password = odoo17
 addons_path = /usr/lib/python3/dist-packages/odoo/addons,/mnt/extra-addons
 log_level = info
-workers = 0          # single-process (dev mode); increase for production
+workers = 0           # single-process; increase for production
 max_cron_threads = 1
-list_db = False      # hides database manager from login page
+list_db = False       # hides database manager from login page
+
+[queue_job]
+channels = root:4,root.ejar:8,root.ejar.contracts:2,root.ejar.polling:10,root.ejar.documents:3
 ```
 
 ---
@@ -370,8 +281,8 @@ list_db = False      # hides database manager from login page
 ### Prerequisites
 
 - Docker ≥ 24
-- `docker-compose` v1 CLI (the `docker-compose` binary, not the v2 `docker compose` plugin)
 - Git
+- SSH access to the server (or run locally)
 
 ### 1. Install Docker (Ubuntu)
 
@@ -379,179 +290,257 @@ list_db = False      # hides database manager from login page
 bash install-docker.sh
 ```
 
-### 2. Clone and start
+### 2. Clone and start containers
 
 ```bash
-git clone git@github.com:AbdelrehmanElhaj/Propza-Saudi.git
-cd Propza-Saudi/odoo17
-bash setup.sh        # first-time: pulls images, creates volumes, starts containers
+git clone git@github.com:AbdelrehmanElhaj/propza-amlak.git
+cd propza-amlak
+bash start.sh
 ```
 
-### 3. Create the demo database
+### 3. Create the database (choose one)
 
 ```bash
-bash create_demodb.sh     # ~5 minutes; installs all 12 modules
-bash create_demo_data.sh  # ~2 minutes; seeds Arabic demo data
+# Clean setup with demo data — recommended for new deployments
+bash create-demodb.sh --with-demo propza
+
+# Clean setup without demo data
+bash create-demodb.sh propza
+
+# Full teardown and rebuild from scratch
+bash create-demodb.sh -f --with-demo propza
 ```
 
 ### 4. Open in browser
 
 ```
 http://localhost:8069
-Database: demodb
-Login:    demo@demo.com
-Password: demo
+Database: propza
+Admin:    admin@propza.sa  /  admin
+Demo users: (any demo email)  /  demo
 ```
 
 ---
 
 ## Demo Database
 
-The `demodb` database ships with realistic Saudi demo data (all content in Arabic):
+Loaded by `create-demo-data.sh`. All content in Arabic, covering realistic Saudi scenarios:
 
-| Category | Count | Detail |
-|----------|-------|--------|
-| الملاك (Owners) | 4 | 3 individuals + 1 company |
-| المستأجرون (Tenants) | 8 | Mix of national ID and Iqama holders |
-| الوسطاء (Brokers) | 3 | 2 individuals + 1 company |
-| الفنيون (Technicians) | 3 | Plumbing / Electrical+HVAC / Painting+Carpentry |
-| العقارات (Properties) | 12 | Villas, apartments, offices, warehouse, shop |
-| Cities | 3 | الرياض · جدة · الدمام |
-| عقود الإيجار (Tenancies) | 9 | 6 active · 1 confirmed · 1 draft · 1 expired |
-| الدفعات (Rent payments) | 31 | Various statuses |
-| المعاينات (Inspections) | 5 | 3 signed · 1 complete · 1 draft |
-| طلبات الصيانة (Maintenance) | 8 | All categories and statuses represented |
-| أوامر العمل (Work orders) | 4 | 1 scheduled · 2 done · 1 in-progress |
-| عقود صيانة (Maint. contracts) | 2 | HVAC + plumbing (both active) |
-| عمولات الوسطاء (Commissions) | 4 | All confirmed and paid |
+| Category | Count | Details |
+|----------|-------|---------|
+| Brokerage Profile | 1 | Propza, Riyadh, UAT credentials |
+| Owners (ملاك) | 4 | 3 individuals + 1 company |
+| Tenants (مستأجرون) | 10 | Mix of NID, Iqama; various verification states |
+| Brokers (وسطاء) | 3 | 2 individuals + 1 company |
+| Technicians (فنيون) | 3 | Plumbing / Electrical+HVAC / Painting+Carpentry |
+| Properties (عقارات) | 12 | Villas · apartments · offices · warehouse · shop; Riyadh, Jeddah, Dammam |
+| Tenancies (عقود إيجار) | 9 | 6 running · 1 confirmed · 1 draft · 1 expired |
+| Rent Payments (دفعات) | 31 | 22 paid · 8 pending · 1 overdue |
+| Inspections (معاينات) | 5 | 3 signed · 1 complete · 1 draft |
+| Maintenance Requests | 8 | All categories and state-machine stages represented |
+| Work Orders | 4 | 1 scheduled · 2 done · 1 in-progress |
+| Maintenance Contracts | 2 | HVAC + plumbing (both active) |
+| Broker Commissions | 4 | All confirmed and paid |
+| **Ejar ECRS Contracts** | **6** | One per state: draft · building · ready · submitted · approved · rejected |
+| Contract Parties | 10 | Lessors + tenants with IDs and IBANs |
+| Contract Units | 5 | With area, floors, bedrooms, furnishing |
+| Sync Logs | 8 | Outbound API calls + inbound webhook events (success and error) |
+| ID Verifications | 10 | Various KYC states |
+| User Documents | 12 | National IDs, lease contracts, salary letters |
+| System Users | 23 | 11 internal + 12 portal — password: `demo` |
 
-**Admin credentials:** `demo@demo.com` / `demo`
+**Login credentials**
+
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | `admin@propza.sa` | `admin` |
+| Property Manager | `manager@propza-demo.sa` | `demo` |
+| Accountant | `accountant@propza-demo.sa` | `demo` |
+| Agent | `agent@propza-demo.sa` | `demo` |
+| Owner (sample) | `m.qahtani@propza-demo.sa` | `demo` |
+| Tenant (sample) | `k.rashidi@propza-demo.sa` | `demo` |
 
 ---
 
 ## Scripts Reference
 
-All scripts live in `odoo17/` and must be run from that directory.
-
 | Script | Purpose |
 |--------|---------|
-| `setup.sh` | First-time setup: pull images, create volumes, start containers |
-| `start.sh` | Start containers (`docker-compose up -d`) |
+| `start.sh` | Start containers (`docker compose up -d`) |
 | `stop.sh` | Stop containers |
-| `restart.sh` | Restart Odoo container only |
-| `status.sh` | Show container status and recent logs |
-| `logs.sh` | Tail Odoo logs |
-| `backup.sh` | Dump all databases to `odoo17/backups/` |
-| `reset.sh` | Wipe database and recreate (destructive) |
-| `create_demodb.sh` | Create `demodb`, install all 12 modules, configure Arabic + SAR |
-| `create_demo_data.sh` | Seed `demodb` with Arabic Saudi demo data |
+| `logs.sh` | Tail Odoo container logs |
+| `install-docker.sh` | Install Docker + compose on Ubuntu |
+| `install-addons.sh` | Install or upgrade custom addons on any database |
+| `create-demodb.sh` | Create database, install modules, configure; supports `--fresh` and `--with-demo` |
+| `create-demo-data.sh` | Seed database with full Arabic Saudi demo data |
 
-### `create_demodb.sh` internals
+### `create-demodb.sh` flags
 
-1. Verifies containers are running
-2. Aborts if `demodb` already exists (safe re-run)
-3. Runs `odoo -d demodb --without-demo=all --load-language ar_001 -i <all_modules> --stop-after-init`
-4. Opens Odoo shell to: activate SAR currency, set company country to Saudi Arabia, set admin credentials and Arabic locale
+| Flag | Effect |
+|------|--------|
+| *(none)* | Create DB + install + configure (skips if DB already exists) |
+| `-u` | Upgrade all modules on existing DB |
+| `-f` / `--fresh` | Drop existing DB, terminate connections, recreate from scratch |
+| `--with-demo` | Also run `create-demo-data.sh` after install |
+| `-f --with-demo` | Full clean teardown + install + demo data in one command |
 
-### `create_demo_data.sh` internals
+```bash
+# Examples
+bash create-demodb.sh propza                       # new install
+bash create-demodb.sh -u propza                    # upgrade modules
+bash create-demodb.sh -f --with-demo propza        # full reset + demo data
+ODOO_DB=propza bash create-demodb.sh --with-demo  # use env var for DB name
+```
 
-Pipes a single Python script to `odoo shell -d demodb`. Creates all records in dependency order with `env.cr.commit()` checkpoints after each group so partial failures don't roll back everything.
+### `install-addons.sh` flags
+
+```bash
+bash install-addons.sh propza              # install all custom addons
+bash install-addons.sh -u propza           # upgrade all custom addons
+bash install-addons.sh --configure propza  # install + configure company (SAR, SA, Arabic)
+bash install-addons.sh --list              # print discovered module names
+bash install-addons.sh --modules sa_property_base,l10n_sa_ejar propza  # specific modules
+```
 
 ---
 
 ## Configuration
 
-### Adding a new database
-
-```bash
-# Inside odoo17/
-docker-compose run --rm web odoo \
-  -d mydb \
-  --without-demo=all \
-  --load-language ar_001 \
-  -i sa_property_base,l10n_sa_ejar,sa_property,sa_security,sa_maintenance,sa_notifications,sa_rental_cycle,sa_sadad,sa_broker_commission,sa_dashboard,sa_portal,sa_mobile_tech \
-  --stop-after-init
-```
-
 ### Upgrading a module after code changes
 
 ```bash
-docker-compose run --rm web odoo \
-  -d demodb \
-  -u sa_rental_cycle \
-  --stop-after-init
+bash install-addons.sh -u propza
+# or upgrade a specific module:
+COMPOSE=$(bash .compose)
+$COMPOSE run --rm web odoo -d propza -u l10n_sa_ejar --stop-after-init
+$COMPOSE restart web
 ```
 
-Then restart Odoo: `bash restart.sh`
+### Running the Odoo shell
 
-### Changing log level
-
-Edit `odoo17/config/odoo.conf`:
-```ini
-log_level = debug   # or: info, warn, error, critical
+```bash
+COMPOSE=$(bash .compose)
+$COMPOSE run --rm -T web odoo shell -d propza << 'PYEOF'
+# Python code
+company = env['res.company'].search([], limit=1)
+print(company.name, company.currency_id.name)
+PYEOF
 ```
-Then `bash restart.sh`.
+
+### Watching logs
+
+```bash
+bash logs.sh
+# or:
+docker logs -f odoo17
+```
+
+### Clearing stale asset bundles
+
+```bash
+docker exec odoo17-db psql -U odoo17 -d propza \
+  -c "DELETE FROM ir_attachment WHERE res_model='ir.ui.view' AND name LIKE '%.assets%';"
+$(bash .compose) restart web
+```
 
 ### Production workers
 
 ```ini
+# config/odoo.conf
 workers = 4
 max_cron_threads = 2
 ```
-Also add a reverse proxy (nginx) in front of port 8069.
+
+Add a reverse proxy (nginx / Caddy) in front of port 8069.
+
+---
+
+## Ejar ECRS Integration
+
+### Authentication
+
+`Basic Base64(api_key:api_secret)` header. Credentials stored as Odoo system parameters:
+
+```
+ejar.api.key.company_{id}
+ejar.api.secret.company_{id}
+ejar.api.environment.company_{id}   # uat | production
+```
+
+Configure at: **Settings → Technical → Parameters → System Parameters** (search: `ejar.api`)
+
+### Contract workflow
+
+1. Create `ejar.contract` linked to a `property.tenancy`
+2. **بدء الإعداد** → add parties (lessor + tenant) and units
+3. **تأكيد الاكتمال** → moves to `ready`
+4. **إرسال إلى إيجار** → enqueues `queue_job`; UI returns immediately
+5. Background worker submits to ECRS; contract transitions to `submitted`
+6. Ejar responds via webhook → contract moves to `approved` or `rejected`
+
+### Webhook setup
+
+```bash
+# 1. Generate a secret
+openssl rand -hex 32
+
+# 2. Store in System Parameters
+ejar.webhook.secret.company_{id}  →  <generated secret>
+
+# 3. Configure Ejar to POST callbacks to:
+https://your-odoo.com/ejar/webhook
+```
+
+### Brokerage profile constraints
+
+| Field | Constraint |
+|-------|-----------|
+| `cr_number` / `unified_number` | Exactly 10 digits |
+| `vat_number` | Exactly 15 digits |
+| `national_address_code` | 4 letters + 4 digits (e.g., `RIYD0001`) |
+| `brokerage_fee` | ≤ 2.5% of annual rent |
 
 ---
 
 ## Roles & Permissions
 
-| Role | Login to Odoo backend | Properties | Tenancies | Payments | Maintenance | Brokers | Settings |
-|------|----------------------|------------|-----------|----------|-------------|---------|----------|
+| Role | Backend | Properties | Tenancies | Payments | Maintenance | Ejar | Settings |
+|------|---------|------------|-----------|----------|-------------|------|----------|
 | Admin | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ |
 | Manager | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ❌ |
-| Accountant | ✅ | Read | ✅ All | ✅ All | Read | ✅ All | ❌ |
-| Agent | ✅ | Read + Create | Read + Create | Read | Read + Create | Read | ❌ |
-| Owner | ✅ Own only | Own only | Own only | Own only | Own only | ❌ | ❌ |
-| Technician | ✅ (maintenance only) | ❌ | ❌ | ❌ | Assigned only | ❌ | ❌ |
-| Tenant | Portal `/my/` only | ❌ | Own only | Own only | Own only | ❌ | ❌ |
+| Accountant | ✅ | Read | ✅ All | ✅ All | Read | Read | ❌ |
+| Agent | ✅ | Read+Create | Read+Create | Read | Read+Create | Read | ❌ |
+| Owner | ✅ Own | Own only | Own only | Own only | Own only | ❌ | ❌ |
+| Technician | ✅ (maint.) | ❌ | ❌ | ❌ | Assigned only | ❌ | ❌ |
+| Tenant | Portal only | ❌ | Own only | Own only | Own only | ❌ | ❌ |
 
-Record rules are enforced at the ORM level — not just UI — so API access is also restricted.
+Record rules are enforced at the ORM level — not just the UI — so API access is also restricted.
 
 ---
 
 ## Saudi Compliance
 
-### Riyadh Rent Freeze
+### Riyadh Rent Freeze (2025–2030)
 
-Royal decree prohibits rent increases on Riyadh properties from 2025 to September 2030. Enforced by `_check_rent_freeze()` in `l10n_sa_ejar/models/sa_tenancy_renewal.py`:
+Royal decree prohibits rent increases on Riyadh properties until September 2030. Enforced as a `_constraint` on `property.tenancy`:
 
 ```python
-if property.sa_region_id.code == 'RI' and renewal_rent_increase_pct > 0:
-    raise UserError(_('لا يُسمح بزيادة الإيجار في عقارات الرياض حتى سبتمبر 2030'))
+if property.sa_region_id.code == 'RUH' and renewal_rent_increase_pct > 0:
+    raise UserError('لا يُسمح بزيادة الإيجار في عقارات الرياض حتى سبتمبر 2030')
 ```
 
-The renewal wizard also shows a yellow warning banner when a Riyadh property is selected.
+The renewal wizard also shows a yellow warning banner for Riyadh properties.
 
-### Ejar Platform
+### National IDs & IBAN
 
-`l10n_sa_ejar` stores the Ejar contract number and sync status. The sync wizard sends contract data to the REGA API. In development mode a mock response is returned; production deployment requires:
-- REGA API credentials in `Settings → l10n_sa_ejar`
-- HTTPS endpoint accessible from the server
+All partner and property forms enforce:
+- رقم الهوية الوطنية or رقم الإقامة with expiry date
+- رقم العنوان الوطني (4-letter + 4-digit short address)
+- IBAN starting with `SA` (24 characters)
 
-### ZATCA Audit Trail
+### Ejar Brokerage Fee Cap
 
-`sa_security` logs every write to a tracked model into `pms.audit.log` with:
-- User, timestamp
-- Model and record ID
-- Field name, old value, new value
-
-Posted `account.move` and `account.payment` records are protected from deletion by override of `unlink()`.
-
-### National Address & IDs
-
-All partner and property forms collect:
-- رقم الهوية الوطنية or رقم الإقامة (with expiry)
-- رقم العنوان الوطني (Saudi short address)
-- IBAN in SA format (24 characters starting with `SA`)
+`ejar.contract` enforces `brokerage_fee ≤ 2.5%` of annual rent via `_check_brokerage_fee_cap`.
 
 ---
 
@@ -560,83 +549,53 @@ All partner and property forms collect:
 ### Repository structure
 
 ```
-propza-dev-v0.0.0/
-├── odoo17/
-│   ├── addons/
-│   │   ├── sa_property_base/
-│   │   │   ├── __manifest__.py
-│   │   │   ├── models/
-│   │   │   ├── views/
-│   │   │   │   ├── menu_root.xml       ← defines root menu early (loaded first)
-│   │   │   │   └── menu.xml            ← child menus (loaded after actions)
-│   │   │   ├── data/
-│   │   │   ├── security/
-│   │   │   └── report/
-│   │   ├── l10n_sa_ejar/
-│   │   ├── sa_property/
-│   │   ├── sa_rental_cycle/
-│   │   ├── sa_maintenance/
-│   │   ├── sa_mobile_tech/
-│   │   ├── sa_broker_commission/
-│   │   ├── sa_notifications/
-│   │   ├── sa_sadad/
-│   │   ├── sa_dashboard/
-│   │   ├── sa_portal/
-│   │   └── sa_security/
-│   ├── config/odoo.conf
-│   ├── docker-compose.yml
-│   └── *.sh
-├── TESTING_GUIDE.md
-└── README.md
+proptech-ejar/
+├── addons/
+│   ├── sa_property_base/
+│   ├── l10n_sa_ejar/
+│   │   ├── models/
+│   │   │   ├── ejar_contract.py
+│   │   │   ├── ejar_contract_jobs.py    ← queue_job integration
+│   │   │   ├── ejar_contract_party.py
+│   │   │   ├── ejar_contract_unit.py
+│   │   │   ├── ejar_sync_log.py
+│   │   │   └── ejar_brokerage_profile.py
+│   │   └── controllers/                 ← webhook endpoint
+│   ├── sa_property/
+│   ├── sa_rental_cycle/
+│   ├── sa_maintenance/
+│   ├── sa_mobile_tech/
+│   ├── sa_broker_commission/
+│   ├── sa_notifications/
+│   ├── sa_sadad/
+│   ├── sa_dashboard/
+│   ├── sa_portal/
+│   ├── sa_security/
+│   └── sa_user_profile/
+├── config/odoo.conf
+├── docker-compose.yml
+├── install-addons.sh
+├── create-demodb.sh
+├── create-demo-data.sh
+├── start.sh  stop.sh  logs.sh
+└── install-docker.sh
 ```
 
 ### XML load order rule
 
-Every module that defines a root `<menuitem>` **must** put it in a separate `views/menu_root.xml` file, loaded **first** in `__manifest__.py` → `data`. Child menus that reference actions must come **after** the views that define those actions.
+Inherited views that reference `inherit_id` from another file must load after that file. Wizards must load before any view that inherits from them.
 
 ```python
 # Correct pattern in __manifest__.py
 'data': [
+    'security/ejar_security.xml',
     'security/ir.model.access.csv',
-    'views/menu_root.xml',      # ← root menuitem first
-    'views/model_views.xml',    # ← defines actions
-    'views/menu.xml',           # ← child menuitems last
+    'data/...',
+    'views/base_views.xml',          # define base views first
+    'wizard/wizard_views.xml',       # wizards before anything that inherits them
+    'views/inherited_views.xml',     # inherits from both above
+    'views/menu.xml',                # menus always last
 ],
-```
-
-### Running Odoo shell
-
-```bash
-cd odoo17
-docker-compose run --rm -T web odoo shell -d demodb << 'PYEOF'
-# Python code here
-env['res.partner'].search([('is_tenant', '=', True)])
-PYEOF
-```
-
-### Watching logs
-
-```bash
-bash logs.sh          # tails odoo17 container logs
-# or directly:
-docker logs -f odoo17
-```
-
-### Clearing stale asset bundles
-
-If JavaScript changes are not appearing after a module upgrade:
-
-```bash
-docker exec odoo17-db psql -U odoo17 -d demodb \
-  -c "DELETE FROM ir_attachment WHERE res_model='ir.ui.view' AND name LIKE '%.assets%';"
-bash restart.sh
-```
-
-### Running module upgrade
-
-```bash
-docker-compose run --rm web odoo -d demodb -u sa_dashboard --stop-after-init
-bash restart.sh
 ```
 
 ### Git workflow
@@ -644,21 +603,21 @@ bash restart.sh
 ```bash
 git checkout -b feature/my-feature
 # make changes
-git add odoo17/addons/sa_my_module/
-git commit -m "feat(sa_my_module): description"
+git add addons/l10n_sa_ejar/
+git commit -m "feat(l10n_sa_ejar): description"
 git push origin feature/my-feature
-# open PR → merge → pull on EC2 → restart Odoo
+# PR → merge → pull on server → restart
 ```
 
-### EC2 deployment
+### Server deployment
 
 ```bash
-# On your local machine
-ssh -i Propza-Saudi-dev.pem ubuntu@ec2-51-21-218-85.eu-north-1.compute.amazonaws.com \
-  "cd ~/Propza-Saudi && git pull origin main && cd odoo17 && docker-compose restart web"
+ssh proptech-amlak "cd ~/propza-amlak && git pull origin main"
+# Then upgrade modules:
+ssh proptech-amlak "cd ~/propza-amlak && bash install-addons.sh -u propza"
 ```
 
----
+**Server:** `13.50.5.37` — `ubuntu@proptech-amlak` (SSH alias)
 
 ---
 
@@ -666,8 +625,7 @@ ssh -i Propza-Saudi-dev.pem ubuntu@ec2-51-21-218-85.eu-north-1.compute.amazonaws
 
 | | |
 |---|---|
-| Email | hdr333@gmail.com |
-| Mobile | +966 57 377 1364 |
+| Email | a.elhaj@proptech.sa |
 | LinkedIn | [abdelrehman-elhaj](https://www.linkedin.com/in/abdelrehman-elhaj-972a49257/) |
 
-*Odoo 17 · PostgreSQL 15 · Docker*
+*Odoo 17 · PostgreSQL 15 · Docker · OCA queue_job*
