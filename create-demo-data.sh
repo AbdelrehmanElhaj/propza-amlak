@@ -1369,7 +1369,7 @@ ec1 = env['ejar.contract'].create({
     'payment_option':       'bank_transfer',
     'sublease_allowed':     False,
     'ejar_fees_paid_by':    'brokerage_office',
-    'brokerage_fee':        4000.0,
+    'brokerage_fee':        2000.0,
     'brokerage_fee_paid_by':'lessor',
 })
 ec1.action_start_building()
@@ -1413,7 +1413,7 @@ ec3 = env['ejar.contract'].create({
     'ejar_fees_paid_by':    'brokerage_office',
     'ejar_contract_id':     'DEMO-EJAR-CONTRACT-003',
     'ejar_contract_number': '9876543210',
-    'brokerage_fee':        6000.0,
+    'brokerage_fee':        3000.0,
     'brokerage_fee_paid_by':'lessor',
 })
 ec3.action_start_building()
