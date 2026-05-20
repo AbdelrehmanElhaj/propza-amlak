@@ -72,13 +72,14 @@
         'views/res_partner_views.xml',
         'views/ejar_brokerage_profile_views.xml',
         'views/ejar_contract_views.xml',
-        'views/ejar_contract_job_views.xml',   # job monitoring overlays
         'views/ejar_sync_log_views.xml',
-        'views/menu.xml',
-        # Wizards
+        # Wizards (must precede ejar_contract_job_views which inherits submit wizard)
         'wizard/ejar_sync_wizard_views.xml',
         'wizard/ejar_submit_wizard_views.xml',
         'wizard/ejar_upload_doc_wizard_views.xml',
+        # Job monitoring overlays (inherit from contract + submit wizard views above)
+        'views/ejar_contract_job_views.xml',
+        'views/menu.xml',
     ],
     'installable': True,
     'auto_install': False,
