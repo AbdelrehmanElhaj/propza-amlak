@@ -1618,7 +1618,7 @@ ec6 = env['ejar.contract'].create({
     'rent_amount':          55000.0,
     'currency_id':          SAR_curr.id,
     'payment_schedule':     'biannual',
-    'payment_option':       'cheque',
+    'payment_option':       'bank_transfer',
     'sublease_allowed':     False,
     'ejar_fees_paid_by':    'brokerage_office',
     'brokerage_fee':        1375.0,
