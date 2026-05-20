@@ -45,10 +45,12 @@
             </div>
 
             <!-- Additional hidden fields required by expressions above -->
-            <field name="has_active_job" invisible="1"/>
-            <field name="job_state" invisible="1"/>
-            <field name="job_progress" invisible="1"/>
-            <field name="job_channel" invisible="1"/>
+            <field name="rent_freeze_warning" position="after">
+                <field name="has_active_job" invisible="1"/>
+                <field name="job_state" invisible="1"/>
+                <field name="job_progress" invisible="1"/>
+                <field name="job_channel" invisible="1"/>
+            </field>
 
             <!-- Job monitoring section inside the API tab -->
             <page name="ejar_api" position="inside">
