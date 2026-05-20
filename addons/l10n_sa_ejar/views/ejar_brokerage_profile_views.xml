@@ -14,6 +14,7 @@
                            options="{'terminology': {'true': 'تم التحقق', 'false': 'لم يتم التحقق'}}"/>
                 </header>
                 <sheet>
+                    <field name="license_expired" invisible="1"/>
                     <div class="alert alert-warning" role="alert"
                          invisible="not license_expired">
                         <i class="fa fa-exclamation-triangle"/> &#160;
