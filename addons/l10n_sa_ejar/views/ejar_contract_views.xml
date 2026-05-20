@@ -8,7 +8,7 @@
         <field name="name">ejar.contract.list</field>
         <field name="model">ejar.contract</field>
         <field name="arch" type="xml">
-            <list string="عقود إيجار"
+            <tree string="عقود إيجار"
                   decoration-success="ejar_status == 'approved'"
                   decoration-info="ejar_status in ('submitted', 'submitting')"
                   decoration-warning="ejar_status in ('building', 'ready')"
@@ -31,7 +31,7 @@
                        decoration-danger="ejar_status == 'rejected'"
                        decoration-muted="ejar_status in ('expired', 'cancelled')"/>
                 <field name="ejar_last_sync"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -154,8 +154,8 @@
                     <notebook>
 
                         <page string="الأطراف" name="parties">
-                            <field name="party_ids" mode="list">
-                                <list editable="bottom"
+                            <field name="party_ids" mode="tree">
+                                <tree editable="bottom"
                                       decoration-success="sync_state == 'synced'"
                                       decoration-danger="sync_state == 'failed'">
                                     <field name="role"/>
@@ -173,13 +173,13 @@
                                            decoration-danger="sync_state == 'failed'"
                                            optional="show"/>
                                     <field name="sync_error" readonly="1" optional="hide"/>
-                                </list>
+                                </tree>
                             </field>
                         </page>
 
                         <page string="الوحدات" name="units">
-                            <field name="unit_ids" mode="list">
-                                <list editable="bottom"
+                            <field name="unit_ids" mode="tree">
+                                <tree editable="bottom"
                                       decoration-success="sync_state == 'synced'"
                                       decoration-danger="sync_state == 'failed'">
                                     <field name="property_id"/>
@@ -196,7 +196,7 @@
                                            decoration-warning="sync_state == 'pending'"
                                            decoration-danger="sync_state == 'failed'"
                                            optional="show"/>
-                                </list>
+                                </tree>
                             </field>
                         </page>
 
@@ -347,7 +347,7 @@
     <record id="action_ejar_contract" model="ir.actions.act_window">
         <field name="name">عقود إيجار</field>
         <field name="res_model">ejar.contract</field>
-        <field name="view_mode">list,kanban,form</field>
+        <field name="view_mode">tree,kanban,form</field>
         <field name="search_view_id" ref="view_ejar_contract_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">أنشئ عقد إيجار جديد</p>
