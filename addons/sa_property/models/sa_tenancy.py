@@ -99,20 +99,4 @@ class SaTenancy(models.Model):
         if not self.property_id.sa_deed_number:
             raise UserError(_('يجب إدخال رقم صك العقار قبل الإرسال لإيجار'))
 
-        api = self.env['ejar.api.connector']
-        result = api._simulate_submit(self)
-
-        if result.get('success'):
-            # Note: ejar_contract_number is a related/readonly field on
-            # l10n_sa_ejar — sourced from ejar_contract_id. Use
-            # action_create_ejar_contract to create the linked record.
-            self.sa_ejar_status = 'pending'
-            return {
-                'type': 'ir.actions.client',
-                'tag': 'display_notification',
-                'params': {
-                    'title': _('تم الإرسال'),
-                    'message': _('رقم العقد: %s') % result.get('contract_number'),
-                    'type': 'success',
-                }
-            }
+        return self.action_create_ejar_contract()

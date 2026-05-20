@@ -8,4 +8,3 @@ from . import ejar_contract_unit
 from . import ejar_sync_log
 from . import ejar_contract
 from . import ejar_contract_jobs   # async job layer — must load after ejar_contract
-from . import ejar_api

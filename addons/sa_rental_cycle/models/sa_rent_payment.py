@@ -556,25 +556,7 @@ class PropertyTenancyCycle(models.Model):
         if not self.property_id.sa_deed_number:
             raise UserError(_('يجب إدخال رقم صك العقار'))
 
-        api = self.env['ejar.api.connector']
-        result = api._simulate_submit(self)
-        if result.get('success'):
-            # ejar_contract_number is a related/readonly field sourced from
-            # ejar_contract_id. Use action_create_ejar_contract for the
-            # actual contract record creation.
-            self.write({
-                'sa_ejar_status': 'pending',
-                'sa_cycle_state': 'ejar_sent',
-            })
-            return {
-                'type': 'ir.actions.client',
-                'tag': 'display_notification',
-                'params': {
-                    'title': _('تم الإرسال لإيجار'),
-                    'message': _('رقم العقد: %s') % result.get('contract_number'),
-                    'type': 'success',
-                }
-            }
+        return self.tenancy_id.action_create_ejar_contract()
 
     # ─── إنهاء الإيجار ───────────────────────────────────────────
     def action_open_end_wizard(self):

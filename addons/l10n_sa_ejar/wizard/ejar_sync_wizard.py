@@ -17,13 +17,6 @@ class EjarSyncWizard(models.TransientModel):
     new_end_date = fields.Date(string='تاريخ انتهاء جديد')
     new_rent = fields.Float(string='إيجار سنوي جديد')
 
-    simulation_mode = fields.Boolean(
-        string='وضع المحاكاة',
-        default=True,
-        readonly=True,
-        help='Simulation mode active — real API credentials not set yet'
-    )
-
     def action_execute(self):
         self.ensure_one()
         tenancy = self.tenancy_id
@@ -53,20 +46,4 @@ class EjarSyncWizard(models.TransientModel):
             contract = tenancy.ejar_contract_id
             if not contract:
                 raise UserError(_('لا يوجد عقد إيجار للتجديد'))
-            api = self.env['ejar.api.connector']
-            result = api.renew_contract(contract, self.new_end_date, self.new_rent)
-            if result.get('success'):
-                contract.write({
-                    'end_date': self.new_end_date,
-                    'rent_amount': self.new_rent,
-                    'ejar_status': 'renewed',
-                })
-                return {
-                    'type': 'ir.actions.client',
-                    'tag': 'display_notification',
-                    'params': {
-                        'title': _('تم التجديد'),
-                        'message': _('تم تجديد العقد بنجاح'),
-                        'type': 'success',
-                    }
-                }
+            raise UserError(_('تجديد العقد عبر API إيجار غير متاح بعد — يُرجى التجديد مباشرةً من نموذج عقد إيجار'))
