@@ -48,13 +48,46 @@ def region(code):
 def city_sa(name):
     return env['sa.city'].search([('name','ilike',name)], limit=1)
 
-r_riyadh = region('01') or env['sa.region'].search([], limit=1)
-r_jeddah = region('02') or r_riyadh
-r_dammam = region('04') or r_riyadh
+r_riyadh = region('RUH') or env['sa.region'].search([], limit=1)
+r_jeddah = region('MKH') or r_riyadh   # Jeddah is in Makkah region
+r_dammam = region('EAS') or r_riyadh   # Eastern Province
 
-c_riyadh = city_sa('Riyadh') or env['sa.city'].search([], limit=1)
-c_jeddah = city_sa('Jeddah') or c_riyadh
-c_dammam = city_sa('Dammam') or c_riyadh
+c_riyadh = city_sa('الرياض') or env['sa.city'].search([], limit=1)
+c_jeddah = city_sa('جدة')    or c_riyadh
+c_dammam = city_sa('الدمام') or c_riyadh
+
+# ══════════════════════════════════════════════════════════════════════════
+# 0b — ملف الوساطة وبيانات إيجار  (Ejar Brokerage Profile + Credentials)
+# ══════════════════════════════════════════════════════════════════════════
+print("إعداد ملف الوساطة وبيانات إيجار... (Setting up brokerage profile...)")
+
+params = env['ir.config_parameter'].sudo()
+params.set_param('ejar.api.key.company_%d' % company.id, 'PLACEHOLDER_API_KEY')
+params.set_param('ejar.api.secret.company_%d' % company.id, 'PLACEHOLDER_API_SECRET')
+params.set_param('ejar.api.environment.company_%d' % company.id, 'uat')
+
+ejar_profile = env['ejar.brokerage.profile'].search([('company_id', '=', company.id)], limit=1)
+if not ejar_profile:
+    ejar_profile = env['ejar.brokerage.profile'].create({
+        'company_id':             company.id,
+        'office_name_ar':         'شركة بروبزا للوساطة العقارية',
+        'office_name_en':         'Propza Real Estate Brokerage',
+        'cr_number':              '1000000001',
+        'unified_number':         '1000000001',
+        'license_number':         'FB-LICENSE-001',
+        'license_expiry':         str(ahead(365)),
+        'vat_number':             '300000000000001',
+        'national_address_code':  'RIYD0001',
+        'building_number':        '1234',
+        'street_ar':              'شارع الملك عبدالعزيز',
+        'district_ar':            'حي العليا',
+        'sa_region_id':           r_riyadh.id,
+        'sa_city_id':             c_riyadh.id,
+        'postal_code':            '12211',
+        'is_verified':            False,
+    })
+
+env.cr.commit()
 
 # ══════════════════════════════════════════════════════════════════════════
 # 1 — ملاك العقارات  (Property Owners)
@@ -645,13 +678,15 @@ t1 = tenancy({
     'rent_amount':         80000.0,
     'deposit_amount':      80000.0,
     'currency_id':         SAR.id,
-    'payment_method':      'sadad',
-    'sa_contract_type':    'residential',
-    'sa_payment_schedule': 'quarterly',
-    'sa_broker_id':        broker1.id,
-    'tenant_id_type':      'national_id',
-    'tenant_national_id':  '1098765432',
-    'auto_renew':          True,
+    'payment_method':        'sadad',
+    'sa_contract_type':      'residential',
+    'sa_payment_schedule':   'quarterly',
+    'ejar_payment_schedule': 'quarterly',
+    'sa_broker_id':          broker1.id,
+    'tenant_id_type':        'national_id',
+    'tenant_national_id':    '1098765432',
+    'sublease_allowed':      False,
+    'auto_renew':            True,
     'renewal_period_months': 12,
     'renewal_rent_increase_pct': 0.0,
 })
@@ -667,12 +702,14 @@ t2 = tenancy({
     'rent_amount':         45000.0,
     'deposit_amount':      22500.0,
     'currency_id':         SAR.id,
-    'payment_method':      'bank_transfer',
-    'sa_contract_type':    'residential',
-    'sa_payment_schedule': 'quarterly',
-    'sa_broker_id':        broker2.id,
-    'tenant_id_type':      'national_id',
-    'tenant_national_id':  '1034512678',
+    'payment_method':        'bank_transfer',
+    'sa_contract_type':      'residential',
+    'sa_payment_schedule':   'quarterly',
+    'ejar_payment_schedule': 'quarterly',
+    'sa_broker_id':          broker2.id,
+    'tenant_id_type':        'national_id',
+    'tenant_national_id':    '1034512678',
+    'sublease_allowed':      False,
 })
 
 # ع٣ — نورة في شقة الملقا: قيد التشغيل، دفعة متأخرة، شهري
@@ -686,11 +723,13 @@ t3 = tenancy({
     'rent_amount':         48000.0,
     'deposit_amount':      24000.0,
     'currency_id':         SAR.id,
-    'payment_method':      'mada',
-    'sa_contract_type':    'residential',
-    'sa_payment_schedule': 'monthly',
-    'tenant_id_type':      'national_id',
-    'tenant_national_id':  '1067891234',
+    'payment_method':        'mada',
+    'sa_contract_type':      'residential',
+    'sa_payment_schedule':   'monthly',
+    'ejar_payment_schedule': 'monthly',
+    'tenant_id_type':        'national_id',
+    'tenant_national_id':    '1067891234',
+    'sublease_allowed':      False,
 })
 
 # ع٤ — عائشة في شقة الحمراء: تنتهي خلال ٢٨ يومًا، سنوي
@@ -704,13 +743,15 @@ t4 = tenancy({
     'rent_amount':         42000.0,
     'deposit_amount':      21000.0,
     'currency_id':         SAR.id,
-    'payment_method':      'bank_transfer',
-    'sa_contract_type':    'residential',
-    'sa_payment_schedule': 'annual',
-    'sa_broker_id':        broker3.id,
-    'tenant_id_type':      'iqama',
-    'tenant_national_id':  '2123456789',
-    'auto_renew':          True,
+    'payment_method':        'bank_transfer',
+    'sa_contract_type':      'residential',
+    'sa_payment_schedule':   'annual',
+    'ejar_payment_schedule': 'annual',
+    'sa_broker_id':          broker3.id,
+    'tenant_id_type':        'iqama',
+    'tenant_national_id':    '2123456789',
+    'sublease_allowed':      False,
+    'auto_renew':            True,
     'renewal_period_months': 12,
     'renewal_rent_increase_pct': 0.0,
 })
@@ -726,13 +767,15 @@ t5 = tenancy({
     'rent_amount':         120000.0,
     'deposit_amount':      60000.0,
     'currency_id':         SAR.id,
-    'payment_method':      'bank_transfer',
-    'sa_contract_type':    'commercial',
-    'sa_payment_schedule': 'quarterly',
-    'sa_broker_id':        broker1.id,
-    'tenant_id_type':      'national_id',
-    'tenant_national_id':  '1055443322',
-    'auto_renew':          True,
+    'payment_method':        'bank_transfer',
+    'sa_contract_type':      'commercial',
+    'sa_payment_schedule':   'quarterly',
+    'ejar_payment_schedule': 'quarterly',
+    'sa_broker_id':          broker1.id,
+    'tenant_id_type':        'national_id',
+    'tenant_national_id':    '1055443322',
+    'sublease_allowed':      False,
+    'auto_renew':            True,
     'renewal_period_months': 12,
     'renewal_rent_increase_pct': 0.0,
 })
@@ -748,11 +791,13 @@ t6 = tenancy({
     'rent_amount':         38000.0,
     'deposit_amount':      19000.0,
     'currency_id':         SAR.id,
-    'payment_method':      'sadad',
-    'sa_contract_type':    'residential',
-    'sa_payment_schedule': 'monthly',
-    'tenant_id_type':      'national_id',
-    'tenant_national_id':  '1066778899',
+    'payment_method':        'sadad',
+    'sa_contract_type':      'residential',
+    'sa_payment_schedule':   'monthly',
+    'ejar_payment_schedule': 'monthly',
+    'tenant_id_type':        'national_id',
+    'tenant_national_id':    '1066778899',
+    'sublease_allowed':      False,
 })
 
 # ع٧ — محمد في المحل التجاري: تجاري، ٨ أشهر، نصف سنوي
@@ -766,12 +811,14 @@ t7 = tenancy({
     'rent_amount':         55000.0,
     'deposit_amount':      55000.0,
     'currency_id':         SAR.id,
-    'payment_method':      'cheque',
-    'sa_contract_type':    'commercial',
-    'sa_payment_schedule': 'semi_annual',
-    'sa_broker_id':        broker3.id,
-    'tenant_id_type':      'national_id',
-    'tenant_national_id':  '1077889900',
+    'payment_method':        'cheque',
+    'sa_contract_type':      'commercial',
+    'sa_payment_schedule':   'semi_annual',
+    'ejar_payment_schedule': 'semi_annual',
+    'sa_broker_id':          broker3.id,
+    'tenant_id_type':        'national_id',
+    'tenant_national_id':    '1077889900',
+    'sublease_allowed':      False,
 })
 
 # ع٨ — ريم في شقة الدانة: مؤكد لم يبدأ بعد
@@ -1301,6 +1348,81 @@ comm4.action_confirm()
 env.cr.commit()
 
 # ══════════════════════════════════════════════════════════════════════════
+# 12 — عقود إيجار (نظام ECRS)  (Ejar ECRS Contracts — 3 sample records)
+# ══════════════════════════════════════════════════════════════════════════
+print("إنشاء عقود إيجار ECRS... (Creating Ejar ECRS contracts...)")
+
+SAR_curr = env['res.currency'].search([('name', '=', 'SAR')], limit=1)
+
+# ع.إيجار-١ — فيلا الروضة: حالة building (جارٍ الإعداد)
+ec1 = env['ejar.contract'].create({
+    'brokerage_profile_id': ejar_profile.id,
+    'tenancy_id':           t1.id,
+    'contract_type':        'residential',
+    'contract_sub_type':    'main',
+    'use_type':             'residential_families',
+    'start_date':           t1.start_date,
+    'end_date':             t1.end_date,
+    'rent_amount':          80000.0,
+    'currency_id':          SAR_curr.id,
+    'payment_schedule':     'quarterly',
+    'payment_option':       'bank_transfer',
+    'sublease_allowed':     False,
+    'ejar_fees_paid_by':    'brokerage_office',
+    'brokerage_fee':        4000.0,
+    'brokerage_fee_paid_by':'lessor',
+})
+ec1.action_start_building()
+
+# ع.إيجار-٢ — شقة العليا: حالة submitted (بانتظار الموافقة من إيجار)
+ec2 = env['ejar.contract'].create({
+    'brokerage_profile_id': ejar_profile.id,
+    'tenancy_id':           t2.id,
+    'contract_type':        'residential',
+    'contract_sub_type':    'main',
+    'use_type':             'residential_families',
+    'start_date':           t2.start_date,
+    'end_date':             t2.end_date,
+    'rent_amount':          45000.0,
+    'currency_id':          SAR_curr.id,
+    'payment_schedule':     'quarterly',
+    'payment_option':       'bank_transfer',
+    'sublease_allowed':     False,
+    'ejar_fees_paid_by':    'brokerage_office',
+    'ejar_contract_id':     'DEMO-EJAR-CONTRACT-002',
+    'ejar_contract_number': '1234567890',
+})
+ec2.action_start_building()
+# Manually push to submitted state for demo
+ec2.write({'ejar_status': 'submitted', 'ejar_last_sync': today})
+
+# ع.إيجار-٣ — مكتب بيزنس باي: حالة approved (موافق عليه)
+ec3 = env['ejar.contract'].create({
+    'brokerage_profile_id': ejar_profile.id,
+    'tenancy_id':           t5.id,
+    'contract_type':        'commercial',
+    'contract_sub_type':    'main',
+    'use_type':             'commercial',
+    'start_date':           t5.start_date,
+    'end_date':             t5.end_date,
+    'rent_amount':          120000.0,
+    'currency_id':          SAR_curr.id,
+    'payment_schedule':     'quarterly',
+    'payment_option':       'bank_transfer',
+    'sublease_allowed':     False,
+    'ejar_fees_paid_by':    'brokerage_office',
+    'ejar_contract_id':     'DEMO-EJAR-CONTRACT-003',
+    'ejar_contract_number': '9876543210',
+    'brokerage_fee':        6000.0,
+    'brokerage_fee_paid_by':'lessor',
+})
+ec3.action_start_building()
+# Manually push to approved state for demo
+ec3.write({'ejar_status': 'approved', 'ejar_last_sync': today})
+
+env.cr.commit()
+
+# ══════════════════════════════════════════════════════════════════════════
 # 13 — مستخدمو النظام  (System Users — 21 accounts, password: demo)
 # ══════════════════════════════════════════════════════════════════════════
 print("إنشاء حسابات المستخدمين... (Creating user accounts...)")
@@ -1511,6 +1633,7 @@ print("")
 print("══════════════════════════════════════════════════════════════")
 print("  ✓ تم تحميل البيانات التجريبية بنجاح! Demo data loaded!")
 print("══════════════════════════════════════════════════════════════")
+print(f"  ملف الوساطة      / Brokerage Profile: 1  (بروبزا للوساطة، بيانات UAT)")
 print(f"  الملاك           / Owners:      4  ({owner1.name[:20]}…، {owner4.name[:20]}…)")
 print(f"  المستأجرون       / Tenants:    10  (٦ موثَّق، ٢ قيد المراجعة، ٢ مسودة)")
 print(f"  الوسطاء          / Brokers:     3")
@@ -1523,6 +1646,7 @@ print(f"  طلبات الصيانة   / Maint Reqs:  8  (متنوعة الحال
 print(f"  أوامر العمل     / Work Orders: 4  (١ مجدول، ٢ منجز، ١ قيد التنفيذ)")
 print(f"  عقود الصيانة    / Maint Conts: 2  (تكييف + سباكة، نشطة)")
 print(f"  عمولات الوسطاء  / Commissions: 4  (جميعها مؤكدة ومدفوعة)")
+print(f"  عقود إيجار ECRS / Ejar Contracts: {env['ejar.contract'].search_count([])}  (building، submitted، approved)")
 print(f"  توثيق الهوية    / Verifications: {env['sa.user.verification'].search_count([])}  (٦ موثَّق، ٢ مقدَّم، ٢ مسودة/مرفوض)")
 print(f"  وثائق المستخدمين / Documents:  {env['sa.user.document'].search_count([])}  (هويات، عقود، خطابات راتب)")
 print(f"  المستخدمون       / Users:      23  (كلمة المرور: demo)")

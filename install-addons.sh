@@ -66,7 +66,7 @@ configure_company() {
     local admin_password="${ADMIN_PASSWORD:-admin}"
 
     echo ""
-    echo "Configuring company locale (SAR, Saudi Arabia, Arabic)..."
+    echo "Configuring company locale (SAR, Saudi Arabia, Arabic) and Ejar UAT credentials..."
 
     $COMPOSE run --rm -T web odoo shell -d "$db" << PYEOF
 SAR = env['res.currency'].search([('name', '=', 'SAR')], limit=1)
@@ -95,8 +95,37 @@ if admin:
         'password': '${admin_password}',
     })
 
+# Ejar UAT credentials (placeholders — replace via Settings → System Parameters)
+params = env['ir.config_parameter'].sudo()
+params.set_param('ejar.api.key.company_%d' % company.id, 'PLACEHOLDER_API_KEY')
+params.set_param('ejar.api.secret.company_%d' % company.id, 'PLACEHOLDER_API_SECRET')
+params.set_param('ejar.api.environment.company_%d' % company.id, 'uat')
+
+# Ejar brokerage profile (placeholder data — update with real details)
+r_riyadh = env['sa.region'].search([('code', '=', 'RUH')], limit=1)
+c_riyadh = env['sa.city'].search([('name_ar', 'ilike', 'الرياض')], limit=1)
+if not env['ejar.brokerage.profile'].search([('company_id', '=', company.id)], limit=1):
+    env['ejar.brokerage.profile'].create({
+        'company_id':            company.id,
+        'office_name_ar':        'شركة بروبزا للوساطة العقارية',
+        'office_name_en':        'Propza Real Estate Brokerage',
+        'cr_number':             '1000000001',
+        'unified_number':        '1000000001',
+        'license_number':        'FB-LICENSE-001',
+        'license_expiry':        '2026-12-31',
+        'vat_number':            '300000000000001',
+        'national_address_code': 'RIYD0001',
+        'building_number':       '1234',
+        'street_ar':             'شارع الملك عبدالعزيز',
+        'district_ar':           'حي العليا',
+        'sa_region_id':          r_riyadh.id if r_riyadh else False,
+        'sa_city_id':            c_riyadh.id if c_riyadh else False,
+        'postal_code':           '12211',
+        'is_verified':           False,
+    })
+
 env.cr.commit()
-print('Company and admin configured.')
+print('Company, admin, and Ejar UAT credentials configured.')
 PYEOF
 }
 
@@ -204,3 +233,9 @@ if [ "$CONFIGURE" = true ]; then
 fi
 echo ""
 echo "Demo data is optional: ./create-demo-data.sh   (only if you want sample records)"
+if [ "$CONFIGURE" = true ]; then
+    echo ""
+    echo "  Ejar credentials set to UAT placeholders — update real values at:"
+    echo "  Settings → Technical → Parameters → System Parameters (search: ejar.api)"
+    echo "  Brokerage profile: Ejar → ملفات مكاتب الوساطة"
+fi
