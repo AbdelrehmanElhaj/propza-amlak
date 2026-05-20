@@ -31,6 +31,18 @@ Propza replaces generic property management add-ons with a system purpose-built 
 - **Role-aware** — 7 RBAC groups with ORM-level record rules; API access also restricted
 - **No vendor lock-in** — thin `sa_property_base` core extended cleanly by all other modules
 
+### Main Menu
+
+| # | App | Arabic | Notes |
+|---|-----|--------|-------|
+| 1 | لوحة التحكم | Dashboard | Standalone KPI app |
+| 2 | إدارة العقارات | Property Management | Properties, tenancies, payments, commissions, inspections |
+| 3 | إيجار | Ejar | ECRS contracts, brokerage profiles, sync logs |
+| 4 | الصيانة | Maintenance | Requests, work orders, contracts |
+| 5 | حسابي | My Account | User profile, verifications, documents |
+
+Rent payments (الدفعات) live under **إدارة العقارات** as a sub-group with "جميع الدفعات" and "دفعات متأخرة".
+
 ---
 
 ## Architecture
@@ -330,24 +342,24 @@ Loaded by `create-demo-data.sh`. All content in Arabic, covering realistic Saudi
 |----------|-------|---------|
 | Brokerage Profile | 1 | Propza, Riyadh, UAT credentials |
 | Owners (ملاك) | 4 | 3 individuals + 1 company |
-| Tenants (مستأجرون) | 10 | Mix of NID, Iqama; various verification states |
+| Tenants (مستأجرون) | 10 | Mix of NID, Iqama; 6 verified · 2 pending · 2 draft/rejected |
 | Brokers (وسطاء) | 3 | 2 individuals + 1 company |
 | Technicians (فنيون) | 3 | Plumbing / Electrical+HVAC / Painting+Carpentry |
-| Properties (عقارات) | 12 | Villas · apartments · offices · warehouse · shop; Riyadh, Jeddah, Dammam |
-| Tenancies (عقود إيجار) | 9 | 6 running · 1 confirmed · 1 draft · 1 expired |
+| Properties (عقارات) | 12 | 8 residential + 4 commercial; Riyadh, Jeddah, Dammam |
+| Tenancies (عقود إيجار) | 11 | 7 running · 1 confirmed · 3 draft |
 | Rent Payments (دفعات) | 31 | 22 paid · 8 pending · 1 overdue |
 | Inspections (معاينات) | 5 | 3 signed · 1 complete · 1 draft |
-| Maintenance Requests | 8 | All categories and state-machine stages represented |
-| Work Orders | 4 | 1 scheduled · 2 done · 1 in-progress |
+| Maintenance Requests | 10 | new×2 · approved×4 · scheduled×1 · in_progress×1 · done×2 |
+| Work Orders | 4 | 2 scheduled · 2 done |
 | Maintenance Contracts | 2 | HVAC + plumbing (both active) |
-| Broker Commissions | 4 | All confirmed and paid |
+| Broker Commissions | 4 | All confirmed — 172,200 SAR total |
 | **Ejar ECRS Contracts** | **6** | One per state: draft · building · ready · submitted · approved · rejected |
-| Contract Parties | 10 | Lessors + tenants with IDs and IBANs |
-| Contract Units | 5 | With area, floors, bedrooms, furnishing |
-| Sync Logs | 8 | Outbound API calls + inbound webhook events (success and error) |
-| ID Verifications | 10 | Various KYC states |
+| Contract Parties | 10 | 5 lessors + 5 tenants; 7 synced · 2 pending · 1 failed |
+| Contract Units | 5 | villa×1 · apartment×3 · office×1; various furnishing states |
+| Sync Logs | 10 | 8 outbound + 2 inbound; 8 success · 2 error |
+| ID Verifications | 10 | 6 verified · 2 submitted · 2 draft/rejected |
 | User Documents | 12 | National IDs, lease contracts, salary letters |
-| System Users | 23 | 11 internal + 12 portal — password: `demo` |
+| System Users | 24 | 12 internal + 12 portal — password: `demo` |
 
 **Login credentials**
 
