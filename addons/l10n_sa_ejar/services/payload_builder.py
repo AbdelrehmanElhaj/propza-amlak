@@ -67,11 +67,11 @@ class EjarPayloadBuilder:
             'contract_type': contract.contract_type or 'residential',
             'sub_type': contract.contract_sub_type or 'main',
             'use_type': contract.use_type or 'residential_families',
-            'start_date': str(contract.start_date),
-            'end_date': str(contract.end_date),
+            'contract_start_date': str(contract.start_date),
+            'contract_end_date': str(contract.end_date),
             'number_of_years': round(contract.duration_years, 4),
             'sublease_allowed': contract.sublease_allowed,
-            'custom_terms': contract.custom_terms or '',
+            'custom_terms_accepted': bool(contract.custom_terms),
         }
         return attrs
 
@@ -99,7 +99,7 @@ class EjarPayloadBuilder:
             'billing_type': contract.payment_schedule,
             'payment_option': contract.payment_option or 'bank_transfer',
             'iban_number': iban,
-            'iban_belongs_to': iban_belongs_to,
+            'iban_belong_to': iban_belongs_to,
             'ejar_fees_paid_by': contract.ejar_fees_paid_by or 'brokerage_office',
         }
 
@@ -195,8 +195,10 @@ class EjarPayloadBuilder:
 
         return {
             'role': party.role,
-            'entity_type': entity_type_map.get(party.entity_type, 'individual_entities'),
-            'entity_id': entity_id,
+            'protect_identity': False,
+            'is_representative': party.role in ('lessor_representative', 'tenant_representative'),
+            '_entity_id': entity_id,
+            '_entity_type': entity_type_map.get(party.entity_type, 'individual_entities'),
         }
 
     # ------------------------------------------------------------------

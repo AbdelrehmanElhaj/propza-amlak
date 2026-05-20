@@ -359,21 +359,30 @@ class EjarContractLifecycleService:
         if unit.ejar_contract_unit_id:
             return
 
-        attrs = self._builder.build_unit_attributes(unit)
+        if not unit.ejar_property_id or not unit.ejar_unit_id:
+            raise EjarPayloadError(
+                f"Unit {unit.display_name} is missing ejar_property_id / ejar_unit_id. "
+                "Register the property and unit in the Ejar portfolio before submitting.",
+                odoo_field='ejar_unit_id',
+                odoo_model='ejar.contract.unit',
+            )
+
         try:
-            resp = client.attach_unit(ejar_contract_id, attrs, correlation_id=correlation_id)
+            resp = client.attach_unit(
+                ejar_contract_id,
+                unit.ejar_property_id,
+                unit.ejar_unit_id,
+                correlation_id=correlation_id,
+            )
         except EjarConflictError as exc:
             existing = exc.existing_resource or {}
             unit.sudo().write({
-                'ejar_property_id': existing.get('property_id', ''),
-                'ejar_unit_id': existing.get('unit_id', ''),
                 'ejar_contract_unit_id': existing.get('id', ''),
                 'sync_state': 'synced',
             })
             return
 
         data = resp.get('data', {})
-        included = resp.get('included', [{}])
         unit.sudo().write({
             'ejar_contract_unit_id': data.get('id', ''),
             'sync_state': 'synced',

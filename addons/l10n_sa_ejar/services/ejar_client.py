@@ -510,8 +510,8 @@ class EjarApiClient:
         ikey = self._build_idempotency_key(
             "create_contract",
             self._company_id,
-            attributes.get("start_date", ""),
-            attributes.get("end_date", ""),
+            attributes.get("contract_start_date", ""),
+            attributes.get("contract_end_date", ""),
             attributes.get("contract_type", ""),
         )
         body = {"data": {"type": "contracts", "attributes": attributes}}
@@ -619,22 +619,28 @@ class EjarApiClient:
     def attach_unit(
         self,
         contract_id: str,
-        attributes: Dict[str, Any],
+        property_id: str,
+        unit_id: str,
         *,
         correlation_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         POST /contracts/{contract_id}/units
-        Attach a property unit to a draft contract.
+        Attach an existing Ejar portfolio unit to a draft contract.
+
+        property_id and unit_id must be Ejar portfolio UUIDs (not Odoo IDs).
         """
         cid = correlation_id or str(uuid.uuid4())
         ep = EP_CONTRACT_UNITS.format(contract_id=contract_id)
         ikey = self._build_idempotency_key(
-            "attach_unit", self._company_id, contract_id,
-            attributes.get("unit_id", ""),
-            attributes.get("property_id", ""),
+            "attach_unit", self._company_id, contract_id, unit_id, property_id,
         )
-        body = {"data": {"type": "contract_units", "attributes": attributes}}
+        body = {
+            "data": {
+                "contract_property": {"id": property_id},
+                "contract_units": [{"id": unit_id}],
+            }
+        }
         return self._post(ep, body, correlation_id=cid, idempotency_key=ikey)
 
     def remove_unit(
@@ -703,16 +709,31 @@ class EjarApiClient:
         POST /contracts/{contract_id}/parties
         Add a lessor, tenant, or representative party to a draft contract.
 
-        Required attributes: role, entity_type, entity_id (from individual/org entity)
+        attributes must contain: role, protect_identity, is_representative,
+        _entity_id, _entity_type (prefixed keys are popped into relationships).
         """
         cid = correlation_id or str(uuid.uuid4())
         ep = EP_CONTRACT_PARTIES.format(contract_id=contract_id)
+
+        entity_id = attributes.pop("_entity_id", "")
+        entity_type = attributes.pop("_entity_type", "individual_entities")
+
         ikey = self._build_idempotency_key(
             "add_party", self._company_id, contract_id,
             attributes.get("role", ""),
-            attributes.get("entity_id", ""),
+            entity_id,
         )
-        body = {"data": {"type": "contract_parties", "attributes": attributes}}
+        body = {
+            "data": {
+                "type": "contract_parties",
+                "attributes": attributes,
+                "relationships": {
+                    "entity": {
+                        "data": {"id": entity_id, "type": entity_type}
+                    }
+                },
+            }
+        }
         return self._post(ep, body, correlation_id=cid, idempotency_key=ikey)
 
     def update_party(
