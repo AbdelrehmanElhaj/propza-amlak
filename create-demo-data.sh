@@ -1503,7 +1503,7 @@ ejar_party(ec3, 'tenant', 'individual', 'عمر محمد الفاروق',
            sync_state='synced')
 ejar_unit(ec3, prop4, 'عليا-٣ب', 'apartment', 140.0,
           floor_number=3, bedrooms=3, bathrooms=2,
-          finishing='finished', furnishing='semi_finished', sync_state='synced')
+          finishing='finished', furnishing='furnish_old', sync_state='synced')
 sync_log(ec3, 'contract_submit', 'outbound',
          '/ecrs/api/v1/contracts', 'POST', 200, 842,
          request_body='{"contractType":"RESIDENTIAL","startDate":"' + str(t2.start_date) + '"}',
@@ -1596,7 +1596,7 @@ ejar_party(ec5, 'tenant', 'individual', 'عائشة أحمد مالك',
            nationality='PK', sync_state='failed')
 ejar_unit(ec5, prop6, 'حمراء-١٥', 'apartment', 130.0,
           floor_number=2, bedrooms=3, bathrooms=2,
-          finishing='finished', furnishing='semi_finished', sync_state='synced')
+          finishing='finished', furnishing='furnish_old', sync_state='synced')
 sync_log(ec5, 'contract_submit', 'outbound',
          '/ecrs/api/v1/contracts', 'POST', 200, 891,
          response_body='{"status":"ACCEPTED","contractId":"DEMO-EJAR-CONTRACT-005"}')
