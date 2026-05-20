@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ═══════════════════════════════════════════════════════════
+             Groups
+        ═══════════════════════════════════════════════════════════ -->
+
+        <record id="group_ejar_user" model="res.groups">
+            <field name="name">مستخدم إيجار</field>
+            <field name="category_id" ref="base.module_category_real_estate"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="group_ejar_manager" model="res.groups">
+            <field name="name">مدير إيجار</field>
+            <field name="category_id" ref="base.module_category_real_estate"/>
+            <field name="implied_ids" eval="[(4, ref('group_ejar_user'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             Record Rules — multi-company isolation
+             Each company can only see its own contracts and profiles.
+        ═══════════════════════════════════════════════════════════ -->
+
+        <!-- ejar.contract -->
+        <record id="rule_ejar_contract_company" model="ir.rule">
+            <field name="name">عقود إيجار — عزل الشركة</field>
+            <field name="model_id" ref="model_ejar_contract"/>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+            <field name="domain_force">
+                [('company_id', 'in', company_ids)]
+            </field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- ejar.brokerage.profile -->
+        <record id="rule_ejar_brokerage_profile_company" model="ir.rule">
+            <field name="name">ملف الوساطة — عزل الشركة</field>
+            <field name="model_id" ref="model_ejar_brokerage_profile"/>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+            <field name="domain_force">
+                [('company_id', 'in', company_ids)]
+            </field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- ejar.contract.party -->
+        <record id="rule_ejar_contract_party_company" model="ir.rule">
+            <field name="name">أطراف العقد — عزل الشركة</field>
+            <field name="model_id" ref="model_ejar_contract_party"/>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+            <field name="domain_force">
+                [('company_id', 'in', company_ids)]
+            </field>
+        </record>
+
+        <!-- ejar.contract.unit -->
+        <record id="rule_ejar_contract_unit_company" model="ir.rule">
+            <field name="name">وحدات العقد — عزل الشركة</field>
+            <field name="model_id" ref="model_ejar_contract_unit"/>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+            <field name="domain_force">
+                [('company_id', 'in', company_ids)]
+            </field>
+        </record>
+
+        <!-- ejar.sync.log — read-only for users, full access for managers -->
+        <record id="rule_ejar_sync_log_company" model="ir.rule">
+            <field name="name">سجلات المزامنة — عزل الشركة</field>
+            <field name="model_id" ref="model_ejar_sync_log"/>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+            <field name="domain_force">
+                [('company_id', 'in', company_ids)]
+            </field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_ejar_submit_wizard_form" model="ir.ui.view">
+        <field name="name">ejar.submit.wizard.form</field>
+        <field name="model">ejar.submit.wizard</field>
+        <field name="arch" type="xml">
+            <form string="إرسال العقد إلى إيجار">
+                <sheet>
+                    <!-- Production environment warning -->
+                    <div class="alert alert-danger" role="alert"
+                         invisible="not is_production">
+                        <i class="fa fa-exclamation-triangle"/> &#160;
+                        <strong>بيئة الإنتاج</strong> —
+                        هذا الإرسال سيوثَّق في منصة إيجار الفعلية ولا يمكن التراجع عنه.
+                    </div>
+                    <div class="alert alert-info" role="alert"
+                         invisible="is_production">
+                        <i class="fa fa-info-circle"/> &#160;
+                        <strong>بيئة الاختبار (UAT)</strong> —
+                        العقد سيُرسَل إلى بيئة الاختبار فقط.
+                    </div>
+
+                    <h3>قائمة التحقق قبل الإرسال</h3>
+
+                    <group>
+                        <group string="البيانات المطلوبة">
+                            <field name="check_brokerage" readonly="1" widget="boolean_toggle"
+                                   string="ملف مكتب الوساطة"/>
+                            <field name="check_lessor" readonly="1" widget="boolean_toggle"
+                                   string="المؤجر"/>
+                            <field name="check_tenant" readonly="1" widget="boolean_toggle"
+                                   string="المستأجر"/>
+                            <field name="check_unit" readonly="1" widget="boolean_toggle"
+                                   string="الوحدة العقارية"/>
+                            <field name="check_signed_doc" readonly="1" widget="boolean_toggle"
+                                   string="العقد الموقّع (PDF)"/>
+                            <field name="check_dates" readonly="1" widget="boolean_toggle"
+                                   string="التواريخ وقيمة الإيجار"/>
+                        </group>
+                        <group string="البيئة">
+                            <field name="environment" readonly="1" string="البيئة"/>
+                            <field name="contract_id" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <div class="alert alert-danger" role="alert"
+                         invisible="all_checks_pass">
+                        <strong>العناصر الناقصة:</strong><br/>
+                        <field name="missing_summary" readonly="1" nolabel="1"/>
+                    </div>
+
+                    <div invisible="not all_checks_pass">
+                        <field name="confirmed" widget="boolean_toggle"
+                               string="أؤكد إرسال هذا العقد إلى إيجار"/>
+                    </div>
+
+                    <field name="all_checks_pass" invisible="1"/>
+                    <field name="is_production" invisible="1"/>
+                </sheet>
+                <footer>
+                    <button name="action_confirm_submit"
+                            string="إرسال إلى إيجار"
+                            type="object"
+                            class="btn-primary"
+                            invisible="not all_checks_pass"/>
+                    <button string="إلغاء" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

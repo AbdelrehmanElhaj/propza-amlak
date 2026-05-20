@@ -5,3 +5,14 @@ access_sa_city_user,sa.city user,model_sa_city,base.group_user,1,0,0,0
 access_sa_city_manager,sa.city manager,model_sa_city,base.group_system,1,1,1,1
 access_ejar_contract_user,ejar.contract user,model_ejar_contract,base.group_user,1,1,1,0
 access_ejar_contract_manager,ejar.contract manager,model_ejar_contract,base.group_system,1,1,1,1
+access_ejar_brokerage_profile_user,ejar.brokerage.profile user,model_ejar_brokerage_profile,base.group_user,1,1,1,0
+access_ejar_brokerage_profile_manager,ejar.brokerage.profile manager,model_ejar_brokerage_profile,base.group_system,1,1,1,1
+access_ejar_contract_party_user,ejar.contract.party user,model_ejar_contract_party,base.group_user,1,1,1,1
+access_ejar_contract_party_manager,ejar.contract.party manager,model_ejar_contract_party,base.group_system,1,1,1,1
+access_ejar_contract_unit_user,ejar.contract.unit user,model_ejar_contract_unit,base.group_user,1,1,1,1
+access_ejar_contract_unit_manager,ejar.contract.unit manager,model_ejar_contract_unit,base.group_system,1,1,1,1
+access_ejar_sync_log_user,ejar.sync.log user,model_ejar_sync_log,base.group_user,1,0,0,0
+access_ejar_sync_log_manager,ejar.sync.log manager,model_ejar_sync_log,base.group_system,1,1,1,1
+access_ejar_submit_wizard_user,ejar.submit.wizard user,model_ejar_submit_wizard,base.group_user,1,1,1,1
+access_ejar_upload_doc_wizard_user,ejar.upload.doc.wizard user,model_ejar_upload_doc_wizard,base.group_user,1,1,1,1
+access_ejar_sync_wizard_user,ejar.sync.wizard user,model_ejar_sync_wizard,base.group_user,1,1,1,1

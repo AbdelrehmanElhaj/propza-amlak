@@ -1,127 +1,358 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- ═══════════════════════════════════════════════════════════════
+         ejar.contract — List View
+    ═══════════════════════════════════════════════════════════════ -->
     <record id="view_ejar_contract_list" model="ir.ui.view">
         <field name="name">ejar.contract.list</field>
         <field name="model">ejar.contract</field>
         <field name="arch" type="xml">
-            <tree string="عقود إيجار" decoration-success="ejar_status == 'active'"
-                  decoration-warning="ejar_status == 'pending'"
-                  decoration-muted="ejar_status in ('expired','cancelled')">
+            <list string="عقود إيجار"
+                  decoration-success="ejar_status == 'approved'"
+                  decoration-info="ejar_status in ('submitted', 'submitting')"
+                  decoration-warning="ejar_status in ('building', 'ready')"
+                  decoration-danger="ejar_status == 'rejected'"
+                  decoration-muted="ejar_status in ('expired', 'cancelled')">
                 <field name="name"/>
                 <field name="ejar_contract_number"/>
-                <field name="property_id"/>
-                <field name="tenant_partner_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="contract_type"/>
                 <field name="start_date"/>
                 <field name="end_date"/>
-                <field name="rent_amount"/>
-                <field name="payment_schedule"/>
+                <field name="rent_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="party_count" string="الأطراف"/>
+                <field name="unit_count" string="الوحدات"/>
                 <field name="ejar_status" widget="badge"
-                       decoration-success="ejar_status == 'active'"
-                       decoration-warning="ejar_status == 'pending'"
-                       decoration-danger="ejar_status == 'expired'"/>
+                       decoration-success="ejar_status == 'approved'"
+                       decoration-info="ejar_status in ('submitted', 'submitting')"
+                       decoration-warning="ejar_status in ('building', 'ready')"
+                       decoration-danger="ejar_status == 'rejected'"
+                       decoration-muted="ejar_status in ('expired', 'cancelled')"/>
                 <field name="ejar_last_sync"/>
-            </tree>
+            </list>
         </field>
     </record>
 
+    <!-- ═══════════════════════════════════════════════════════════════
+         ejar.contract — Form View
+    ═══════════════════════════════════════════════════════════════ -->
     <record id="view_ejar_contract_form" model="ir.ui.view">
         <field name="name">ejar.contract.form</field>
         <field name="model">ejar.contract</field>
         <field name="arch" type="xml">
             <form string="عقد إيجار">
                 <header>
-                    <button name="action_submit_to_ejar"
-                            string="إرسال لإيجار"
+                    <button name="action_start_building"
+                            string="بدء الإعداد"
                             type="object"
                             class="btn-primary"
                             invisible="ejar_status != 'draft'"/>
-                    <button name="action_check_ejar_status"
-                            string="تحديث الحالة من إيجار"
+
+                    <button name="action_upload_document"
+                            string="رفع العقد الموقّع"
                             type="object"
-                            invisible="not ejar_contract_number"/>
-                    <button name="action_cancel_ejar_contract"
-                            string="إلغاء"
+                            class="btn-secondary"
+                            invisible="ejar_status not in ('building', 'ready')"/>
+
+                    <button name="action_mark_ready"
+                            string="تأكيد الاكتمال"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="ejar_status != 'building'"/>
+
+                    <button name="action_submit_to_ejar"
+                            string="إرسال إلى إيجار"
+                            type="object"
+                            class="btn-primary"
+                            invisible="ejar_status not in ('building', 'ready')"/>
+
+                    <button name="action_check_ejar_status"
+                            string="استعلام الحالة"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="ejar_status not in ('submitted', 'approved')"/>
+
+                    <button name="action_reset_to_draft"
+                            string="إعادة إلى مسودة"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="ejar_status != 'rejected'"/>
+
+                    <button name="action_cancel"
+                            string="إلغاء العقد"
                             type="object"
                             class="btn-danger"
-                            invisible="ejar_status in ('cancelled','expired')"/>
+                            invisible="ejar_status in ('expired', 'cancelled')"
+                            confirm="هل أنت متأكد من إلغاء هذا العقد؟"/>
+
                     <field name="ejar_status" widget="statusbar"
-                           statusbar_visible="draft,pending,active,expired"/>
+                           statusbar_visible="draft,building,ready,submitted,approved"/>
                 </header>
+
                 <sheet>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="not rent_freeze_warning">
+                        <i class="fa fa-exclamation-triangle"/> &#160;
+                        <strong>تحذير: تجميد الإيجار</strong> —
+                        قيمة الإيجار تتجاوز الحد المسموح به خلال فترة التجميد في الرياض
+                    </div>
+                    <div class="alert alert-danger" role="alert"
+                         invisible="not rejection_reason">
+                        <i class="fa fa-times-circle"/> &#160;
+                        <strong>سبب الرفض: </strong>
+                        <field name="rejection_reason" readonly="1" nolabel="1"/>
+                    </div>
+                    <div class="alert alert-info" role="alert"
+                         invisible="ejar_status != 'submitting'">
+                        <i class="fa fa-spinner fa-spin"/> &#160;
+                        جارٍ إرسال العقد إلى إيجار... يرجى الانتظار.
+                    </div>
+
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_parties" type="object"
+                                class="oe_stat_button" icon="fa-users">
+                            <field name="party_count" widget="statinfo" string="الأطراف"/>
+                        </button>
+                        <button name="action_view_units" type="object"
+                                class="oe_stat_button" icon="fa-building-o">
+                            <field name="unit_count" widget="statinfo" string="الوحدات"/>
+                        </button>
+                        <button name="action_view_sync_logs" type="object"
+                                class="oe_stat_button" icon="fa-history">
+                            <field name="log_count" widget="statinfo" string="السجلات"/>
+                        </button>
+                    </div>
+
                     <div class="oe_title">
                         <h1><field name="name" readonly="1"/></h1>
-                        <h2 invisible="not ejar_contract_number">
+                        <h3 invisible="not ejar_contract_number">
                             رقم إيجار: <field name="ejar_contract_number" readonly="1"/>
-                        </h2>
+                        </h3>
                     </div>
 
-                    <!-- Simulation mode notice -->
-                    <div class="alert alert-info" role="alert">
-                        <strong>وضع المحاكاة مفعّل</strong> —
-                        النظام جاهز للتكامل الحقيقي مع إيجار عند توفر بيانات الاعتماد.
-                    </div>
-
-                    <group string="أطراف العقد">
-                        <group>
-                            <field name="lessor_partner_id"/>
-                            <field name="tenant_partner_id"/>
-                            <field name="broker_partner_id"/>
+                    <group>
+                        <group string="معلومات العقد">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="brokerage_profile_id"
+                                   domain="[('company_id', '=', company_id)]"
+                                   required="1"/>
+                            <field name="contract_type"/>
+                            <field name="contract_sub_type"/>
+                            <field name="use_type"/>
+                            <field name="tenancy_id"/>
                         </group>
-                        <group>
-                            <field name="property_id"/>
-                            <field name="tenancy_id" readonly="1"/>
-                        </group>
-                    </group>
-
-                    <group string="شروط العقد">
-                        <group>
+                        <group string="التواريخ والمدة">
                             <field name="start_date"/>
                             <field name="end_date"/>
                             <field name="duration_years" readonly="1"/>
-                        </group>
-                        <group>
-                            <field name="rent_amount"/>
-                            <field name="currency_id" groups="base.group_multi_currency"/>
-                            <field name="payment_schedule"/>
-                            <field name="sublease_allowed"/>
-                        </group>
-                    </group>
-
-                    <group string="هوية المستأجر">
-                        <group>
-                            <field name="tenant_id_type"/>
-                            <field name="tenant_national_id"/>
-                        </group>
-                        <group>
-                            <field name="fee_bearer"/>
                             <field name="doc_fee" readonly="1"/>
                         </group>
                     </group>
 
-                    <group string="استجابة إيجار" colspan="2"
-                           invisible="not ejar_contract_number">
-                        <field name="ejar_last_sync" readonly="1"/>
-                        <field name="ejar_error_msg" readonly="1"
-                               invisible="not ejar_error_msg"/>
-                        <field name="ejar_response_raw" readonly="1" widget="text"
-                               invisible="not ejar_response_raw"/>
-                    </group>
+                    <notebook>
+
+                        <page string="الأطراف" name="parties">
+                            <field name="party_ids" mode="list">
+                                <list editable="bottom"
+                                      decoration-success="sync_state == 'synced'"
+                                      decoration-danger="sync_state == 'failed'">
+                                    <field name="role"/>
+                                    <field name="entity_type"/>
+                                    <field name="full_name_ar"/>
+                                    <field name="id_type"/>
+                                    <field name="id_number"/>
+                                    <field name="mobile"/>
+                                    <field name="iban" optional="hide"/>
+                                    <field name="ejar_entity_id" readonly="1" optional="hide"/>
+                                    <field name="ejar_party_id" readonly="1" optional="hide"/>
+                                    <field name="sync_state" readonly="1" widget="badge"
+                                           decoration-success="sync_state == 'synced'"
+                                           decoration-warning="sync_state == 'pending'"
+                                           decoration-danger="sync_state == 'failed'"
+                                           optional="show"/>
+                                    <field name="sync_error" readonly="1" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="الوحدات" name="units">
+                            <field name="unit_ids" mode="list">
+                                <list editable="bottom"
+                                      decoration-success="sync_state == 'synced'"
+                                      decoration-danger="sync_state == 'failed'">
+                                    <field name="property_id"/>
+                                    <field name="unit_number"/>
+                                    <field name="unit_type"/>
+                                    <field name="area" string="م²"/>
+                                    <field name="floor_number"/>
+                                    <field name="finishing"/>
+                                    <field name="furnishing"/>
+                                    <field name="deed_number" readonly="1" optional="show"/>
+                                    <field name="ejar_contract_unit_id" readonly="1" optional="hide"/>
+                                    <field name="sync_state" readonly="1" widget="badge"
+                                           decoration-success="sync_state == 'synced'"
+                                           decoration-warning="sync_state == 'pending'"
+                                           decoration-danger="sync_state == 'failed'"
+                                           optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="الشروط المالية" name="financial">
+                            <group>
+                                <group string="الإيجار والدفع">
+                                    <field name="rent_amount" widget="monetary"
+                                           options="{'currency_field': 'currency_id'}"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="payment_schedule"/>
+                                    <field name="payment_option"/>
+                                    <field name="sublease_allowed"/>
+                                </group>
+                                <group string="رسوم الوساطة">
+                                    <field name="brokerage_fee" widget="monetary"
+                                           options="{'currency_field': 'currency_id'}"/>
+                                    <field name="brokerage_fee_paid_by"/>
+                                    <field name="ejar_fees_paid_by"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="المستندات" name="documents">
+                            <group>
+                                <group string="العقد الموقّع">
+                                    <field name="signed_doc" widget="binary"
+                                           filename="signed_doc_filename"/>
+                                    <field name="signed_doc_filename"/>
+                                </group>
+                                <group string="بنود إضافية">
+                                    <field name="custom_terms" nolabel="1"
+                                           placeholder="أي بنود خاصة إضافية..."/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="إيجار — API" name="ejar_api"
+                              groups="base.group_system">
+                            <group>
+                                <group string="معرّفات إيجار">
+                                    <field name="ejar_contract_id" readonly="1"/>
+                                    <field name="ejar_contract_number" readonly="1"/>
+                                    <field name="ejar_last_sync" readonly="1"/>
+                                    <field name="next_poll_at" readonly="1"/>
+                                    <field name="poll_count" readonly="1"/>
+                                    <field name="submit_attempt" readonly="1"/>
+                                </group>
+                                <group string="حالة الإرسال"
+                                       invisible="not submit_error">
+                                    <field name="submit_error" readonly="1" nolabel="1"/>
+                                </group>
+                            </group>
+                            <group string="الاستجابة الخام" invisible="not ejar_response_raw">
+                                <field name="ejar_response_raw" readonly="1"
+                                       nolabel="1" widget="text"/>
+                            </group>
+                        </page>
+
+                    </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>
+                <chatter/>
             </form>
         </field>
     </record>
 
+    <!-- ═══════════════════════════════════════════════════════════════
+         ejar.contract — Kanban
+    ═══════════════════════════════════════════════════════════════ -->
+    <record id="view_ejar_contract_kanban" model="ir.ui.view">
+        <field name="name">ejar.contract.kanban</field>
+        <field name="model">ejar.contract</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="ejar_status" class="o_kanban_small_column">
+                <field name="ejar_status"/>
+                <field name="name"/>
+                <field name="ejar_contract_number"/>
+                <field name="rent_amount"/>
+                <field name="currency_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="party_count"/>
+                <templates>
+                    <t t-name="card">
+                        <strong><field name="name"/></strong>
+                        <div t-if="record.ejar_contract_number.value" class="text-muted small">
+                            <field name="ejar_contract_number"/>
+                        </div>
+                        <div class="mt-2">
+                            <field name="rent_amount" widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                        </div>
+                        <div class="text-muted small mt-1">
+                            <field name="start_date"/> — <field name="end_date"/>
+                        </div>
+                        <div class="mt-2">
+                            <span class="badge bg-secondary">
+                                <field name="party_count"/> أطراف
+                            </span>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         ejar.contract — Search
+    ═══════════════════════════════════════════════════════════════ -->
+    <record id="view_ejar_contract_search" model="ir.ui.view">
+        <field name="name">ejar.contract.search</field>
+        <field name="model">ejar.contract</field>
+        <field name="arch" type="xml">
+            <search string="بحث عقود إيجار">
+                <field name="name" string="رقم المرجع"/>
+                <field name="ejar_contract_number" string="رقم إيجار"/>
+                <field name="company_id"/>
+                <separator/>
+                <filter string="مسودة" name="draft"
+                        domain="[('ejar_status', '=', 'draft')]"/>
+                <filter string="جارٍ الإعداد" name="building"
+                        domain="[('ejar_status', '=', 'building')]"/>
+                <filter string="جاهز" name="ready"
+                        domain="[('ejar_status', '=', 'ready')]"/>
+                <filter string="بانتظار الموافقة" name="submitted"
+                        domain="[('ejar_status', '=', 'submitted')]"/>
+                <filter string="موافق عليه" name="approved"
+                        domain="[('ejar_status', '=', 'approved')]"/>
+                <filter string="مرفوض" name="rejected"
+                        domain="[('ejar_status', '=', 'rejected')]"/>
+                <separator/>
+                <filter string="نشطة" name="active_contracts"
+                        domain="[('ejar_status', 'in', ('submitted', 'approved'))]"/>
+                <group expand="0" string="تجميع حسب">
+                    <filter string="الشركة" name="group_company"
+                            context="{'group_by': 'company_id'}"/>
+                    <filter string="الحالة" name="group_status"
+                            context="{'group_by': 'ejar_status'}"/>
+                    <filter string="نوع العقد" name="group_type"
+                            context="{'group_by': 'contract_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         ejar.contract — Action
+    ═══════════════════════════════════════════════════════════════ -->
     <record id="action_ejar_contract" model="ir.actions.act_window">
         <field name="name">عقود إيجار</field>
         <field name="res_model">ejar.contract</field>
-        <field name="view_mode">list,form</field>
-        <field name="context">{'search_default_active': 1}</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="view_ejar_contract_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">أنشئ عقد إيجار جديد</p>
+            <p>سيتم توثيق العقد عبر منصة إيجار بعد اكتمال البيانات.</p>
+        </field>
     </record>
 
 </odoo>

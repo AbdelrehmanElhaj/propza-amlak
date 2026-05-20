@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_ejar_upload_doc_wizard_form" model="ir.ui.view">
+        <field name="name">ejar.upload.doc.wizard.form</field>
+        <field name="model">ejar.upload.doc.wizard</field>
+        <field name="arch" type="xml">
+            <form string="رفع العقد الموقّع">
+                <sheet>
+                    <div class="alert alert-info" role="alert">
+                        <i class="fa fa-info-circle"/> &#160;
+                        يرجى رفع نسخة PDF من العقد الموقّع من جميع الأطراف.
+                        الملف يجب أن يكون بصيغة PDF.
+                    </div>
+                    <group>
+                        <field name="contract_id" readonly="1"/>
+                        <field name="signed_doc" widget="binary"
+                               filename="signed_doc_filename" required="1"/>
+                        <field name="signed_doc_filename" required="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_upload" string="رفع" type="object" class="btn-primary"/>
+                    <button string="إلغاء" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

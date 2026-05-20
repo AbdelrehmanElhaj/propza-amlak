@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+    ═══════════════════════════════════════════════════════════════════
+    Job monitoring additions to ejar.contract views.
+    Extends ejar_contract_views.xml without modifying the base file.
+    ═══════════════════════════════════════════════════════════════════
+    -->
+
+    <!-- ─── Form: cancel-job button + progress banners ───────────── -->
+    <record id="view_ejar_contract_form_jobs" model="ir.ui.view">
+        <field name="name">ejar.contract.form.jobs</field>
+        <field name="model">ejar.contract</field>
+        <field name="inherit_id" ref="view_ejar_contract_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Cancel pending job (header, before Cancel contract) -->
+            <button name="action_cancel" position="before">
+                <button name="action_cancel_pending_job"
+                        string="إلغاء المهمة"
+                        type="object"
+                        class="btn-warning"
+                        invisible="not has_active_job"
+                        confirm="هل تريد إلغاء المهمة الجارية وإرجاع العقد إلى حالة 'جاهز'؟"/>
+            </button>
+
+            <!-- In-progress / failed banners (after the submitting alert) -->
+            <div class="alert alert-info" position="after">
+                <div class="alert alert-primary" role="alert"
+                     invisible="job_state not in ('pending', 'enqueued', 'started')">
+                    <i class="fa fa-spin fa-cog"/> &#160;
+                    <strong>مهمة في الخلفية:</strong>
+                    <field name="job_progress" readonly="1" nolabel="1"/>
+                    <span class="ms-2 text-muted small">
+                        (قناة: <field name="job_channel" readonly="1" nolabel="1"/>)
+                    </span>
+                </div>
+                <div class="alert alert-danger" role="alert"
+                     invisible="job_state != 'failed'">
+                    <i class="fa fa-times-circle"/> &#160;
+                    <strong>فشلت المهمة:</strong>
+                    <field name="job_progress" readonly="1" nolabel="1"/>
+                </div>
+            </div>
+
+            <!-- Additional hidden fields required by expressions above -->
+            <field name="has_active_job" invisible="1"/>
+            <field name="job_state" invisible="1"/>
+            <field name="job_progress" invisible="1"/>
+            <field name="job_channel" invisible="1"/>
+
+            <!-- Job monitoring section inside the API tab -->
+            <page name="ejar_api" position="inside">
+                <separator string="مهام قائمة الانتظار (queue_job)"
+                           groups="base.group_system"/>
+                <group groups="base.group_system">
+                    <group string="المهمة النشطة">
+                        <field name="active_job_uuid" readonly="1"/>
+                        <field name="job_channel" readonly="1"/>
+                        <field name="job_enqueued_at" readonly="1"/>
+                        <field name="job_state" readonly="1"/>
+                        <field name="job_progress" readonly="1"/>
+                        <field name="job_retry_count" readonly="1"/>
+                    </group>
+                    <group string="آخر خطأ" invisible="not job_last_error">
+                        <field name="job_last_error" readonly="1" nolabel="1"/>
+                    </group>
+                </group>
+            </page>
+
+        </field>
+    </record>
+
+    <!-- ─── List: optional job-state column (system-only) ────────── -->
+    <record id="view_ejar_contract_list_jobs" model="ir.ui.view">
+        <field name="name">ejar.contract.list.jobs</field>
+        <field name="model">ejar.contract</field>
+        <field name="inherit_id" ref="view_ejar_contract_list"/>
+        <field name="arch" type="xml">
+            <field name="ejar_last_sync" position="before">
+                <field name="job_state"
+                       string="المهمة"
+                       optional="hide"
+                       groups="base.group_system"/>
+                <field name="job_progress"
+                       string="تقدم المهمة"
+                       optional="hide"
+                       groups="base.group_system"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- ─── Submit wizard: processing-mode indicator ─────────────── -->
+    <record id="view_ejar_submit_wizard_form_jobs" model="ir.ui.view">
+        <field name="name">ejar.submit.wizard.form.jobs</field>
+        <field name="model">ejar.submit.wizard</field>
+        <field name="inherit_id" ref="view_ejar_submit_wizard_form"/>
+        <field name="arch" type="xml">
+
+            <h3 position="before">
+                <!-- Processing mode badge -->
+                <div class="mb-3">
+                    <span class="badge bg-success me-2"
+                          invisible="not queue_job_available">
+                        <i class="fa fa-clock-o"/> خلفي — queue_job
+                    </span>
+                    <span class="badge bg-secondary me-2"
+                          invisible="queue_job_available">
+                        <i class="fa fa-bolt"/> متزامن
+                    </span>
+                    <span class="text-muted small">
+                        وضع التنفيذ:
+                        <field name="processing_mode" readonly="1" nolabel="1"/>
+                    </span>
+                </div>
+
+                <!-- Async explanation (only when queue_job available) -->
+                <div class="alert alert-info" role="alert"
+                     invisible="not queue_job_available">
+                    <i class="fa fa-info-circle"/> &#160;
+                    سيُرسَل العقد في <strong>الخلفية</strong> عبر عمال قائمة الانتظار.
+                    يمكنك إغلاق هذه النافذة فوراً — ستجد حالة العقد محدّثة تلقائياً.
+                </div>
+            </h3>
+
+            <!-- Hidden fields needed by invisible expressions -->
+            <field name="all_checks_pass" position="after">
+                <field name="queue_job_available" invisible="1"/>
+                <field name="processing_mode" invisible="1"/>
+            </field>
+
+        </field>
+    </record>
+
+</odoo>

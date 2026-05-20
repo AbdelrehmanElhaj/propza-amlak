@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_ejar_sync_log_list" model="ir.ui.view">
+        <field name="name">ejar.sync.log.list</field>
+        <field name="model">ejar.sync.log</field>
+        <field name="arch" type="xml">
+            <list string="سجلات مزامنة إيجار" create="0" edit="0" delete="0"
+                  decoration-success="status == 'success'"
+                  decoration-danger="status == 'error'"
+                  decoration-warning="status == 'retry'"
+                  decoration-muted="status == 'skipped'">
+                <field name="create_date" string="التاريخ"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="contract_ref"/>
+                <field name="action"/>
+                <field name="direction" widget="badge"/>
+                <field name="http_method"/>
+                <field name="http_status"/>
+                <field name="duration_ms" string="مدة (ms)"/>
+                <field name="attempt"/>
+                <field name="status" widget="badge"
+                       decoration-success="status == 'success'"
+                       decoration-danger="status == 'error'"
+                       decoration-warning="status == 'retry'"
+                       decoration-muted="status == 'skipped'"/>
+                <field name="error_type" optional="hide"/>
+                <field name="correlation_id" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ejar_sync_log_form" model="ir.ui.view">
+        <field name="name">ejar.sync.log.form</field>
+        <field name="model">ejar.sync.log</field>
+        <field name="arch" type="xml">
+            <form string="سجل مزامنة إيجار" edit="0">
+                <sheet>
+                    <group>
+                        <group string="معلومات الطلب">
+                            <field name="create_date" string="التاريخ"/>
+                            <field name="company_id"/>
+                            <field name="contract_id"/>
+                            <field name="action"/>
+                            <field name="direction"/>
+                            <field name="http_method"/>
+                            <field name="endpoint"/>
+                            <field name="http_status"/>
+                            <field name="duration_ms"/>
+                            <field name="attempt"/>
+                        </group>
+                        <group string="النتيجة">
+                            <field name="status" widget="badge"/>
+                            <field name="error_type"/>
+                            <field name="is_permanent_error" widget="boolean_toggle"/>
+                            <field name="correlation_id"/>
+                            <field name="idempotency_key"/>
+                        </group>
+                    </group>
+                    <group string="رسالة الخطأ" invisible="not error_message">
+                        <field name="error_message" nolabel="1"/>
+                    </group>
+                    <group string="جسم الطلب" invisible="not request_body">
+                        <field name="request_body" nolabel="1" widget="text"/>
+                    </group>
+                    <group string="جسم الاستجابة" invisible="not response_body">
+                        <field name="response_body" nolabel="1" widget="text"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ejar_sync_log" model="ir.actions.act_window">
+        <field name="name">سجلات مزامنة إيجار</field>
+        <field name="res_model">ejar.sync.log</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'create': False}</field>
+    </record>
+
+</odoo>
