@@ -69,17 +69,17 @@ configure_company() {
     echo "Configuring company locale (SAR, Saudi Arabia, Arabic) and Ejar UAT credentials..."
 
     $COMPOSE run --rm -T web odoo shell -d "$db" << PYEOF
-SAR = env['res.currency'].search([('name', '=', 'SAR')], limit=1)
+SAR = env['res.currency'].with_context(active_test=False).search([('name', '=', 'SAR')], limit=1)
 SA = env['res.country'].search([('code', '=', 'SA')], limit=1)
 company = env.company
 
 if SAR:
-    SAR.active = True
-    company.currency_id = SAR
+    SAR.write({'active': True})
+    env.cr.execute('UPDATE res_company SET currency_id = %s WHERE id = %s', (SAR.id, company.id))
 if SA:
     company.country_id = SA
 company.write({
-    'name': company.name or 'Propza',
+    'name': 'Propza Real Estate Brokerage',
     'phone': company.phone or '+966000000000',
 })
 

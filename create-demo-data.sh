@@ -39,7 +39,7 @@ dt    = lambda d, h=9: datetime.datetime.combine(d, datetime.time(h, 0))
 # ══════════════════════════════════════════════════════════════════════════
 # 0 — Helpers
 # ══════════════════════════════════════════════════════════════════════════
-SAR     = env['res.currency'].search([('name','=','SAR')], limit=1)
+SAR     = env['res.currency'].with_context(active_test=False).search([('name','=','SAR')], limit=1)
 company = env['res.company'].search([], limit=1)
 SA      = env['res.country'].search([('code','=','SA')], limit=1)
 
@@ -1352,7 +1352,7 @@ env.cr.commit()
 # ══════════════════════════════════════════════════════════════════════════
 print("إنشاء عقود إيجار ECRS... (Creating Ejar ECRS contracts...)")
 
-SAR_curr = env['res.currency'].search([('name', '=', 'SAR')], limit=1)
+SAR_curr = env['res.currency'].with_context(active_test=False).search([('name', '=', 'SAR')], limit=1)
 
 # ── Helpers ─────────────────────────────────────────────────────────────
 def ejar_party(contract, role, entity_type, full_name_ar, id_type, id_number,
