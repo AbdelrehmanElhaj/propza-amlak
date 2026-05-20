@@ -1460,7 +1460,6 @@ ec2 = env['ejar.contract'].create({
     'brokerage_fee_paid_by':'lessor',
 })
 ec2.action_start_building()
-ec2.action_mark_ready()
 ejar_party(ec2, 'lessor', 'individual', 'محمد بن عبدالله القحطاني',
            'national_id', '1023456789', '+966501234001',
            iban='SA0380000000608010167519', sync_state='synced')
@@ -1470,6 +1469,7 @@ ejar_party(ec2, 'tenant', 'individual', 'نورة سعد الحمدان',
 ejar_unit(ec2, prop5, 'ملقا-٧أ', 'apartment', 160.0,
           floor_number=7, bedrooms=3, bathrooms=2,
           finishing='finished', furnishing='unfurnished', sync_state='synced')
+ec2.write({'ejar_status': 'ready'})
 
 # ── ع.إيجار-٣  شقة العليا — submitted (بانتظار موافقة إيجار) ─────────
 ec3 = env['ejar.contract'].create({
