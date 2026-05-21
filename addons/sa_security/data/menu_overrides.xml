@@ -88,9 +88,14 @@
             <field name="groups_id" eval="[(6, 0, [ref('group_pms_agent')])]"/>
         </record>
 
-        <!-- جهات الاتصال (Contacts الافتراضية): manager فقط -->
+        <!-- جهات الاتصال (Contacts الافتراضية): مخفية — نستخدم قائمتنا الخاصة للأطراف -->
         <record id="contacts.menu_contacts" model="ir.ui.menu">
-            <field name="groups_id" eval="[(6, 0, [ref('group_pms_manager')])]"/>
+            <field name="active" eval="False"/>
+        </record>
+
+        <!-- Job Queue: قائمة تقنية داخلية — مخفية من القوائم الرئيسية -->
+        <record id="queue_job.menu_queue_job_root" model="ir.ui.menu">
+            <field name="active" eval="False"/>
         </record>
 
         <!-- Apps + Settings: admin فقط -->
