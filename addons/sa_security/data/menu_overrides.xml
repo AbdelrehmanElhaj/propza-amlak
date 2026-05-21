@@ -122,6 +122,16 @@
             ])]"/>
         </record>
 
+        <!-- إيجار: admin + manager + accountant + agent فقط (لا فني ولا مالك) -->
+        <record id="l10n_sa_ejar.menu_ejar_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('group_pms_admin'),
+                ref('group_pms_manager'),
+                ref('group_pms_accountant'),
+                ref('group_pms_agent'),
+            ])]"/>
+        </record>
+
         <!-- الصيانة: المدراء + المحاسبين + الموظفين + الملاك + الفنيين -->
         <record id="sa_maintenance.menu_maintenance_root" model="ir.ui.menu">
             <field name="groups_id" eval="[(6, 0, [
