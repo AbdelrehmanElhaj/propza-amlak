@@ -26,7 +26,10 @@
         <record id="group_pms_agent" model="res.groups">
             <field name="name">موظف خدمة عملاء</field>
             <field name="category_id" ref="module_category_pms_staff"/>
-            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="implied_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('l10n_sa_ejar.group_ejar_user')),
+            ]"/>
             <field name="comment">يفتح طلبات الصيانة، يتابع المستأجرين، يصل لقراءة الفواتير</field>
         </record>
 
