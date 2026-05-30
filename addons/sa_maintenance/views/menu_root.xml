@@ -3,6 +3,5 @@
     <menuitem id="menu_maintenance_root"
               name="الصيانة"
               sequence="40"
-              groups="sa_security.group_pms_agent"
               web_icon="sa_maintenance,static/description/icon.png"/>
 </odoo>

@@ -122,15 +122,7 @@
             ])]"/>
         </record>
 
-        <!-- CRM: admin + manager + accountant + agent فقط (لا فني ولا مالك) -->
-        <record id="sa_crm.menu_crm_root" model="ir.ui.menu">
-            <field name="groups_id" eval="[(6, 0, [
-                ref('group_pms_admin'),
-                ref('group_pms_manager'),
-                ref('group_pms_accountant'),
-                ref('group_pms_agent'),
-            ])]"/>
-        </record>
+        <!-- CRM: تقييد الوصول مُعرَّف في sa_crm/views/menu.xml مباشرة -->
 
         <!-- إيجار: admin + manager + accountant + agent فقط (لا فني ولا مالك) -->
         <record id="l10n_sa_ejar.menu_ejar_root" model="ir.ui.menu">
