@@ -226,7 +226,6 @@
                 <filter name="buy"       string="شراء"     domain="[('lead_type','=','buy')]"/>
                 <separator/>
                 <filter name="high_priority" string="عاجل" domain="[('priority','=','2')]"/>
-                <filter name="stale" string="أكثر من 30 يوم" domain="[('days_open','&gt;',30)]"/>
                 <group expand="0" string="تجميع حسب">
                     <filter name="group_stage"        string="المرحلة"    context="{'group_by':'stage_id'}"/>
                     <filter name="group_user"         string="الموظف"     context="{'group_by':'user_id'}"/>
