@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── sa.maintenance.request ─────────────────────────────── -->
+    <!-- Agent: sees all requests (maintenance is property-wide, not per-agent) -->
+    <record id="rule_maintenance_request_agent" model="ir.rule">
+        <field name="name">Maintenance Request: agent sees all</field>
+        <field name="model_id" ref="model_sa_maintenance_request"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('sa_security.group_pms_agent'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Manager: full access -->
+    <record id="rule_maintenance_request_manager" model="ir.rule">
+        <field name="name">Maintenance Request: manager sees all</field>
+        <field name="model_id" ref="model_sa_maintenance_request"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('sa_security.group_pms_manager'))]"/>
+    </record>
+
+    <!-- ── sa.maintenance.work_order ──────────────────────────── -->
+    <!-- Technician: sees only work orders assigned to their partner -->
+    <record id="rule_maintenance_wo_technician" model="ir.rule">
+        <field name="name">Work Order: technician sees own</field>
+        <field name="model_id" ref="model_sa_maintenance_work_order"/>
+        <field name="domain_force">[('technician_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('sa_security.group_pms_technician'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Agent: sees all work orders -->
+    <record id="rule_maintenance_wo_agent" model="ir.rule">
+        <field name="name">Work Order: agent sees all</field>
+        <field name="model_id" ref="model_sa_maintenance_work_order"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('sa_security.group_pms_agent'))]"/>
+    </record>
+
+    <!-- Manager: sees all work orders -->
+    <record id="rule_maintenance_wo_manager" model="ir.rule">
+        <field name="name">Work Order: manager sees all</field>
+        <field name="model_id" ref="model_sa_maintenance_work_order"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('sa_security.group_pms_manager'))]"/>
+    </record>
+
+</odoo>

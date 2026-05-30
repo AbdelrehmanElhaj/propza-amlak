@@ -19,11 +19,15 @@
     'license': 'LGPL-3',
     'depends': [
         'sa_property_base',
+        'sa_security',
         'mail',
     ],
     'data': [
         'security/ir.model.access.csv',
+        'security/sa_maintenance_security.xml',
+        'data/sequence.xml',
         'data/maintenance_skills_data.xml',
+        'data/cron.xml',
         'views/menu_root.xml',
         'views/maintenance_skill_views.xml',
         'views/res_partner_views.xml',

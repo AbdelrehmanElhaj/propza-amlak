@@ -34,6 +34,7 @@
     <menuitem id="menu_maintenance_config"
               name="الإعدادات"
               parent="menu_maintenance_root"
+              groups="sa_security.group_pms_manager"
               sequence="100"/>
 
     <menuitem id="menu_maintenance_skills"
