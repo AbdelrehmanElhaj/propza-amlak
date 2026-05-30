@@ -1,10 +1,9 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_sa_maintenance_skill_agent,sa.maintenance.skill agent,model_sa_maintenance_skill,sa_security.group_pms_agent,1,0,0,0
-access_sa_maintenance_skill_manager,sa.maintenance.skill manager,model_sa_maintenance_skill,sa_security.group_pms_manager,1,1,1,1
-access_sa_maintenance_request_agent,sa.maintenance.request agent,model_sa_maintenance_request,sa_security.group_pms_agent,1,1,1,0
-access_sa_maintenance_request_manager,sa.maintenance.request manager,model_sa_maintenance_request,sa_security.group_pms_manager,1,1,1,1
-access_sa_maintenance_work_order_technician,sa.maintenance.work_order technician,model_sa_maintenance_work_order,sa_security.group_pms_technician,1,1,0,0
-access_sa_maintenance_work_order_agent,sa.maintenance.work_order agent,model_sa_maintenance_work_order,sa_security.group_pms_agent,1,1,1,0
-access_sa_maintenance_work_order_manager,sa.maintenance.work_order manager,model_sa_maintenance_work_order,sa_security.group_pms_manager,1,1,1,1
-access_sa_maintenance_contract_agent,sa.maintenance.contract agent,model_sa_maintenance_contract,sa_security.group_pms_agent,1,0,0,0
-access_sa_maintenance_contract_manager,sa.maintenance.contract manager,model_sa_maintenance_contract,sa_security.group_pms_manager,1,1,1,1
+access_sa_maintenance_skill_user,sa.maintenance.skill user,model_sa_maintenance_skill,base.group_user,1,0,0,0
+access_sa_maintenance_skill_system,sa.maintenance.skill system,model_sa_maintenance_skill,base.group_system,1,1,1,1
+access_sa_maintenance_request_user,sa.maintenance.request user,model_sa_maintenance_request,base.group_user,1,0,0,0
+access_sa_maintenance_request_system,sa.maintenance.request system,model_sa_maintenance_request,base.group_system,1,1,1,1
+access_sa_maintenance_work_order_user,sa.maintenance.work_order user,model_sa_maintenance_work_order,base.group_user,1,0,0,0
+access_sa_maintenance_work_order_system,sa.maintenance.work_order system,model_sa_maintenance_work_order,base.group_system,1,1,1,1
+access_sa_maintenance_contract_user,sa.maintenance.contract user,model_sa_maintenance_contract,base.group_user,1,0,0,0
+access_sa_maintenance_contract_system,sa.maintenance.contract system,model_sa_maintenance_contract,base.group_system,1,1,1,1

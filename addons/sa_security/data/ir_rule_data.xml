@@ -170,5 +170,41 @@
             <field name="perm_unlink" eval="False"/>
         </record>
 
+        <!-- ═══════════════════════════════════════════════════════
+             AGENT RULES — يرى جميع طلبات الصيانة وأوامر العمل
+             ═══════════════════════════════════════════════════════ -->
+
+        <record id="rule_maintenance_request_agent" model="ir.rule">
+            <field name="name">Agent: all maintenance requests</field>
+            <field name="model_id" ref="sa_maintenance.model_sa_maintenance_request"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_pms_agent'))]"/>
+        </record>
+
+        <record id="rule_maintenance_wo_agent" model="ir.rule">
+            <field name="name">Agent: all work orders</field>
+            <field name="model_id" ref="sa_maintenance.model_sa_maintenance_work_order"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_pms_agent'))]"/>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════
+             MANAGER RULES — وصول كامل
+             ═══════════════════════════════════════════════════════ -->
+
+        <record id="rule_maintenance_request_manager" model="ir.rule">
+            <field name="name">Manager: all maintenance requests</field>
+            <field name="model_id" ref="sa_maintenance.model_sa_maintenance_request"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_pms_manager'))]"/>
+        </record>
+
+        <record id="rule_maintenance_wo_manager" model="ir.rule">
+            <field name="name">Manager: all work orders</field>
+            <field name="model_id" ref="sa_maintenance.model_sa_maintenance_work_order"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_pms_manager'))]"/>
+        </record>
+
     </data>
 </odoo>
