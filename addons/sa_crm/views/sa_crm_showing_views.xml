@@ -6,7 +6,7 @@
         <field name="name">sa.crm.showing.list</field>
         <field name="model">sa.crm.showing</field>
         <field name="arch" type="xml">
-            <list string="الجولات الميدانية"
+            <tree string="الجولات الميدانية"
                   decoration-success="outcome == 'done'"
                   decoration-muted="outcome in ('cancelled','no_show')">
                 <field name="scheduled_date"/>
@@ -14,7 +14,7 @@
                 <field name="property_id"/>
                 <field name="user_id"/>
                 <field name="outcome"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -57,13 +57,13 @@
         <field name="name">sa.crm.showing.list.inline</field>
         <field name="model">sa.crm.showing</field>
         <field name="arch" type="xml">
-            <list string="الجولات الميدانية" editable="bottom">
+            <tree string="الجولات الميدانية" editable="bottom">
                 <field name="scheduled_date"/>
                 <field name="property_id"/>
                 <field name="user_id"/>
                 <field name="outcome"/>
                 <field name="notes"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -92,7 +92,7 @@
     <record id="action_sa_crm_showing" model="ir.actions.act_window">
         <field name="name">الجولات الميدانية</field>
         <field name="res_model">sa.crm.showing</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="view_sa_crm_showing_search"/>
     </record>
 

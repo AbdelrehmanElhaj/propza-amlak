@@ -6,13 +6,13 @@
         <field name="name">sa.crm.stage.list</field>
         <field name="model">sa.crm.stage</field>
         <field name="arch" type="xml">
-            <list string="مراحل CRM" editable="bottom">
+            <tree string="مراحل CRM" editable="bottom">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="probability"/>
                 <field name="is_won"/>
                 <field name="fold"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -42,7 +42,7 @@
     <record id="action_sa_crm_stage" model="ir.actions.act_window">
         <field name="name">المراحل</field>
         <field name="res_model">sa.crm.stage</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">tree,form</field>
     </record>
 
 </odoo>
