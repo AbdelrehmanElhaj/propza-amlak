@@ -174,7 +174,7 @@ class SaMaintenanceRequest(models.Model):
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get('name', _('جديد')) == _('جديد'):
-                vals['name'] = self.env['ir.sequence'].next_by_code(
+                vals['name'] = self.env['ir.sequence'].sudo().next_by_code(
                     'sa.maintenance.request') or _('جديد')
         return super().create(vals_list)
 
