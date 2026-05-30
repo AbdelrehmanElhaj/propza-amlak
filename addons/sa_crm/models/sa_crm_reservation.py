@@ -112,14 +112,17 @@ class SaCrmReservation(models.Model):
                 )
             rec.state = 'active'
             rec.lead_id.lead_category = 'opportunity'
+            rec.property_id._compute_is_reserved()
 
     def action_cancel(self):
         self.write({'state': 'cancelled'})
+        self.mapped('property_id')._compute_is_reserved()
 
     def action_convert_to_deal(self):
         for rec in self:
             rec.state = 'converted'
             rec.lead_id.action_mark_won()
+        self.mapped('property_id')._compute_is_reserved()
 
     @api.model
     def _cron_expire_reservations(self):
@@ -130,6 +133,7 @@ class SaCrmReservation(models.Model):
         ])
         if expired:
             expired.write({'state': 'expired'})
+            expired.mapped('property_id')._compute_is_reserved()
 
 
 class PropertyPropertyReservation(models.Model):

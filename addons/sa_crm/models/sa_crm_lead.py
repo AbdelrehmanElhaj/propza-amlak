@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 from odoo import models, fields, api, _
 
 
@@ -268,7 +269,6 @@ class SaCrmLead(models.Model):
 
     def action_create_reservation(self):
         self.ensure_one()
-        import datetime
         default_end = fields.Date.today() + datetime.timedelta(days=14)
         return {
             'name': _('حجز وحدة'),
@@ -313,6 +313,8 @@ class SaCrmLead(models.Model):
         for rec in self:
             rec.state = 'open'
             rec.active = True
+            if rec.lead_category == 'deal':
+                rec.lead_category = 'opportunity'
 
     def action_view_showings(self):
         self.ensure_one()
