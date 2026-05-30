@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_crm_root"
+              name="CRM العملاء"
+              sequence="25"
+              web_icon="sa_crm,static/description/icon.png"/>
+
+    <menuitem id="menu_crm_leads"
+              name="الطلبات"
+              parent="menu_crm_root"
+              action="action_sa_crm_lead"
+              sequence="10"/>
+
+    <menuitem id="menu_crm_showings"
+              name="الجولات الميدانية"
+              parent="menu_crm_root"
+              action="action_sa_crm_showing"
+              sequence="20"/>
+
+    <menuitem id="menu_crm_config"
+              name="الإعدادات"
+              parent="menu_crm_root"
+              groups="sa_security.group_pms_manager"
+              sequence="100"/>
+
+    <menuitem id="menu_crm_stages"
+              name="المراحل"
+              parent="menu_crm_config"
+              action="action_sa_crm_stage"
+              sequence="10"/>
+
+</odoo>

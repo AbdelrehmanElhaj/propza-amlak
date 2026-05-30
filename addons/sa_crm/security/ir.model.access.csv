@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sa_crm_stage_agent,sa.crm.stage agent,model_sa_crm_stage,sa_security.group_pms_agent,1,0,0,0
+access_sa_crm_stage_manager,sa.crm.stage manager,model_sa_crm_stage,sa_security.group_pms_manager,1,1,1,1
+access_sa_crm_lead_agent,sa.crm.lead agent,model_sa_crm_lead,sa_security.group_pms_agent,1,1,1,0
+access_sa_crm_lead_manager,sa.crm.lead manager,model_sa_crm_lead,sa_security.group_pms_manager,1,1,1,1
+access_sa_crm_showing_agent,sa.crm.showing agent,model_sa_crm_showing,sa_security.group_pms_agent,1,1,1,1
+access_sa_crm_showing_manager,sa.crm.showing manager,model_sa_crm_showing,sa_security.group_pms_manager,1,1,1,1

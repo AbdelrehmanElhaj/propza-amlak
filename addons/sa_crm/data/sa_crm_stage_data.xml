@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="stage_new_request" model="sa.crm.stage">
+            <field name="name">طلب جديد</field>
+            <field name="sequence">10</field>
+            <field name="probability">10.0</field>
+            <field name="fold" eval="False"/>
+            <field name="is_won" eval="False"/>
+        </record>
+
+        <record id="stage_contacted" model="sa.crm.stage">
+            <field name="name">تم التواصل</field>
+            <field name="sequence">20</field>
+            <field name="probability">30.0</field>
+            <field name="fold" eval="False"/>
+            <field name="is_won" eval="False"/>
+        </record>
+
+        <record id="stage_showing_scheduled" model="sa.crm.stage">
+            <field name="name">جولة مجدولة</field>
+            <field name="sequence">30</field>
+            <field name="probability">50.0</field>
+            <field name="fold" eval="False"/>
+            <field name="is_won" eval="False"/>
+        </record>
+
+        <record id="stage_negotiating" model="sa.crm.stage">
+            <field name="name">قيد التفاوض</field>
+            <field name="sequence">40</field>
+            <field name="probability">70.0</field>
+            <field name="fold" eval="False"/>
+            <field name="is_won" eval="False"/>
+        </record>
+
+        <record id="stage_won" model="sa.crm.stage">
+            <field name="name">فاز بالصفقة</field>
+            <field name="sequence">50</field>
+            <field name="probability">100.0</field>
+            <field name="is_won" eval="True"/>
+            <field name="fold" eval="True"/>
+        </record>
+
+        <record id="stage_lost" model="sa.crm.stage">
+            <field name="name">خسر الصفقة</field>
+            <field name="sequence">60</field>
+            <field name="probability">0.0</field>
+            <field name="is_won" eval="False"/>
+            <field name="fold" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

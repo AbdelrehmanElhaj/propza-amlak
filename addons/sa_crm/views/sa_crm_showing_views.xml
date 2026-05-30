@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- List -->
+    <record id="view_sa_crm_showing_list" model="ir.ui.view">
+        <field name="name">sa.crm.showing.list</field>
+        <field name="model">sa.crm.showing</field>
+        <field name="arch" type="xml">
+            <list string="الجولات الميدانية"
+                  decoration-success="outcome == 'done'"
+                  decoration-muted="outcome in ('cancelled','no_show')">
+                <field name="scheduled_date"/>
+                <field name="lead_id"/>
+                <field name="property_id"/>
+                <field name="user_id"/>
+                <field name="outcome"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form -->
+    <record id="view_sa_crm_showing_form" model="ir.ui.view">
+        <field name="name">sa.crm.showing.form</field>
+        <field name="model">sa.crm.showing</field>
+        <field name="arch" type="xml">
+            <form string="جولة ميدانية">
+                <header>
+                    <field name="outcome" widget="statusbar"
+                           statusbar_visible="scheduled,done,cancelled"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="التفاصيل">
+                            <field name="lead_id"/>
+                            <field name="property_id"/>
+                            <field name="scheduled_date"/>
+                            <field name="user_id"/>
+                        </group>
+                        <group string="النتيجة">
+                            <field name="outcome"/>
+                        </group>
+                    </group>
+                    <group string="ملاحظات">
+                        <field name="notes" nolabel="1"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Inline list for lead form -->
+    <record id="view_sa_crm_showing_list_inline" model="ir.ui.view">
+        <field name="name">sa.crm.showing.list.inline</field>
+        <field name="model">sa.crm.showing</field>
+        <field name="arch" type="xml">
+            <list string="الجولات الميدانية" editable="bottom">
+                <field name="scheduled_date"/>
+                <field name="property_id"/>
+                <field name="user_id"/>
+                <field name="outcome"/>
+                <field name="notes"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Search -->
+    <record id="view_sa_crm_showing_search" model="ir.ui.view">
+        <field name="name">sa.crm.showing.search</field>
+        <field name="model">sa.crm.showing</field>
+        <field name="arch" type="xml">
+            <search string="بحث في الجولات">
+                <field name="lead_id"/>
+                <field name="property_id"/>
+                <field name="user_id"/>
+                <separator/>
+                <filter name="scheduled" string="مجدولة"  domain="[('outcome','=','scheduled')]"/>
+                <filter name="done"      string="تمت"      domain="[('outcome','=','done')]"/>
+                <filter name="cancelled" string="ملغاة"    domain="[('outcome','=','cancelled')]"/>
+                <group expand="0" string="تجميع حسب">
+                    <filter name="group_outcome"   string="النتيجة"  context="{'group_by':'outcome'}"/>
+                    <filter name="group_property"  string="العقار"   context="{'group_by':'property_id'}"/>
+                    <filter name="group_user"      string="الموظف"   context="{'group_by':'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_sa_crm_showing" model="ir.actions.act_window">
+        <field name="name">الجولات الميدانية</field>
+        <field name="res_model">sa.crm.showing</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_sa_crm_showing_search"/>
+    </record>
+
+</odoo>
