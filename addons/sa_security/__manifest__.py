@@ -34,6 +34,7 @@
         'l10n_sa_ejar',
         'sa_rental_cycle',
         'sa_maintenance',
+        'sa_crm',
         'account',
     ],
     'data': [
