@@ -182,7 +182,7 @@ class SaCrmLead(models.Model):
             rec.matching_count = self.env['property.property'].search_count(domain)
 
     def _build_matching_domain(self):
-        domain = [('state', '=', 'available')]
+        domain = [('state', '=', 'draft')]
         if self.property_type:
             domain.append(('property_type', '=', self.property_type))
         if self.preferred_region_id:
