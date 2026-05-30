@@ -382,10 +382,17 @@ class SaCrmLead(models.Model):
         }
 
         if property_rec:
+            _unit_type_map = {
+                'residential': 'apartment',
+                'commercial': 'office',
+                'industrial': 'warehouse',
+                'land': 'land',
+            }
+            unit_type = _unit_type_map.get(property_rec.ejar_unit_type or '', 'apartment')
             unit_vals = {
                 'property_id': property_rec.id,
                 'unit_number': property_rec.name,
-                'unit_type': property_rec.ejar_unit_type or 'apartment',
+                'unit_type': unit_type,
                 'area': property_rec.sa_area_sqm or 0.0,
                 'bedrooms': property_rec.sa_rooms or 0,
                 'bathrooms': property_rec.sa_bathrooms or 0,
