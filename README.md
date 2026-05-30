@@ -1,6 +1,6 @@
 # Propza — Saudi Property Management System
 
-A Saudi-first property management platform built on **Odoo 17**, covering the full real estate lifecycle: properties, tenancies, rent collection, maintenance, broker commissions, and deep integration with the **Ejar ECRS** platform — all purpose-built for the Saudi market.
+A Saudi-first property management platform built on **Odoo 17**, covering the full real estate lifecycle: properties, tenancies, rent collection, CRM leads & reservations, maintenance, broker commissions, and deep integration with the **Ejar ECRS** platform — all purpose-built for the Saudi market.
 
 ---
 
@@ -37,9 +37,10 @@ Propza replaces generic property management add-ons with a system purpose-built 
 |---|-----|--------|-------|
 | 1 | لوحة التحكم | Dashboard | Standalone KPI app |
 | 2 | إدارة العقارات | Property Management | Properties, tenancies, payments, commissions, inspections |
-| 3 | إيجار | Ejar | ECRS contracts, brokerage profiles, sync logs |
-| 4 | الصيانة | Maintenance | Requests, work orders, contracts |
-| 5 | حسابي | My Account | User profile, verifications, documents |
+| 3 | CRM العملاء | CRM | Leads, showings, reservations, deals — agents & managers only |
+| 4 | إيجار | Ejar | ECRS contracts, brokerage profiles, sync logs |
+| 5 | الصيانة | Maintenance | Requests, work orders, periodic contracts |
+| 6 | حسابي | My Account | User profile, verifications, documents |
 
 Rent payments (الدفعات) live under **إدارة العقارات** as a sub-group with "جميع الدفعات" and "دفعات متأخرة".
 
@@ -51,7 +52,7 @@ Rent payments (الدفعات) live under **إدارة العقارات** as a s
 ┌──────────────────────────────────────────────────────────────────┐
 │  sa_dashboard   sa_portal   sa_mobile_tech   sa_notifications    │  ← Presentation
 ├──────────────────────────────────────────────────────────────────┤
-│         sa_broker_commission        sa_sadad                     │  ← Financial
+│   sa_crm        sa_broker_commission        sa_sadad             │  ← CRM & Financial
 ├──────────────────────────────────────────────────────────────────┤
 │                     sa_rental_cycle                              │  ← Rental workflow
 ├────────────────────┬─────────────────────────────────────────────┤
@@ -79,8 +80,11 @@ sa_property_base
 ├── sa_user_profile
 ├── sa_dashboard
 └── sa_security
+    ├── sa_crm
     └── sa_portal
 ```
+
+> **Load order rule:** `sa_security` is the top-level orchestration module. Feature modules (`sa_maintenance`, `sa_property_base`, etc.) must NOT depend on `sa_security` — doing so creates a circular dependency. PMS group ACL and record rules for those modules are defined inside `sa_security` instead.
 
 ---
 
@@ -161,6 +165,54 @@ End-to-end rental operations: payment schedules, wizards, owner dashboard, compl
 
 ---
 
+### `sa_crm` — CRM & Deal Pipeline
+
+Customer relationship management module covering the full pre-tenancy sales cycle.
+
+**Models**
+
+| Model | Purpose |
+|-------|---------|
+| `sa.crm.lead` | Lead / opportunity / deal — tracks the full sales lifecycle |
+| `sa.crm.reservation` | Property reservation linked to a lead |
+| `sa.crm.showing` | Field showing (جولة ميدانية) scheduled for a lead |
+| `sa.crm.stage` | Configurable kanban pipeline stages |
+
+**Lead lifecycle (enforced by button visibility)**
+
+```
+طلب (lead)
+  → تأهيل كفرصة
+فرصة (opportunity)
+  → احجز العقار          (opens reservation form — property required)
+حجز مسودة (draft reservation)
+  → تأكيد الحجز          (activates reservation; checks for conflicts)
+حجز مؤكد (active reservation)
+  → تحويل إلى صفقة       (converts reservation; marks lead as won)
+صفقة (deal / won)
+  → إنشاء عقد إيجار      (creates property.tenancy + ejar.contract in one step)
+```
+
+**Key rules:**
+- "تحويل إلى صفقة" is hidden until a confirmed (active) reservation exists
+- Reservations conflict-check: one active reservation per property at a time
+- Expired reservations are auto-cancelled by a daily cron job
+- Creating an Ejar contract also creates a linked `property.tenancy` (draft), pre-filled from lead data
+
+**Linking to the rental lifecycle**
+
+When "إنشاء عقد إيجار" is clicked on a won deal:
+1. A `property.tenancy` record is created in `draft` state
+2. An `ejar.contract` is created with `tenancy_id` pointing to that tenancy
+3. `tenancy.ejar_contract_id` is set (bidirectional link)
+4. Both are stored on the lead (`lead.tenancy_id`, `lead.contract_id`)
+
+Activating the tenancy (`تشغيل`) automatically sets `property.state = on_rent` and assigns `tenant_partner_id`.
+
+**Access:** restricted to `group_pms_agent` and `group_pms_manager` — owners, technicians, and portal users have no access.
+
+---
+
 ### `sa_maintenance` — Maintenance Management
 
 | Model | Purpose |
@@ -170,9 +222,17 @@ End-to-end rental operations: payment schedules, wizards, owner dashboard, compl
 | `sa.maintenance.contract` | Periodic maintenance agreement |
 | `sa.maintenance.skill` | Technician speciality taxonomy |
 
-**Categories:** `plumbing` · `electrical` · `ac` · `painting` · `carpentry` · `civil` · `other`
+**Categories:** `plumbing` · `electrical` · `ac` · `painting` · `carpentry` · `cleaning` · `pest` · `appliance` · `other`
 
-**State machine:** `new → approved → scheduled → in_progress → done`
+**Request state machine:** `new → approved → scheduled → in_progress → done`
+
+**Cost breakdown:** materials + labour + transport → computed total; cost bearer: owner / tenant / split
+
+**Periodic contracts:** auto-generate maintenance requests via daily cron (`cron_generate_due_services`)
+
+**Sequences:** `MNT/YYYY/NNNNN` for requests · `WO/YYYY/NNNNN` for work orders
+
+> `sa_maintenance` does NOT depend on `sa_security` (would be circular). PMS group ACL and record rules for maintenance models are defined in `sa_security`.
 
 ---
 
@@ -245,10 +305,12 @@ Central security module. Seven roles enforced at ORM level.
 | `group_pms_admin` | مدير النظام | Full access + settings |
 | `group_pms_manager` | مدير العقارات | All operational data |
 | `group_pms_accountant` | المحاسب | Financial records |
-| `group_pms_agent` | موظف خدمة عملاء | Read + create |
+| `group_pms_agent` | موظف خدمة عملاء | CRM + read + create |
 | `group_pms_owner` | مالك عقار | Own portfolio only |
 | `group_pms_technician` | فني صيانة | Assigned work orders only |
 | `group_pms_tenant_portal` | مستأجر (بوابة) | Portal `/my/…` own records only |
+
+This module also owns ACL entries and record rules for models defined in `sa_maintenance` and other feature modules that load before it.
 
 ---
 
@@ -483,12 +545,20 @@ Configure at: **Settings → Technical → Parameters → System Parameters** (s
 
 ### Contract workflow
 
-1. Create `ejar.contract` linked to a `property.tenancy`
+1. Create `ejar.contract` (automatically via CRM deal, or manually)
 2. **بدء الإعداد** → add parties (lessor + tenant) and units
 3. **تأكيد الاكتمال** → moves to `ready`
 4. **إرسال إلى إيجار** → enqueues `queue_job`; UI returns immediately
 5. Background worker submits to ECRS; contract transitions to `submitted`
 6. Ejar responds via webhook → contract moves to `approved` or `rejected`
+
+### CRM → Ejar shortcut
+
+When a CRM deal's "إنشاء عقد إيجار" button is clicked, the system automatically:
+- Creates `property.tenancy` (draft) pre-filled from lead data
+- Creates `ejar.contract` linked via `tenancy_id`
+- Sets `tenancy.ejar_contract_id` (bidirectional)
+- Opens the Ejar contract form for review before submission
 
 ### Webhook setup
 
@@ -516,17 +586,19 @@ https://your-odoo.com/ejar/webhook
 
 ## Roles & Permissions
 
-| Role | Backend | Properties | Tenancies | Payments | Maintenance | Ejar | Settings |
-|------|---------|------------|-----------|----------|-------------|------|----------|
-| Admin | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ |
-| Manager | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ❌ |
-| Accountant | ✅ | Read | ✅ All | ✅ All | Read | Read | ❌ |
-| Agent | ✅ | Read+Create | Read+Create | Read | Read+Create | Read | ❌ |
-| Owner | ✅ Own | Own only | Own only | Own only | Own only | ❌ | ❌ |
-| Technician | ✅ (maint.) | ❌ | ❌ | ❌ | Assigned only | ❌ | ❌ |
-| Tenant | Portal only | ❌ | Own only | Own only | Own only | ❌ | ❌ |
+| Role | Backend | Properties | Tenancies | Payments | CRM | Maintenance | Ejar | Settings |
+|------|---------|------------|-----------|----------|-----|-------------|------|----------|
+| Admin | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ |
+| Manager | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ❌ |
+| Accountant | ✅ | Read | ✅ All | ✅ All | ❌ UI | Read | Read | ❌ |
+| Agent | ✅ | Read+Create | Read+Create | Read | ✅ Full | Read+Create | Read | ❌ |
+| Owner | ✅ Own | Own only | Own only | Own only | ❌ | Own only | ❌ | ❌ |
+| Technician | ✅ (maint.) | ❌ | ❌ | ❌ | ❌ | Assigned only | ❌ | ❌ |
+| Tenant | Portal only | ❌ | Own only | Own only | ❌ | Own only | ❌ | ❌ |
 
 Record rules are enforced at the ORM level — not just the UI — so API access is also restricted.
+
+> **Accountant note:** The accountant has `base.group_user` internal access so can reach CRM records programmatically, but the CRM menu is hidden in the UI (`groups="sa_security.group_pms_agent"`).
 
 ---
 
@@ -575,7 +647,8 @@ proptech-ejar/
 │   │   └── controllers/                 ← webhook endpoint
 │   ├── sa_property/
 │   ├── sa_rental_cycle/
-│   ├── sa_maintenance/
+│   ├── sa_crm/                          ← CRM: leads, reservations, showings, deals
+│   ├── sa_maintenance/                  ← Maintenance: requests, work orders, contracts
 │   ├── sa_mobile_tech/
 │   ├── sa_broker_commission/
 │   ├── sa_notifications/
@@ -610,13 +683,20 @@ Inherited views that reference `inherit_id` from another file must load after th
 ],
 ```
 
+### Module dependency rules
+
+- `sa_security` depends on all feature modules → loads last among custom addons
+- Feature modules (`sa_maintenance`, `sa_property_base`, etc.) must NOT list `sa_security` in `depends` — circular dependency silently breaks all module loading
+- Modules that need PMS group restrictions in their menus must either: (a) depend on `sa_security` (like `sa_crm`), or (b) have their menu group overrides declared in `sa_security/data/menu_overrides.xml`
+- Portal user `create()` methods that call `ir.sequence` must use `.sudo()` — portal users lack sequence read access
+
 ### Git workflow
 
 ```bash
 git checkout -b feature/my-feature
 # make changes
-git add addons/l10n_sa_ejar/
-git commit -m "feat(l10n_sa_ejar): description"
+git add addons/sa_crm/
+git commit -m "feat(sa_crm): description"
 git push origin feature/my-feature
 # PR → merge → pull on server → restart
 ```
@@ -624,9 +704,7 @@ git push origin feature/my-feature
 ### Server deployment
 
 ```bash
-ssh proptech-amlak "cd ~/propza-amlak && git pull origin main"
-# Then upgrade modules:
-ssh proptech-amlak "cd ~/propza-amlak && bash install-addons.sh -u propza"
+ssh proptech-amlak "cd ~/propza-amlak && git pull && ODOO_DB=propza bash install-addons.sh propza 2>&1"
 ```
 
 **Server:** `13.50.5.37` — `ubuntu@proptech-amlak` (SSH alias)
