@@ -24,5 +24,28 @@
             <field name="perm_unlink" eval="True"/>
         </record>
 
+        <!-- ── Showings ───────────────────────────────────────── -->
+        <record id="rule_crm_showing_agent" model="ir.rule">
+            <field name="name">Agent: own showings only</field>
+            <field name="model_id" ref="model_sa_crm_showing"/>
+            <field name="domain_force">[('lead_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('sa_security.group_pms_agent'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="rule_crm_showing_manager" model="ir.rule">
+            <field name="name">Manager: all showings</field>
+            <field name="model_id" ref="model_sa_crm_showing"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('sa_security.group_pms_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
     </data>
 </odoo>
