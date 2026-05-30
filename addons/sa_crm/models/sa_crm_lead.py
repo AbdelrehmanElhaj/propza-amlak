@@ -156,9 +156,13 @@ class SaCrmLead(models.Model):
         compute='_compute_active_reservation',
     )
 
-    # ─── Ejar Contract ─────────────────────────────────────────
+    # ─── Tenancy & Ejar Contract ───────────────────────────────
+    tenancy_id = fields.Many2one(
+        'property.tenancy', string='عقد الإيجار (تأجير)',
+        copy=False, tracking=True,
+    )
     contract_id = fields.Many2one(
-        'ejar.contract', string='عقد الإيجار',
+        'ejar.contract', string='عقد إيجار (منصة)',
         copy=False, tracking=True,
     )
 
@@ -355,14 +359,31 @@ class SaCrmLead(models.Model):
             if converted:
                 property_rec = converted.property_id
 
+        rent_monthly = 0.0
         rent_annual = 0.0
         if property_rec:
-            rent_annual = property_rec.sa_rent_annual or (property_rec.rent_amount * 12)
+            rent_monthly = property_rec.rent_amount or 0.0
+            rent_annual = property_rec.sa_rent_annual or (rent_monthly * 12)
         if not rent_annual:
             rent_annual = self.budget_max or 0.0
+        if not rent_monthly:
+            rent_monthly = rent_annual / 12
 
+        # 1. Create property.tenancy (draft)
+        tenancy_vals = {
+            'partner_id': self.partner_id.id,
+            'start_date': today,
+            'end_date': end_date,
+            'rent_amount': rent_monthly,
+            'payment_method': 'bank_transfer',
+        }
+        if property_rec:
+            tenancy_vals['property_id'] = property_rec.id
+        tenancy = self.env['property.tenancy'].sudo().create(tenancy_vals)
+        self.tenancy_id = tenancy
+
+        # 2. Create ejar.contract linked to tenancy
         contract_type = 'residential' if self.property_type in ('residential', 'land') else 'commercial'
-
         party_vals = {
             'role': 'tenant',
             'entity_type': 'individual',
@@ -371,8 +392,8 @@ class SaCrmLead(models.Model):
             'mobile': self.partner_id.phone or self.partner_id.mobile or '',
             'email': self.partner_id.email or '',
         }
-
         contract_vals = {
+            'tenancy_id': tenancy.id,
             'start_date': today,
             'end_date': end_date,
             'rent_amount': rent_annual,
@@ -380,7 +401,6 @@ class SaCrmLead(models.Model):
             'payment_schedule': 'monthly',
             'party_ids': [(0, 0, party_vals)],
         }
-
         if property_rec:
             _unit_type_map = {
                 'residential': 'apartment',
@@ -400,6 +420,7 @@ class SaCrmLead(models.Model):
             contract_vals['unit_ids'] = [(0, 0, unit_vals)]
 
         contract = self.env['ejar.contract'].create(contract_vals)
+        tenancy.ejar_contract_id = contract
         self.contract_id = contract
 
         return {
@@ -418,4 +439,14 @@ class SaCrmLead(models.Model):
             'res_model': 'ejar.contract',
             'view_mode': 'form',
             'res_id': self.contract_id.id,
+        }
+
+    def action_view_tenancy(self):
+        self.ensure_one()
+        return {
+            'name': _('عقد الإيجار (تأجير) — %s') % self.name,
+            'type': 'ir.actions.act_window',
+            'res_model': 'property.tenancy',
+            'view_mode': 'form',
+            'res_id': self.tenancy_id.id,
         }

@@ -164,7 +164,14 @@
                                 class="oe_stat_button" icon="fa-file-text-o"
                                 invisible="not contract_id">
                             <div class="o_stat_info">
-                                <span class="o_stat_text">عقد الإيجار</span>
+                                <span class="o_stat_text">عقد إيجار</span>
+                            </div>
+                        </button>
+                        <button name="action_view_tenancy" type="object"
+                                class="oe_stat_button" icon="fa-key"
+                                invisible="not tenancy_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">عقد التأجير</span>
                             </div>
                         </button>
                     </div>
@@ -235,6 +242,7 @@
                         <field name="lost_reason" string="سبب الخسارة"/>
                     </group>
                     <field name="contract_id" invisible="1"/>
+                    <field name="tenancy_id" invisible="1"/>
                     <notebook>
                         <page string="الجولات الميدانية" name="showings">
                             <field name="showing_ids">
