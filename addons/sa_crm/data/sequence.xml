@@ -8,5 +8,12 @@
             <field name="padding">5</field>
             <field name="company_id" eval="False"/>
         </record>
+        <record id="seq_sa_crm_reservation" model="ir.sequence">
+            <field name="name">حجز وحدة</field>
+            <field name="code">sa.crm.reservation</field>
+            <field name="prefix">RES/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
     </data>
 </odoo>

@@ -15,6 +15,7 @@
         'data/sa_crm_stage_data.xml',
         'views/sa_crm_stage_views.xml',
         'views/sa_crm_showing_views.xml',
+        'views/sa_crm_reservation_views.xml',
         'views/sa_crm_lead_views.xml',
         'views/menu.xml',
     ],

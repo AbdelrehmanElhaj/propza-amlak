@@ -20,6 +20,8 @@
                 <field name="area_min_sqm"/>
                 <field name="area_max_sqm"/>
                 <field name="days_open"/>
+                <field name="lead_category"/>
+                <field name="has_active_reservation"/>
                 <templates>
                     <t t-name="kanban-box">
                         <div class="oe_kanban_card oe_kanban_global_click">
@@ -34,9 +36,18 @@
                                 </div>
                             </div>
                             <div class="o_kanban_record_body">
+                                <field name="lead_category" widget="badge"
+                                       decoration-info="lead_category == 'lead'"
+                                       decoration-warning="lead_category == 'opportunity'"
+                                       decoration-success="lead_category == 'deal'"/>
                                 <field name="lead_type" widget="badge"
                                        decoration-info="lead_type == 'rent'"
                                        decoration-warning="lead_type == 'buy'"/>
+                                <t t-if="record.has_active_reservation.raw_value">
+                                    <span class="badge badge-danger ms-1">
+                                        <i class="fa fa-lock"/> محجوز
+                                    </span>
+                                </t>
                                 <div t-if="record.budget_max.raw_value">
                                     <field name="budget_max" widget="monetary"/>
                                 </div>
@@ -100,9 +111,22 @@
         <field name="arch" type="xml">
             <form string="طلب CRM">
                 <header>
+                    <!-- Lead → Opportunity -->
+                    <button name="action_qualify_opportunity" type="object"
+                            string="تأهيل كفرصة" class="oe_highlight"
+                            invisible="lead_category != 'lead' or state != 'open'"/>
+                    <!-- Opportunity → Reserve -->
+                    <button name="action_create_reservation" type="object"
+                            string="احجز العقار" class="oe_highlight"
+                            invisible="lead_category != 'opportunity' or has_active_reservation or state != 'open'"/>
+                    <!-- Release reservation -->
+                    <button name="action_view_reservations" type="object"
+                            string="عرض الحجز النشط"
+                            invisible="not has_active_reservation"/>
+                    <!-- Won / Lost -->
                     <button name="action_mark_won" type="object"
                             string="فاز بالصفقة" class="oe_highlight"
-                            invisible="state != 'open'"/>
+                            invisible="state != 'open' or lead_category == 'deal'"/>
                     <button name="action_mark_lost" type="object"
                             string="خسر الصفقة"
                             invisible="state != 'open'"/>
@@ -124,6 +148,11 @@
                             <field name="matching_count" widget="statinfo"
                                    string="عقارات مطابقة"/>
                         </button>
+                        <button name="action_view_reservations" type="object"
+                                class="oe_stat_button" icon="fa-lock">
+                            <field name="reservation_count" widget="statinfo"
+                                   string="الحجوزات"/>
+                        </button>
                     </div>
                     <div class="oe_title">
                         <h1><field name="name" readonly="1"/></h1>
@@ -135,11 +164,22 @@
                             <field name="email" readonly="1"/>
                         </group>
                         <group string="التصنيف">
+                            <field name="lead_category" widget="badge"
+                                   decoration-info="lead_category == 'lead'"
+                                   decoration-warning="lead_category == 'opportunity'"
+                                   decoration-success="lead_category == 'deal'"/>
                             <field name="lead_type"/>
                             <field name="property_type"/>
                             <field name="source"/>
                             <field name="priority" widget="priority"/>
                         </group>
+                    </group>
+
+                    <!-- Active reservation banner -->
+                    <group invisible="not has_active_reservation"
+                           string="الحجز النشط">
+                        <field name="active_reservation_id" readonly="1"/>
+                        <field name="has_active_reservation" invisible="1"/>
                     </group>
                     <group>
                         <group string="الميزانية">

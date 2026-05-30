@@ -30,6 +30,13 @@ class SaCrmLead(models.Model):
         related='partner_id.email', store=True,
     )
 
+    # ─── Lead / Opportunity / Deal ─────────────────────────────
+    lead_category = fields.Selection([
+        ('lead',        'طلب'),
+        ('opportunity', 'فرصة'),
+        ('deal',        'صفقة'),
+    ], string='التصنيف', default='lead', tracking=True)
+
     # ─── Classification ────────────────────────────────────────
     lead_type = fields.Selection([
         ('rent', 'بحث عن إيجار'),
@@ -133,6 +140,21 @@ class SaCrmLead(models.Model):
     date_deadline = fields.Date(string='الموعد النهائي')
     description = fields.Text(string='ملاحظات')
 
+    # ─── Reservations ──────────────────────────────────────────
+    reservation_ids = fields.One2many(
+        'sa.crm.reservation', 'lead_id', string='الحجوزات',
+    )
+    reservation_count = fields.Integer(
+        string='الحجوزات', compute='_compute_reservation_count',
+    )
+    active_reservation_id = fields.Many2one(
+        'sa.crm.reservation', string='الحجز النشط',
+        compute='_compute_active_reservation',
+    )
+    has_active_reservation = fields.Boolean(
+        compute='_compute_active_reservation',
+    )
+
     # ─── Showings ──────────────────────────────────────────────
     showing_ids = fields.One2many(
         'sa.crm.showing', 'lead_id', string='الجولات الميدانية',
@@ -155,6 +177,18 @@ class SaCrmLead(models.Model):
     @api.model
     def _default_stage_id(self):
         return self.env['sa.crm.stage'].search([], order='sequence asc', limit=1)
+
+    @api.depends('reservation_ids')
+    def _compute_reservation_count(self):
+        for rec in self:
+            rec.reservation_count = len(rec.reservation_ids)
+
+    @api.depends('reservation_ids.state')
+    def _compute_active_reservation(self):
+        for rec in self:
+            active = rec.reservation_ids.filtered(lambda r: r.state == 'active')
+            rec.active_reservation_id = active[:1]
+            rec.has_active_reservation = bool(active)
 
     @api.depends('showing_ids')
     def _compute_showing_count(self):
@@ -182,7 +216,7 @@ class SaCrmLead(models.Model):
             rec.matching_count = self.env['property.property'].search_count(domain)
 
     def _build_matching_domain(self):
-        domain = [('state', '=', 'draft')]
+        domain = [('state', '=', 'draft'), ('is_reserved', '=', False)]
         if self.property_type:
             domain.append(('property_type', '=', self.property_type))
         if self.preferred_region_id:
@@ -225,12 +259,48 @@ class SaCrmLead(models.Model):
         return super().create(vals_list)
 
     # ─── Actions ───────────────────────────────────────────────
+    def action_qualify_opportunity(self):
+        second_stage = self.env['sa.crm.stage'].search([], order='sequence asc', offset=1, limit=1)
+        for rec in self:
+            rec.lead_category = 'opportunity'
+            if rec.stage_id == self.env['sa.crm.stage'].search([], order='sequence asc', limit=1) and second_stage:
+                rec.stage_id = second_stage
+
+    def action_create_reservation(self):
+        self.ensure_one()
+        import datetime
+        default_end = fields.Date.today() + datetime.timedelta(days=14)
+        return {
+            'name': _('حجز وحدة'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'sa.crm.reservation',
+            'view_mode': 'form',
+            'context': {
+                'default_lead_id': self.id,
+                'default_property_id': self.property_id.id if self.property_id else False,
+                'default_date_end': default_end.strftime('%Y-%m-%d'),
+            },
+            'target': 'new',
+        }
+
+    def action_view_reservations(self):
+        self.ensure_one()
+        return {
+            'name': _('الحجوزات — %s') % self.name,
+            'type': 'ir.actions.act_window',
+            'res_model': 'sa.crm.reservation',
+            'view_mode': 'tree,form',
+            'domain': [('lead_id', '=', self.id)],
+            'context': {'default_lead_id': self.id},
+        }
+
     def action_mark_won(self):
         won_stage = self.env['sa.crm.stage'].search(
             [('is_won', '=', True)], order='sequence asc', limit=1
         )
         for rec in self:
             rec.state = 'won'
+            rec.lead_category = 'deal'
             if won_stage:
                 rec.stage_id = won_stage
 

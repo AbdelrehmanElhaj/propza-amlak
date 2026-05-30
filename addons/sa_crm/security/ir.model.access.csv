@@ -5,3 +5,5 @@ access_sa_crm_lead_agent,sa.crm.lead agent,model_sa_crm_lead,sa_security.group_p
 access_sa_crm_lead_manager,sa.crm.lead manager,model_sa_crm_lead,sa_security.group_pms_manager,1,1,1,1
 access_sa_crm_showing_agent,sa.crm.showing agent,model_sa_crm_showing,sa_security.group_pms_agent,1,1,1,1
 access_sa_crm_showing_manager,sa.crm.showing manager,model_sa_crm_showing,sa_security.group_pms_manager,1,1,1,1
+access_sa_crm_reservation_agent,sa.crm.reservation agent,model_sa_crm_reservation,sa_security.group_pms_agent,1,1,1,0
+access_sa_crm_reservation_manager,sa.crm.reservation manager,model_sa_crm_reservation,sa_security.group_pms_manager,1,1,1,1

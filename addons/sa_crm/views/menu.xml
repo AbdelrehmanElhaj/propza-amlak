@@ -18,6 +18,12 @@
               action="action_sa_crm_showing"
               sequence="20"/>
 
+    <menuitem id="menu_crm_reservations"
+              name="الحجوزات"
+              parent="menu_crm_root"
+              action="action_sa_crm_reservation"
+              sequence="30"/>
+
     <menuitem id="menu_crm_config"
               name="الإعدادات"
               parent="menu_crm_root"

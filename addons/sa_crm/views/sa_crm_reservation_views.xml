@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- List -->
+    <record id="view_sa_crm_reservation_list" model="ir.ui.view">
+        <field name="name">sa.crm.reservation.list</field>
+        <field name="model">sa.crm.reservation</field>
+        <field name="arch" type="xml">
+            <tree string="الحجوزات"
+                  decoration-success="state == 'active'"
+                  decoration-warning="state == 'expired'"
+                  decoration-muted="state in ('cancelled','converted')">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="property_id"/>
+                <field name="lead_id"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="days_remaining" string="متبقي"/>
+                <field name="deposit_amount" widget="monetary"/>
+                <field name="deposit_paid"/>
+                <field name="state"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form -->
+    <record id="view_sa_crm_reservation_form" model="ir.ui.view">
+        <field name="name">sa.crm.reservation.form</field>
+        <field name="model">sa.crm.reservation</field>
+        <field name="arch" type="xml">
+            <form string="حجز وحدة">
+                <header>
+                    <button name="action_activate" type="object"
+                            string="تأكيد الحجز" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_convert_to_deal" type="object"
+                            string="تحويل لصفقة" class="oe_highlight"
+                            invisible="state != 'active'"/>
+                    <button name="action_cancel" type="object"
+                            string="إلغاء الحجز"
+                            invisible="state not in ('draft','active')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,active,converted"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="تفاصيل الحجز">
+                            <field name="lead_id"/>
+                            <field name="partner_id" readonly="1"/>
+                            <field name="property_id"
+                                   domain="[('state','=','draft'),('is_reserved','=',False)]"/>
+                            <field name="user_id"/>
+                        </group>
+                        <group string="المدة والمبلغ">
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="duration_days" readonly="1"/>
+                            <field name="days_remaining" readonly="1"
+                                   invisible="state != 'active'"/>
+                            <field name="deposit_amount" widget="monetary"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="deposit_paid" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <group invisible="state != 'cancelled'">
+                        <field name="cancel_reason" string="سبب الإلغاء"/>
+                    </group>
+                    <group string="ملاحظات">
+                        <field name="notes" nolabel="1"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search -->
+    <record id="view_sa_crm_reservation_search" model="ir.ui.view">
+        <field name="name">sa.crm.reservation.search</field>
+        <field name="model">sa.crm.reservation</field>
+        <field name="arch" type="xml">
+            <search string="بحث في الحجوزات">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="property_id"/>
+                <field name="lead_id"/>
+                <separator/>
+                <filter name="active"    string="محجوز"              domain="[('state','=','active')]"/>
+                <filter name="draft"     string="مسودة"              domain="[('state','=','draft')]"/>
+                <filter name="expired"   string="منتهي الصلاحية"    domain="[('state','=','expired')]"/>
+                <filter name="cancelled" string="ملغى"               domain="[('state','=','cancelled')]"/>
+                <filter name="converted" string="تحوّل لصفقة"        domain="[('state','=','converted')]"/>
+                <separator/>
+                <filter name="not_paid"  string="لم يُسدَّد الحجز"   domain="[('deposit_paid','=',False),('state','=','active')]"/>
+                <filter name="my_reservations" string="حجوزاتي"      domain="[('user_id','=',uid)]"/>
+                <group expand="0" string="تجميع حسب">
+                    <filter name="group_state"    string="الحالة"   context="{'group_by':'state'}"/>
+                    <filter name="group_property" string="العقار"   context="{'group_by':'property_id'}"/>
+                    <filter name="group_user"     string="الموظف"   context="{'group_by':'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_sa_crm_reservation" model="ir.actions.act_window">
+        <field name="name">الحجوزات</field>
+        <field name="res_model">sa.crm.reservation</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_sa_crm_reservation_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+    </record>
+
+</odoo>
