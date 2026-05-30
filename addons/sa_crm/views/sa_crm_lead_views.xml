@@ -133,6 +133,13 @@
                     <button name="action_reopen" type="object"
                             string="إعادة فتح"
                             invisible="state == 'open'"/>
+                    <!-- Deal → Ejar Contract -->
+                    <button name="action_create_ejar_contract" type="object"
+                            string="إنشاء عقد إيجار" class="oe_highlight"
+                            invisible="lead_category != 'deal' or contract_id != False"/>
+                    <button name="action_view_ejar_contract" type="object"
+                            string="عرض عقد الإيجار"
+                            invisible="not contract_id"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="open,won,lost"/>
                 </header>
@@ -152,6 +159,13 @@
                                 class="oe_stat_button" icon="fa-lock">
                             <field name="reservation_count" widget="statinfo"
                                    string="الحجوزات"/>
+                        </button>
+                        <button name="action_view_ejar_contract" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o"
+                                invisible="not contract_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">عقد الإيجار</span>
+                            </div>
                         </button>
                     </div>
                     <div class="oe_title">
@@ -220,6 +234,7 @@
                     <group invisible="state != 'lost'">
                         <field name="lost_reason" string="سبب الخسارة"/>
                     </group>
+                    <field name="contract_id" invisible="1"/>
                     <notebook>
                         <page string="الجولات الميدانية" name="showings">
                             <field name="showing_ids">

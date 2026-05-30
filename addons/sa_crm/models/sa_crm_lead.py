@@ -156,6 +156,12 @@ class SaCrmLead(models.Model):
         compute='_compute_active_reservation',
     )
 
+    # ─── Ejar Contract ─────────────────────────────────────────
+    contract_id = fields.Many2one(
+        'ejar.contract', string='عقد الإيجار',
+        copy=False, tracking=True,
+    )
+
     # ─── Showings ──────────────────────────────────────────────
     showing_ids = fields.One2many(
         'sa.crm.showing', 'lead_id', string='الجولات الميدانية',
@@ -336,4 +342,73 @@ class SaCrmLead(models.Model):
             'res_model': 'property.property',
             'view_mode': 'tree,form',
             'domain': domain,
+        }
+
+    def action_create_ejar_contract(self):
+        self.ensure_one()
+        today = fields.Date.today()
+        end_date = today + datetime.timedelta(days=365)
+
+        property_rec = self.property_id
+        if not property_rec:
+            converted = self.reservation_ids.filtered(lambda r: r.state == 'converted')[:1]
+            if converted:
+                property_rec = converted.property_id
+
+        rent_annual = 0.0
+        if property_rec:
+            rent_annual = property_rec.sa_rent_annual or (property_rec.rent_amount * 12)
+        if not rent_annual:
+            rent_annual = self.budget_max or 0.0
+
+        contract_type = 'residential' if self.property_type in ('residential', 'land') else 'commercial'
+
+        party_vals = {
+            'role': 'tenant',
+            'entity_type': 'individual',
+            'partner_id': self.partner_id.id,
+            'full_name_ar': self.partner_id.name or '',
+            'mobile': self.partner_id.phone or self.partner_id.mobile or '',
+            'email': self.partner_id.email or '',
+        }
+
+        contract_vals = {
+            'start_date': today,
+            'end_date': end_date,
+            'rent_amount': rent_annual,
+            'contract_type': contract_type,
+            'payment_schedule': 'monthly',
+            'party_ids': [(0, 0, party_vals)],
+        }
+
+        if property_rec:
+            unit_vals = {
+                'property_id': property_rec.id,
+                'unit_number': property_rec.name,
+                'unit_type': property_rec.ejar_unit_type or 'apartment',
+                'area': property_rec.sa_area_sqm or 0.0,
+                'bedrooms': property_rec.sa_rooms or 0,
+                'bathrooms': property_rec.sa_bathrooms or 0,
+            }
+            contract_vals['unit_ids'] = [(0, 0, unit_vals)]
+
+        contract = self.env['ejar.contract'].create(contract_vals)
+        self.contract_id = contract
+
+        return {
+            'name': _('عقد الإيجار — %s') % self.name,
+            'type': 'ir.actions.act_window',
+            'res_model': 'ejar.contract',
+            'view_mode': 'form',
+            'res_id': contract.id,
+        }
+
+    def action_view_ejar_contract(self):
+        self.ensure_one()
+        return {
+            'name': _('عقد الإيجار — %s') % self.name,
+            'type': 'ir.actions.act_window',
+            'res_model': 'ejar.contract',
+            'view_mode': 'form',
+            'res_id': self.contract_id.id,
         }
