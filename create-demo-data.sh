@@ -1833,6 +1833,121 @@ make_doc(tenant9, 'lease_contract', 'عقد إيجار — فيلا الورود
 env.cr.commit()
 
 # ══════════════════════════════════════════════════════════════════════════
+# 15 — بيانات CRM  (CRM Leads & Showings)
+# ══════════════════════════════════════════════════════════════════════════
+print("إنشاء بيانات CRM... (Creating CRM leads & showings...)")
+
+_stage_new        = env['sa.crm.stage'].search([('sequence','=',10)], limit=1)
+_stage_contacted  = env['sa.crm.stage'].search([('sequence','=',20)], limit=1)
+_stage_showing    = env['sa.crm.stage'].search([('sequence','=',30)], limit=1)
+_stage_negotiating= env['sa.crm.stage'].search([('sequence','=',40)], limit=1)
+_stage_won        = env['sa.crm.stage'].search([('is_won','=',True)], limit=1)
+_stage_lost       = env['sa.crm.stage'].search([('sequence','=',60)], limit=1)
+
+_user_manager = env['res.users'].search([('login','=','manager@propza-demo.sa')], limit=1)
+_user_agent   = env['res.users'].search([('login','=','agent@propza-demo.sa')],   limit=1)
+
+def lead(partner, lead_type, prop_type, stage, user, source, budget_min, budget_max,
+         region=None, prop=None, commission=0, deadline_days=None, priority='0',
+         state='open', lost_reason=None, description=None):
+    vals = {
+        'partner_id':          partner.id,
+        'lead_type':           lead_type,
+        'property_type':       prop_type,
+        'stage_id':            stage.id,
+        'user_id':             user.id,
+        'source':              source,
+        'budget_min':          budget_min,
+        'budget_max':          budget_max,
+        'preferred_region_id': region.id if region else False,
+        'property_id':         prop.id if prop else False,
+        'expected_commission': commission,
+        'date_deadline':       str(ahead(deadline_days)) if deadline_days else False,
+        'priority':            priority,
+        'state':               state,
+        'lost_reason':         lost_reason or False,
+        'description':         description or False,
+    }
+    if state == 'lost':
+        vals['active'] = False
+    return env['sa.crm.lead'].create(vals)
+
+def showing(crm_lead, prop, scheduled_days, outcome, user, notes=None):
+    env['sa.crm.showing'].create({
+        'lead_id':        crm_lead.id,
+        'property_id':    prop.id,
+        'scheduled_date': str(ago(scheduled_days)) + ' 10:00:00',
+        'user_id':        user.id,
+        'outcome':        outcome,
+        'notes':          notes or False,
+    })
+
+# ── طلبات مفتوحة ────────────────────────────────────────────────────────
+# خالد الراشدي: يبحث عن شقة سكنية بالرياض — قيد التفاوض
+lead1 = lead(tenant1, 'rent', 'residential', _stage_negotiating, _user_agent,
+             'referral', 40000, 55000, region=r_riyadh, prop=prop4,
+             commission=2750, deadline_days=14, priority='1',
+             description='يفضل الطابق الثاني أو أعلى، قريب من المدارس')
+showing(lead1, prop4, 5,  'done',      _user_agent, 'أعجبه الموقع، يفاوض على السعر')
+showing(lead1, prop5, 10, 'done',      _user_agent, 'لم يعجبه المدخل')
+
+# عمر الفاروق: يبحث عن مكتب تجاري بالرياض — جولة مجدولة
+lead2 = lead(tenant2, 'rent', 'commercial', _stage_showing, _user_agent,
+             'website', 80000, 130000, region=r_riyadh, prop=prop9,
+             commission=6500, deadline_days=30, priority='1')
+showing(lead2, prop9,  3, 'done',      _user_agent, 'عرض المكتب، اهتمام جيد')
+showing(lead2, prop10, 1, 'scheduled', _user_agent, 'جولة ثانية مقررة الأسبوع القادم')
+
+# نورة الحمدان: تبحث عن فيلا سكنية بجدة — تم التواصل
+lead3 = lead(tenant3, 'rent', 'residential', _stage_contacted, _user_manager,
+             'phone', 90000, 120000, region=r_jeddah,
+             commission=6000, deadline_days=45, priority='2',
+             description='عائلة كبيرة، تحتاج 5 غرف على الأقل')
+
+# عائشة مالك: تبحث عن شقة بالدمام — طلب جديد
+lead4 = lead(tenant4, 'rent', 'residential', _stage_new, _user_agent,
+             'social', 30000, 45000, region=r_dammam,
+             deadline_days=60, priority='0')
+
+# أحمد العمري: يبحث عن مستودع صناعي — طلب جديد
+lead5 = lead(tenant5, 'rent', 'industrial', _stage_new, _user_manager,
+             'walkin', 60000, 90000, region=r_riyadh,
+             description='مستودع للتخزين، مساحة لا تقل عن 500 م²')
+
+# محمد الشهري: يبحث عن محل تجاري بالرياض — تم التواصل
+lead6 = lead(tenant7, 'rent', 'commercial', _stage_contacted, _user_agent,
+             'portal', 35000, 50000, region=r_riyadh,
+             deadline_days=20, priority='1')
+
+# ── طلبات فاز بها ────────────────────────────────────────────────────────
+# ريم القرني: أرادت شقة بالرياض — تم التأجير (فاز)
+lead7 = lead(tenant8, 'rent', 'residential', _stage_won, _user_agent,
+             'referral', 40000, 55000, region=r_riyadh, prop=prop5,
+             commission=2400, state='won')
+showing(lead7, prop5, 30, 'done', _user_agent, 'أعجبتها الشقة، وقّعت العقد')
+showing(lead7, prop4, 35, 'done', _user_agent, 'الخيار الأول لم يناسبها')
+
+# فيصل الغامدي: يريد شراء فيلا بالرياض — (فاز)
+lead8 = lead(tenant9, 'buy', 'residential', _stage_won, _user_manager,
+             'website', 1200000, 1800000, region=r_riyadh, prop=prop1,
+             commission=54000, state='won', priority='2')
+showing(lead8, prop1,  45, 'done', _user_manager, 'زار الفيلا مرتين، قرر الشراء')
+showing(lead8, prop2,  50, 'done', _user_manager, 'خيار احتياطي لم يُعجبه')
+
+# ── طلبات خسر بها ─────────────────────────────────────────────────────
+# لينا الزهراني: كانت تبحث عن شقة — خسر (قررت الانتقال لمنطقة أخرى)
+lead9 = lead(tenant6, 'rent', 'residential', _stage_lost, _user_agent,
+             'phone', 35000, 50000, region=r_riyadh,
+             state='lost', lost_reason='قررت الانتقال إلى جدة')
+
+# صالح الدوسري: كان يريد مكتباً — خسر (وجد بديلاً)
+lead10 = lead(tenant10, 'rent', 'commercial', _stage_lost, _user_agent,
+              'walkin', 70000, 100000, region=r_riyadh,
+              state='lost', lost_reason='وجد مكتباً عبر طرف ثالث')
+
+env.cr.commit()
+
+# ══════════════════════════════════════════════════════════════════════════
 # Done
 # ══════════════════════════════════════════════════════════════════════════
 print("")
@@ -1861,6 +1976,8 @@ print(f"    وحدات العقود  / Contract Units:   {_unit_count}  (فلل 
 print(f"    سجلات API     / Sync Logs:        {_log_count}  (صادر/وارد، نجاح/خطأ)")
 print(f"  توثيق الهوية    / Verifications: {env['sa.user.verification'].search_count([])}  (٦ موثَّق، ٢ مقدَّم، ٢ مسودة/مرفوض)")
 print(f"  وثائق المستخدمين / Documents:  {env['sa.user.document'].search_count([])}  (هويات، عقود، خطابات راتب)")
+print(f"  طلبات CRM        / CRM Leads: {env['sa.crm.lead'].with_context(active_test=False).search_count([])}  (٦ مفتوحة، ٢ فاز، ٢ خسر)")
+print(f"  جولات ميدانية   / Showings:  {env['sa.crm.showing'].search_count([])}  (متنوعة النتائج)")
 print(f"  المستخدمون       / Users:      23  (كلمة المرور: demo)")
 print("")
 PYEOF
