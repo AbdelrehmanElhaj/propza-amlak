@@ -115,18 +115,23 @@
                     <button name="action_qualify_opportunity" type="object"
                             string="تأهيل كفرصة" class="oe_highlight"
                             invisible="lead_category != 'lead' or state != 'open'"/>
-                    <!-- Opportunity → Reserve -->
+                    <!-- Opportunity → Reserve (shown only when no reservation exists) -->
                     <button name="action_create_reservation" type="object"
                             string="احجز العقار" class="oe_highlight"
-                            invisible="lead_category != 'opportunity' or has_active_reservation or state != 'open'"/>
-                    <!-- Release reservation -->
+                            invisible="lead_category != 'opportunity' or has_active_reservation or has_draft_reservation or state != 'open'"/>
+                    <!-- Draft reservation → Confirm -->
+                    <button name="action_confirm_reservation" type="object"
+                            string="تأكيد الحجز" class="oe_highlight"
+                            invisible="not has_draft_reservation or state != 'open'"/>
+                    <!-- Active reservation → Convert to deal -->
+                    <button name="action_convert_reservation_to_deal" type="object"
+                            string="تحويل إلى صفقة" class="oe_highlight"
+                            invisible="not has_active_reservation or state != 'open'"/>
+                    <!-- View reservations -->
                     <button name="action_view_reservations" type="object"
-                            string="عرض الحجز النشط"
-                            invisible="not has_active_reservation"/>
-                    <!-- Won / Lost -->
-                    <button name="action_mark_won" type="object"
-                            string="فاز بالصفقة" class="oe_highlight"
-                            invisible="state != 'open' or lead_category == 'deal'"/>
+                            string="عرض الحجوزات"
+                            invisible="reservation_count == 0"/>
+                    <!-- Lost -->
                     <button name="action_mark_lost" type="object"
                             string="خسر الصفقة"
                             invisible="state != 'open'"/>
@@ -196,9 +201,13 @@
                         </group>
                     </group>
 
-                    <!-- Active reservation banner -->
+                    <!-- Reservation banner -->
+                    <group invisible="not has_draft_reservation"
+                           string="الحجز المعلّق (بانتظار التأكيد)">
+                        <field name="draft_reservation_id" readonly="1"/>
+                    </group>
                     <group invisible="not has_active_reservation"
-                           string="الحجز النشط">
+                           string="الحجز المؤكد">
                         <field name="active_reservation_id" readonly="1"/>
                         <field name="has_active_reservation" invisible="1"/>
                     </group>
@@ -243,6 +252,8 @@
                     </group>
                     <field name="contract_id" invisible="1"/>
                     <field name="tenancy_id" invisible="1"/>
+                    <field name="has_draft_reservation" invisible="1"/>
+                    <field name="draft_reservation_id" invisible="1"/>
                     <notebook>
                         <page string="الجولات الميدانية" name="showings">
                             <field name="showing_ids">

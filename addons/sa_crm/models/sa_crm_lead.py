@@ -155,6 +155,13 @@ class SaCrmLead(models.Model):
     has_active_reservation = fields.Boolean(
         compute='_compute_active_reservation',
     )
+    draft_reservation_id = fields.Many2one(
+        'sa.crm.reservation', string='الحجز المعلّق',
+        compute='_compute_active_reservation',
+    )
+    has_draft_reservation = fields.Boolean(
+        compute='_compute_active_reservation',
+    )
 
     # ─── Tenancy & Ejar Contract ───────────────────────────────
     tenancy_id = fields.Many2one(
@@ -198,8 +205,11 @@ class SaCrmLead(models.Model):
     def _compute_active_reservation(self):
         for rec in self:
             active = rec.reservation_ids.filtered(lambda r: r.state == 'active')
+            draft = rec.reservation_ids.filtered(lambda r: r.state == 'draft')
             rec.active_reservation_id = active[:1]
             rec.has_active_reservation = bool(active)
+            rec.draft_reservation_id = draft[:1]
+            rec.has_draft_reservation = bool(draft)
 
     @api.depends('showing_ids')
     def _compute_showing_count(self):
@@ -292,6 +302,20 @@ class SaCrmLead(models.Model):
             },
             'target': 'new',
         }
+
+    def action_confirm_reservation(self):
+        self.ensure_one()
+        draft = self.reservation_ids.filtered(lambda r: r.state == 'draft')[:1]
+        if not draft:
+            raise UserError(_('لا يوجد حجز معلّق لتأكيده.'))
+        draft.action_activate()
+
+    def action_convert_reservation_to_deal(self):
+        self.ensure_one()
+        active = self.reservation_ids.filtered(lambda r: r.state == 'active')[:1]
+        if not active:
+            raise UserError(_('يجب تأكيد الحجز أولاً قبل التحويل إلى صفقة.'))
+        active.action_convert_to_deal()
 
     def action_view_reservations(self):
         self.ensure_one()
