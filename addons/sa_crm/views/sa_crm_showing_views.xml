@@ -7,14 +7,33 @@
         <field name="model">sa.crm.showing</field>
         <field name="arch" type="xml">
             <tree string="الجولات الميدانية"
-                  decoration-success="outcome == 'done'"
+                  decoration-success="outcome == 'done' and interest_level in ('very_interested','interested')"
+                  decoration-warning="outcome == 'done' and interest_level == 'neutral'"
                   decoration-muted="outcome in ('cancelled','no_show')">
                 <field name="scheduled_date"/>
                 <field name="lead_id"/>
                 <field name="property_id"/>
                 <field name="user_id"/>
                 <field name="outcome"/>
+                <field name="interest_level"/>
+                <field name="notes" optional="hide"/>
             </tree>
+        </field>
+    </record>
+
+    <!-- Calendar -->
+    <record id="view_sa_crm_showing_calendar" model="ir.ui.view">
+        <field name="name">sa.crm.showing.calendar</field>
+        <field name="model">sa.crm.showing</field>
+        <field name="arch" type="xml">
+            <calendar string="الجولات الميدانية"
+                      date_start="scheduled_date"
+                      color="user_id"
+                      mode="week">
+                <field name="lead_id"/>
+                <field name="property_id"/>
+                <field name="outcome"/>
+            </calendar>
         </field>
     </record>
 
@@ -30,17 +49,22 @@
                 </header>
                 <sheet>
                     <group>
-                        <group string="التفاصيل">
+                        <group string="تفاصيل الجولة">
                             <field name="lead_id"/>
                             <field name="property_id"/>
                             <field name="scheduled_date"/>
                             <field name="user_id"/>
                         </group>
-                        <group string="النتيجة">
+                        <group string="تقييم الجولة">
                             <field name="outcome"/>
+                            <field name="interest_level"/>
                         </group>
                     </group>
-                    <group string="ملاحظات">
+                    <group string="ملاحظات العميل" invisible="interest_level == False">
+                        <field name="client_feedback" nolabel="1"
+                               placeholder="سجّل ما أبدى العميل من ملاحظات حول العقار…"/>
+                    </group>
+                    <group string="ملاحظات الموظف">
                         <field name="notes" nolabel="1"/>
                     </group>
                 </sheet>
@@ -52,7 +76,7 @@
         </field>
     </record>
 
-    <!-- Inline list for lead form -->
+    <!-- Inline list for lead form (with interest_level) -->
     <record id="view_sa_crm_showing_list_inline" model="ir.ui.view">
         <field name="name">sa.crm.showing.list.inline</field>
         <field name="model">sa.crm.showing</field>
@@ -62,6 +86,7 @@
                 <field name="property_id"/>
                 <field name="user_id"/>
                 <field name="outcome"/>
+                <field name="interest_level"/>
                 <field name="notes"/>
             </tree>
         </field>
@@ -77,13 +102,18 @@
                 <field name="property_id"/>
                 <field name="user_id"/>
                 <separator/>
-                <filter name="scheduled" string="مجدولة"  domain="[('outcome','=','scheduled')]"/>
-                <filter name="done"      string="تمت"      domain="[('outcome','=','done')]"/>
-                <filter name="cancelled" string="ملغاة"    domain="[('outcome','=','cancelled')]"/>
+                <filter name="scheduled"       string="مجدولة"      domain="[('outcome','=','scheduled')]"/>
+                <filter name="done"            string="تمت"         domain="[('outcome','=','done')]"/>
+                <filter name="cancelled"       string="ملغاة"       domain="[('outcome','=','cancelled')]"/>
+                <separator/>
+                <filter name="very_interested" string="مهتم جداً"   domain="[('interest_level','=','very_interested')]"/>
+                <filter name="interested"      string="مهتم"        domain="[('interest_level','in',['very_interested','interested'])]"/>
+                <filter name="my_showings"     string="جولاتي"      domain="[('user_id','=',uid)]"/>
                 <group expand="0" string="تجميع حسب">
-                    <filter name="group_outcome"   string="النتيجة"  context="{'group_by':'outcome'}"/>
-                    <filter name="group_property"  string="العقار"   context="{'group_by':'property_id'}"/>
-                    <filter name="group_user"      string="الموظف"   context="{'group_by':'user_id'}"/>
+                    <filter name="group_outcome"   string="النتيجة"         context="{'group_by':'outcome'}"/>
+                    <filter name="group_interest"  string="مستوى الاهتمام"  context="{'group_by':'interest_level'}"/>
+                    <filter name="group_property"  string="العقار"          context="{'group_by':'property_id'}"/>
+                    <filter name="group_user"      string="الموظف"          context="{'group_by':'user_id'}"/>
                 </group>
             </search>
         </field>
@@ -92,7 +122,7 @@
     <record id="action_sa_crm_showing" model="ir.actions.act_window">
         <field name="name">الجولات الميدانية</field>
         <field name="res_model">sa.crm.showing</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,calendar,form</field>
         <field name="search_view_id" ref="view_sa_crm_showing_search"/>
     </record>
 

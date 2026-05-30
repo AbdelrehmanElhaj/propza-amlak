@@ -15,6 +15,11 @@
                 <field name="kanban_state"/>
                 <field name="stage_id"/>
                 <field name="state"/>
+                <field name="rooms_min"/>
+                <field name="rooms_max"/>
+                <field name="area_min_sqm"/>
+                <field name="area_max_sqm"/>
+                <field name="days_open"/>
                 <templates>
                     <t t-name="kanban-box">
                         <div class="oe_kanban_card oe_kanban_global_click">
@@ -35,10 +40,23 @@
                                 <div t-if="record.budget_max.raw_value">
                                     <field name="budget_max" widget="monetary"/>
                                 </div>
+                                <div t-if="record.rooms_min.raw_value" class="text-muted small">
+                                    <i class="fa fa-bed"/> <t t-esc="record.rooms_min.value"/>
+                                    <t t-if="record.rooms_max.raw_value">–<t t-esc="record.rooms_max.value"/></t>
+                                    غرف
+                                </div>
+                                <div t-if="record.area_min_sqm.raw_value" class="text-muted small">
+                                    <i class="fa fa-arrows-alt"/> <t t-esc="record.area_min_sqm.value"/> م²
+                                </div>
                             </div>
                             <div class="o_kanban_record_bottom">
                                 <div class="oe_kanban_bottom_left">
                                     <field name="kanban_state" widget="kanban_state_selection"/>
+                                    <t t-if="record.days_open.raw_value > 30">
+                                        <span class="badge badge-warning ms-1">
+                                            <i class="fa fa-clock-o"/> <t t-esc="record.days_open.value"/> يوم
+                                        </span>
+                                    </t>
                                 </div>
                                 <div class="oe_kanban_bottom_right">
                                     <field name="user_id" widget="many2one_avatar_user"/>
@@ -62,9 +80,12 @@
                 <field name="name"/>
                 <field name="partner_id"/>
                 <field name="lead_type"/>
+                <field name="property_type"/>
                 <field name="stage_id"/>
                 <field name="user_id"/>
                 <field name="budget_max"/>
+                <field name="rooms_min"/>
+                <field name="days_open" string="أيام"/>
                 <field name="date_deadline"/>
                 <field name="priority" widget="priority"/>
                 <field name="state" invisible="1"/>
@@ -98,6 +119,11 @@
                             <field name="showing_count" widget="statinfo"
                                    string="الجولات"/>
                         </button>
+                        <button name="action_find_matching_properties" type="object"
+                                class="oe_stat_button" icon="fa-home">
+                            <field name="matching_count" widget="statinfo"
+                                   string="عقارات مطابقة"/>
+                        </button>
                     </div>
                     <div class="oe_title">
                         <h1><field name="name" readonly="1"/></h1>
@@ -129,8 +155,28 @@
                             <field name="stage_id"/>
                             <field name="kanban_state"/>
                             <field name="date_deadline"/>
+                            <field name="days_open" readonly="1"/>
                         </group>
                     </group>
+
+                    <!-- Property Requirements -->
+                    <group string="متطلبات العقار">
+                        <group string="الأبعاد والمواصفات">
+                            <field name="rooms_min"/>
+                            <field name="rooms_max"/>
+                            <field name="bathrooms_min"/>
+                            <field name="area_min_sqm"/>
+                            <field name="area_max_sqm"/>
+                            <field name="furnished_pref"/>
+                        </group>
+                        <group string="المرافق المطلوبة">
+                            <field name="parking_required" widget="boolean_toggle"/>
+                            <field name="pool_required" widget="boolean_toggle"/>
+                            <field name="garden_required" widget="boolean_toggle"/>
+                            <field name="elevator_required" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+
                     <group invisible="state != 'lost'">
                         <field name="lost_reason" string="سبب الخسارة"/>
                     </group>
@@ -142,6 +188,7 @@
                                     <field name="property_id"/>
                                     <field name="user_id"/>
                                     <field name="outcome"/>
+                                    <field name="interest_level"/>
                                     <field name="notes"/>
                                 </tree>
                             </field>
@@ -170,14 +217,22 @@
                 <field name="partner_id"/>
                 <field name="user_id"/>
                 <separator/>
-                <filter name="open"    string="مفتوح"  domain="[('state','=','open')]"/>
-                <filter name="won"     string="فاز"    domain="[('state','=','won')]"/>
-                <filter name="lost"    string="خسر"    domain="[('active','=',False),('state','=','lost')]"/>
-                <filter name="my_leads" string="طلباتي" domain="[('user_id','=',uid)]"/>
+                <filter name="open"      string="مفتوح"    domain="[('state','=','open')]"/>
+                <filter name="won"       string="فاز"      domain="[('state','=','won')]"/>
+                <filter name="lost"      string="خسر"      domain="[('active','=',False),('state','=','lost')]"/>
+                <filter name="my_leads"  string="طلباتي"   domain="[('user_id','=',uid)]"/>
+                <separator/>
+                <filter name="rent"      string="إيجار"    domain="[('lead_type','=','rent')]"/>
+                <filter name="buy"       string="شراء"     domain="[('lead_type','=','buy')]"/>
+                <separator/>
+                <filter name="high_priority" string="عاجل" domain="[('priority','=','2')]"/>
+                <filter name="stale" string="أكثر من 30 يوم" domain="[('days_open','&gt;',30)]"/>
                 <group expand="0" string="تجميع حسب">
-                    <filter name="group_stage"     string="المرحلة"   context="{'group_by':'stage_id'}"/>
-                    <filter name="group_user"      string="الموظف"    context="{'group_by':'user_id'}"/>
-                    <filter name="group_lead_type" string="نوع الطلب" context="{'group_by':'lead_type'}"/>
+                    <filter name="group_stage"        string="المرحلة"    context="{'group_by':'stage_id'}"/>
+                    <filter name="group_user"         string="الموظف"     context="{'group_by':'user_id'}"/>
+                    <filter name="group_lead_type"    string="نوع الطلب"  context="{'group_by':'lead_type'}"/>
+                    <filter name="group_property_type" string="نوع العقار" context="{'group_by':'property_type'}"/>
+                    <filter name="group_source"       string="المصدر"     context="{'group_by':'source'}"/>
                 </group>
             </search>
         </field>

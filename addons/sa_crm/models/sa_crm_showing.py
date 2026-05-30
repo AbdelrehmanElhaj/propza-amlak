@@ -31,4 +31,14 @@ class SaCrmShowing(models.Model):
         ('cancelled', 'ملغاة'),
         ('no_show',   'لم يحضر'),
     ], string='النتيجة', default='scheduled', tracking=True)
-    notes = fields.Text(string='ملاحظات')
+
+    # ─── Client Feedback ───────────────────────────────────────
+    interest_level = fields.Selection([
+        ('very_interested', 'مهتم جداً'),
+        ('interested',      'مهتم'),
+        ('neutral',         'محايد'),
+        ('not_interested',  'غير مهتم'),
+    ], string='مستوى الاهتمام', tracking=True)
+    client_feedback = fields.Text(string='ملاحظات العميل')
+
+    notes = fields.Text(string='ملاحظات الموظف')

@@ -56,6 +56,23 @@ class SaCrmLead(models.Model):
         'sa.region', string='المنطقة المفضلة',
     )
 
+    # ─── Property Requirements ─────────────────────────────────
+    rooms_min = fields.Integer(string='الغرف الدنيا')
+    rooms_max = fields.Integer(string='الغرف القصوى')
+    bathrooms_min = fields.Integer(string='دورات المياه (الحد الأدنى)')
+    area_min_sqm = fields.Float(string='المساحة الدنيا م²')
+    area_max_sqm = fields.Float(string='المساحة القصوى م²')
+    furnished_pref = fields.Selection([
+        ('any',        'أي نوع'),
+        ('furnished',  'مفروش'),
+        ('semi',       'نصف مفروش'),
+        ('unfurnished', 'غير مفروش'),
+    ], string='التأثيث', default='any')
+    parking_required = fields.Boolean(string='يتطلب موقف سيارات')
+    pool_required = fields.Boolean(string='يتطلب مسبح')
+    garden_required = fields.Boolean(string='يتطلب حديقة')
+    elevator_required = fields.Boolean(string='يتطلب مصعد')
+
     # ─── Pipeline ──────────────────────────────────────────────
     stage_id = fields.Many2one(
         'sa.crm.stage', string='المرحلة',
@@ -109,6 +126,10 @@ class SaCrmLead(models.Model):
     )
 
     # ─── Dates & Notes ─────────────────────────────────────────
+    date_open = fields.Date(
+        string='تاريخ الفتح',
+        default=fields.Date.today, copy=False, readonly=True,
+    )
     date_deadline = fields.Date(string='الموعد النهائي')
     description = fields.Text(string='ملاحظات')
 
@@ -120,6 +141,16 @@ class SaCrmLead(models.Model):
         string='عدد الجولات', compute='_compute_showing_count',
     )
 
+    # ─── Computed ──────────────────────────────────────────────
+    days_open = fields.Integer(
+        string='أيام منذ الفتح',
+        compute='_compute_days_open',
+    )
+    matching_count = fields.Integer(
+        string='عقارات مطابقة',
+        compute='_compute_matching_count',
+    )
+
     # ─── Helpers ───────────────────────────────────────────────
     @api.model
     def _default_stage_id(self):
@@ -129,6 +160,59 @@ class SaCrmLead(models.Model):
     def _compute_showing_count(self):
         for rec in self:
             rec.showing_count = len(rec.showing_ids)
+
+    @api.depends('date_open')
+    def _compute_days_open(self):
+        today = fields.Date.today()
+        for rec in self:
+            if rec.date_open:
+                rec.days_open = (today - rec.date_open).days
+            else:
+                rec.days_open = 0
+
+    @api.depends(
+        'property_type', 'preferred_region_id', 'rooms_min', 'rooms_max',
+        'bathrooms_min', 'area_min_sqm', 'area_max_sqm', 'budget_max',
+        'lead_type', 'parking_required', 'pool_required',
+        'garden_required', 'elevator_required', 'furnished_pref',
+    )
+    def _compute_matching_count(self):
+        for rec in self:
+            domain = rec._build_matching_domain()
+            rec.matching_count = self.env['property.property'].search_count(domain)
+
+    def _build_matching_domain(self):
+        domain = [('state', '=', 'available')]
+        if self.property_type:
+            domain.append(('property_type', '=', self.property_type))
+        if self.preferred_region_id:
+            domain.append(('sa_region_id', '=', self.preferred_region_id.id))
+        if self.rooms_min:
+            domain.append(('sa_rooms', '>=', self.rooms_min))
+        if self.rooms_max:
+            domain.append(('sa_rooms', '<=', self.rooms_max))
+        if self.bathrooms_min:
+            domain.append(('sa_bathrooms', '>=', self.bathrooms_min))
+        if self.area_min_sqm:
+            domain.append(('sa_area_sqm', '>=', self.area_min_sqm))
+        if self.area_max_sqm:
+            domain.append(('sa_area_sqm', '<=', self.area_max_sqm))
+        if self.budget_max:
+            if self.lead_type == 'rent':
+                domain.append(('rent_amount', '<=', self.budget_max))
+            elif self.lead_type == 'buy':
+                domain.append(('price_amount', '<=', self.budget_max))
+        if self.parking_required:
+            domain.append(('sa_parking', '>', 0))
+        if self.pool_required:
+            domain.append(('sa_pool', '=', True))
+        if self.garden_required:
+            domain.append(('sa_garden', '=', True))
+        if self.elevator_required:
+            domain.append(('sa_elevator', '=', True))
+        if self.furnished_pref and self.furnished_pref != 'any':
+            domain.append(('sa_furnished', '=', self.furnished_pref))
+        return domain
 
     # ─── Sequencing ────────────────────────────────────────────
     @api.model_create_multi
@@ -166,7 +250,18 @@ class SaCrmLead(models.Model):
             'name': _('الجولات الميدانية'),
             'type': 'ir.actions.act_window',
             'res_model': 'sa.crm.showing',
-            'view_mode': 'list,form',
+            'view_mode': 'tree,calendar,form',
             'domain': [('lead_id', '=', self.id)],
             'context': {'default_lead_id': self.id},
+        }
+
+    def action_find_matching_properties(self):
+        self.ensure_one()
+        domain = self._build_matching_domain()
+        return {
+            'name': _('عقارات مطابقة — %s') % self.name,
+            'type': 'ir.actions.act_window',
+            'res_model': 'property.property',
+            'view_mode': 'tree,form',
+            'domain': domain,
         }
