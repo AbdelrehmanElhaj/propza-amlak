@@ -401,6 +401,12 @@ class SaCrmLead(models.Model):
             'rent_amount': rent_monthly,
             'payment_method': 'bank_transfer',
         }
+        if self.partner_id.sa_national_id:
+            tenancy_vals.update({
+                'tenant_id_type': self.partner_id.sa_id_type or 'national_id',
+                'tenant_national_id': self.partner_id.sa_national_id,
+                'tenant_id_expiry': self.partner_id.sa_id_expiry,
+            })
         if property_rec:
             tenancy_vals['property_id'] = property_rec.id
         tenancy = self.env['property.tenancy'].sudo().create(tenancy_vals)
@@ -408,14 +414,26 @@ class SaCrmLead(models.Model):
 
         # 2. Create ejar.contract linked to tenancy
         contract_type = 'residential' if self.property_type in ('residential', 'land') else 'commercial'
+        id_type_mapping = {
+            'national_id': 'national_id',
+            'iqama': 'iqama',
+            'passport': 'passport',
+            'gcc': 'gcc_id',
+        }
         party_vals = {
             'role': 'tenant',
             'entity_type': 'individual',
             'partner_id': self.partner_id.id,
             'full_name_ar': self.partner_id.name or '',
-            'mobile': self.partner_id.phone or self.partner_id.mobile or '',
+            'mobile': self.partner_id.mobile or self.partner_id.phone or '',
             'email': self.partner_id.email or '',
         }
+        if self.partner_id.sa_national_id:
+            party_vals.update({
+                'id_number': self.partner_id.sa_national_id,
+                'id_type': id_type_mapping.get(self.partner_id.sa_id_type, 'national_id'),
+                'id_expiry': self.partner_id.sa_id_expiry,
+            })
         contract_vals = {
             'tenancy_id': tenancy.id,
             'start_date': today,
