@@ -1663,6 +1663,7 @@ g_tenant_portal = env.ref('sa_security.group_pms_tenant_portal').id
 make_user('سارة المدير — مدير العقارات',  'manager@propza-demo.sa',    None, [g_manager])
 make_user('عمر المحاسب — محاسب العقارات', 'accountant@propza-demo.sa', None, [g_accountant])
 make_user('لينا الموظفة — خدمة العملاء',  'agent@propza-demo.sa',      None, [g_agent])
+make_user('مستخدم العرض التوضيحي — Demo User', 'demo@demo.com', None, [g_manager])
 
 # الملاك (Owners)
 make_user(owner1.name, owner1.email, owner1, [g_owner])
