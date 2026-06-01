@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sa_crm_lead_form_ai_recommendation" model="ir.ui.view">
+        <field name="name">sa.crm.lead.form.ai.recommendation</field>
+        <field name="model">sa.crm.lead</field>
+        <field name="inherit_id" ref="sa_crm.view_sa_crm_lead_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@class='oe_button_box']" position="inside">
+                <button name="action_recommend_properties" type="object"
+                        class="oe_stat_button" icon="fa-magic">
+                    <field name="recommended_count" widget="statinfo"
+                           string="اقتراحات AI"/>
+                </button>
+            </xpath>
+            <xpath expr="//group[./group[field[@name='preferred_region_id']]]" position="after">
+                <group string="العقارات المقترحة" colspan="2">
+                    <field name="recommended_property_ids" widget="many2many_tags"/>
+                    <field name="recommendation_note" readonly="1"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
