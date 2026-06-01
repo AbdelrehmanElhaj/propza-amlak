@@ -18,6 +18,14 @@ class SaCrmReservation(models.Model):
         'sa.crm.lead', string='الطلب',
         required=True, ondelete='restrict', tracking=True,
     )
+    lead_property_type = fields.Selection(
+        related='lead_id.property_type', string='نوع العقار من الطلب',
+        store=True, readonly=True,
+    )
+    lead_lead_type = fields.Selection(
+        related='lead_id.lead_type', string='نوع الطلب',
+        store=True, readonly=True,
+    )
     partner_id = fields.Many2one(
         'res.partner', string='العميل',
         related='lead_id.partner_id', store=True,
@@ -26,6 +34,32 @@ class SaCrmReservation(models.Model):
         'property.property', string='العقار',
         required=True, tracking=True,
     )
+
+    @api.onchange('lead_id')
+    def _onchange_lead_id(self):
+        if not self.lead_id:
+            return {
+                'domain': {
+                    'property_id': [
+                        ('state', '=', 'draft'),
+                        ('is_reserved', '=', False),
+                    ]
+                }
+            }
+
+        domain = [
+            ('state', '=', 'draft'),
+            ('is_reserved', '=', False),
+        ]
+        if self.lead_id.property_type:
+            domain.append(('property_type', '=', self.lead_id.property_type))
+        if self.lead_id.lead_type == 'rent':
+            domain.append(('rent_amount', '>', 0))
+        elif self.lead_id.lead_type == 'buy':
+            domain.append(('price_amount', '>', 0))
+        if self.property_id and self.property_id.property_type != self.lead_id.property_type:
+            self.property_id = False
+        return {'domain': {'property_id': domain}}
     user_id = fields.Many2one(
         'res.users', string='الموظف المسؤول',
         default=lambda s: s.env.user, tracking=True,

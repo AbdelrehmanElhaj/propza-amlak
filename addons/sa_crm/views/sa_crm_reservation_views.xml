@@ -52,9 +52,10 @@
                     <group>
                         <group string="تفاصيل الحجز">
                             <field name="lead_id"/>
+                            <field name="lead_property_type" invisible="1"/>
                             <field name="partner_id" readonly="1"/>
                             <field name="property_id"
-                                   domain="[('state','=','draft'),('is_reserved','=',False)]"/>
+                                   domain="[('state','=','draft'),('is_reserved','=',False),('property_type','=',lead_property_type)]"/>
                             <field name="user_id"/>
                         </group>
                         <group string="المدة والمبلغ">
