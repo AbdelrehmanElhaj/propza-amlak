@@ -709,15 +709,15 @@ for batch_idx in range(10):
     # ec1 — building
     ec1 = env['ejar.contract'].create({'brokerage_profile_id':ejar_profile.id,'tenancy_id':tens[0].id,'contract_type':'residential','contract_sub_type':'main','use_type':'residential_families','start_date':tens[0].start_date,'end_date':tens[0].end_date,'rent_amount':80000.0,'currency_id':SAR_curr.id,'payment_schedule':'quarterly','payment_option':'bank_transfer','sublease_allowed':False,'ejar_fees_paid_by':'brokerage_office','brokerage_fee':2000.0,'brokerage_fee_paid_by':'lessor'})
     ec1.action_start_building()
-    ejar_party(ec1,'lessor','individual',owners[0].name,'national_id',owners[0].sa_national_id or '1023456789',owners[0].phone or '+966501234001',iban=owners[0].sa_iban or '')
-    ejar_party(ec1,'tenant','individual',tenants[0].name,'national_id',tenants[0].sa_national_id or '1098765432',tenants[0].phone or '+966503100001')
+    ejar_party(ec1,'lessor','individual',owners[0].name, owners[0].sa_id_type or 'national_id', owners[0].sa_national_id or owners[0].sa_cr_number or '1023456789', owners[0].phone or '+966501234001', iban=owners[0].sa_iban or '')
+    ejar_party(ec1,'tenant','individual',tenants[0].name, tenants[0].sa_id_type or 'national_id', tenants[0].sa_national_id or '1098765432', tenants[0].phone or '+966503100001')
     ejar_unit(ec1,props[0],'فيلا-رئيسية','villa',450.0,floor_number=0,bedrooms=5,bathrooms=4)
 
     # ec2 — ready
     ec2 = env['ejar.contract'].create({'brokerage_profile_id':ejar_profile.id,'tenancy_id':tens[2].id,'contract_type':'residential','contract_sub_type':'main','use_type':'residential_families','start_date':tens[2].start_date,'end_date':tens[2].end_date,'rent_amount':48000.0,'currency_id':SAR_curr.id,'payment_schedule':'monthly','payment_option':'mada','sublease_allowed':False,'ejar_fees_paid_by':'brokerage_office','brokerage_fee':1200.0,'brokerage_fee_paid_by':'lessor'})
     ec2.action_start_building()
-    ejar_party(ec2,'lessor','individual',owners[0].name,'national_id',owners[0].sa_national_id or '1023456789',owners[0].phone or '+966501234001',sync_state='synced')
-    ejar_party(ec2,'tenant','individual',tenants[2].name,'national_id',tenants[2].sa_national_id or '1067891234',tenants[2].phone or '+966503100003',sync_state='synced')
+    ejar_party(ec2,'lessor','individual',owners[0].name, owners[0].sa_id_type or 'national_id', owners[0].sa_national_id or owners[0].sa_cr_number or '1023456789', owners[0].phone or '+966501234001', sync_state='synced')
+    ejar_party(ec2,'tenant','individual',tenants[2].name, tenants[2].sa_id_type or 'national_id', tenants[2].sa_national_id or '1067891234', tenants[2].phone or '+966503100003', sync_state='synced')
     ejar_unit(ec2,props[4],'شقة-ملقا','apartment',160.0,floor_number=7,bedrooms=3,bathrooms=2,sync_state='synced')
     ec2.write({'ejar_status':'ready'})
 
@@ -725,8 +725,8 @@ for batch_idx in range(10):
     ec3 = env['ejar.contract'].create({'brokerage_profile_id':ejar_profile.id,'tenancy_id':tens[1].id,'contract_type':'residential','contract_sub_type':'main','use_type':'residential_families','start_date':tens[1].start_date,'end_date':tens[1].end_date,'rent_amount':45000.0,'currency_id':SAR_curr.id,'payment_schedule':'quarterly','payment_option':'bank_transfer','sublease_allowed':False,'ejar_fees_paid_by':'brokerage_office','brokerage_fee':1125.0,'brokerage_fee_paid_by':'lessor','ejar_contract_id':f'{pfx}-EJAR-003','ejar_contract_number':f'12345{batch_idx:05d}'})
     ec3.action_start_building()
     ec3.write({'ejar_status':'submitted','ejar_last_sync':today,'submit_attempt':1})
-    ejar_party(ec3,'lessor','individual',owners[0].name,'national_id',owners[0].sa_national_id or '1023456789',owners[0].phone or '+966501234001',sync_state='synced')
-    ejar_party(ec3,'tenant','individual',tenants[1].name,'national_id',tenants[1].sa_national_id or '1034512678',tenants[1].phone or '+966503100002',sync_state='synced')
+    ejar_party(ec3,'lessor','individual',owners[0].name, owners[0].sa_id_type or 'national_id', owners[0].sa_national_id or owners[0].sa_cr_number or '1023456789', owners[0].phone or '+966501234001', sync_state='synced')
+    ejar_party(ec3,'tenant','individual',tenants[1].name, tenants[1].sa_id_type or 'national_id', tenants[1].sa_national_id or '1034512678', tenants[1].phone or '+966503100002', sync_state='synced')
     ejar_unit(ec3,props[3],'شقة-عليا','apartment',140.0,floor_number=3,bedrooms=3,bathrooms=2,sync_state='synced')
     sync_log(ec3,'contract_submit','outbound','/ecrs/api/v1/contracts','POST',200,842,response_body=f'{{"status":"ACCEPTED","contractId":"{pfx}-EJAR-003"}}')
 
@@ -734,24 +734,24 @@ for batch_idx in range(10):
     ec4 = env['ejar.contract'].create({'brokerage_profile_id':ejar_profile.id,'tenancy_id':tens[4].id,'contract_type':'commercial','contract_sub_type':'main','use_type':'commercial','start_date':tens[4].start_date,'end_date':tens[4].end_date,'rent_amount':120000.0,'currency_id':SAR_curr.id,'payment_schedule':'quarterly','payment_option':'bank_transfer','sublease_allowed':False,'ejar_fees_paid_by':'brokerage_office','brokerage_fee':3000.0,'brokerage_fee_paid_by':'lessor','ejar_contract_id':f'{pfx}-EJAR-004','ejar_contract_number':f'98765{batch_idx:05d}'})
     ec4.action_start_building()
     ec4.write({'ejar_status':'approved','ejar_last_sync':today,'submit_attempt':1,'poll_count':3})
-    ejar_party(ec4,'lessor','organization',owners[3].name,'national_id',owners[3].sa_cr_number or '1010345678',owners[3].phone or '+966114001400',cr_number=owners[3].sa_cr_number or '1010345678',sync_state='synced')
-    ejar_party(ec4,'tenant','individual',tenants[4].name,'national_id',tenants[4].sa_national_id or '1055443322',tenants[4].phone or '+966503100005',sync_state='synced')
+    ejar_party(ec4,'lessor','organization',owners[3].name, owners[3].sa_id_type or 'national_id', owners[3].sa_cr_number or '1010345678', owners[3].phone or '+966114001400', cr_number=owners[3].sa_cr_number or '1010345678', sync_state='synced')
+    ejar_party(ec4,'tenant','individual',tenants[4].name, tenants[4].sa_id_type or 'national_id', tenants[4].sa_national_id or '1055443322', tenants[4].phone or '+966503100005', sync_state='synced')
     ejar_unit(ec4,props[8],'مكتب-رئيسي','office',280.0,floor_number=20,bedrooms=0,bathrooms=2,furnishing='furnish_new',sync_state='synced')
     sync_log(ec4,'webhook_received','inbound','/ejar/webhook','POST',200,45,request_body=f'{{"event":"contract.approved","contractNumber":"98765{batch_idx:05d}"}}',response_body='{"received":true}')
 
     # ec5 — rejected
     ec5 = env['ejar.contract'].create({'brokerage_profile_id':ejar_profile.id,'tenancy_id':tens[3].id,'contract_type':'residential','contract_sub_type':'main','use_type':'residential_families','start_date':tens[3].start_date,'end_date':tens[3].end_date,'rent_amount':42000.0,'currency_id':SAR_curr.id,'payment_schedule':'annual','payment_option':'bank_transfer','sublease_allowed':False,'ejar_fees_paid_by':'brokerage_office','brokerage_fee':1050.0,'brokerage_fee_paid_by':'lessor','ejar_contract_id':f'{pfx}-EJAR-005'})
     ec5.action_start_building()
-    ec5.write({'ejar_status':'rejected','ejar_last_sync':today,'submit_attempt':1,'ejar_rejection_reason':'بيانات الهوية غير مطابقة'})
-    ejar_party(ec5,'lessor','individual',owners[1].name,'national_id',owners[1].sa_national_id or '1056789012',owners[1].phone or '+966502234002',sync_state='synced')
-    ejar_party(ec5,'tenant','individual',tenants[3].name,'national_id',tenants[3].sa_national_id or '2123456789',tenants[3].phone or '+966503100004',sync_state='error')
+    ec5.write({'ejar_status':'rejected','ejar_last_sync':today,'submit_attempt':1,'rejection_reason':'بيانات الهوية غير مطابقة'})
+    ejar_party(ec5,'lessor','individual',owners[1].name, owners[1].sa_id_type or 'national_id', owners[1].sa_national_id or owners[1].sa_cr_number or '1056789012', owners[1].phone or '+966502234002', sync_state='synced')
+    ejar_party(ec5,'tenant','individual',tenants[3].name, tenants[3].sa_id_type or 'national_id', tenants[3].sa_national_id or '2123456789', tenants[3].phone or '+966503100004', sync_state='failed')
     ejar_unit(ec5,props[5],'شقة-حمراء','apartment',130.0,floor_number=2,bedrooms=3,bathrooms=2,sync_state='synced')
     sync_log(ec5,'contract_submit','outbound','/ecrs/api/v1/contracts','POST',422,912,status='error',response_body='{"error":"ID_MISMATCH","message":"بيانات الهوية غير مطابقة"}')
 
     # ec6 — draft
-    ec6 = env['ejar.contract'].create({'brokerage_profile_id':ejar_profile.id,'tenancy_id':tens[8].id,'contract_type':'residential','contract_sub_type':'main','use_type':'residential_families','start_date':tens[8].start_date,'end_date':tens[8].end_date,'rent_amount':110000.0,'currency_id':SAR_curr.id,'payment_schedule':'semi_annual','payment_option':'bank_transfer','sublease_allowed':False,'ejar_fees_paid_by':'brokerage_office','brokerage_fee':2750.0,'brokerage_fee_paid_by':'lessor'})
-    ejar_party(ec6,'lessor','organization',owners[3].name,'national_id',owners[3].sa_cr_number or '1010345678',owners[3].phone or '+966114001400',cr_number=owners[3].sa_cr_number or '1010345678')
-    ejar_party(ec6,'tenant','individual',tenants[0].name,'national_id',tenants[0].sa_national_id or '1098765432',tenants[0].phone or '+966503100001')
+    ec6 = env['ejar.contract'].create({'brokerage_profile_id':ejar_profile.id,'tenancy_id':tens[8].id,'contract_type':'residential','contract_sub_type':'main','use_type':'residential_families','start_date':tens[8].start_date,'end_date':tens[8].end_date,'rent_amount':110000.0,'currency_id':SAR_curr.id,'payment_schedule':'biannual','payment_option':'bank_transfer','sublease_allowed':False,'ejar_fees_paid_by':'brokerage_office','brokerage_fee':2750.0,'brokerage_fee_paid_by':'lessor'})
+    ejar_party(ec6,'lessor','organization',owners[3].name, owners[3].sa_id_type or 'national_id', owners[3].sa_cr_number or '1010345678', owners[3].phone or '+966114001400', cr_number=owners[3].sa_cr_number or '1010345678')
+    ejar_party(ec6,'tenant','individual',tenants[0].name, tenants[0].sa_id_type or 'national_id', tenants[0].sa_national_id or '1098765432', tenants[0].phone or '+966503100001')
     ejar_unit(ec6,props[2],'فيلا-نرجس','villa',600.0,floor_number=0,bedrooms=6,bathrooms=5)
 
     env.cr.commit()
