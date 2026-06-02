@@ -32,6 +32,7 @@ echo ""
 $COMPOSE run --rm -T web odoo shell -d "$DB" << 'PYEOF'
 import datetime
 import random
+import re
 
 today = datetime.date.today()
 ago   = lambda d: today - datetime.timedelta(days=d)
@@ -681,6 +682,14 @@ SAR_curr = env['res.currency'].with_context(active_test=False).search([('name','
 def ejar_party(contract, role, entity_type, full_name_ar, id_type, id_number,
                mobile, iban=False, nationality='SA', sync_state='pending',
                cr_number=False, unified_number=False):
+    # Normalize id_type based on id_number where possible to satisfy model validation
+    if id_number:
+        s = str(id_number)
+        if re.fullmatch(r'1\d{9}', s):
+            id_type = 'national_id'
+        elif re.fullmatch(r'2\d{9}', s):
+            id_type = 'iqama'
+
     vals = {'contract_id':contract.id,'role':role,'entity_type':entity_type,'full_name_ar':full_name_ar,'id_type':id_type,'id_number':id_number,'mobile':mobile,'nationality':nationality}
     if iban:           vals['iban']           = iban
     if cr_number:      vals['cr_number']      = cr_number

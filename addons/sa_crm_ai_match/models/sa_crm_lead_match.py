@@ -46,7 +46,8 @@ class SaCrmLeadMatch(models.Model):
             reverse=True,
         )
         selected = scored[:8]
-        self.recommended_property_ids = [(6, 0, selected.ids)]
+        selected_ids = [prop.id for prop in selected]
+        self.recommended_property_ids = [(6, 0, selected_ids)]
         self.recommendation_note = _(
             'تم اختيار أفضل %(count)s عقاراً مطابقة لتفضيلات العميل.') % {
             'count': len(selected)
@@ -56,7 +57,7 @@ class SaCrmLeadMatch(models.Model):
             'name': _('العقارات المقترحة'),
             'res_model': 'property.property',
             'view_mode': 'tree,form',
-            'domain': [('id', 'in', selected.ids)],
+            'domain': [('id', 'in', selected_ids)],
         }
 
     def _score_property(self, property_rec):
