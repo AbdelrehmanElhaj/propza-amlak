@@ -29,6 +29,7 @@ Propza replaces generic property management add-ons with a system purpose-built 
 - **Saudi regulations built in** — Riyadh rent freeze (2025–2030), Ejar ECRS contract registration, NID/Iqama validation, IBAN in SA format, VAT
 - **Async Ejar integration** — non-blocking contract submission via OCA `queue_job`; webhook callbacks with HMAC-SHA256 validation; circuit breaker per company
 - **Role-aware** — 7 RBAC groups with ORM-level record rules; API access also restricted
+- **AI Property Match** — intelligent CRM lead recommendations based on preferred region, budget, type, area, rooms, and tenant preferences
 - **No vendor lock-in** — thin `sa_property_base` core extended cleanly by all other modules
 
 ### Main Menu
@@ -177,6 +178,16 @@ Customer relationship management module covering the full pre-tenancy sales cycl
 | `sa.crm.reservation` | Property reservation linked to a lead |
 | `sa.crm.showing` | Field showing (جولة ميدانية) scheduled for a lead |
 | `sa.crm.stage` | Configurable kanban pipeline stages |
+
+### `sa_crm_ai_match` — AI Property Match for CRM
+
+Adds intelligent property recommendation directly to the CRM lead form.
+
+- Extends `sa.crm.lead` with `recommended_property_ids`, `recommended_count`, and `recommendation_note`
+- Uses a scoring heuristic across property type, preferred region, rooms, bathrooms, area, budget, furnishing, and special features
+- Selects the top 8 matching properties and opens them in a tree/form view
+- Provides an Arabic action button for CRM agents to generate recommendations immediately
+
 
 **Lead lifecycle (enforced by button visibility)**
 
