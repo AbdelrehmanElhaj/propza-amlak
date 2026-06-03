@@ -71,6 +71,7 @@
         'views/property_tenancy_views.xml',
         'views/res_partner_views.xml',
         'views/ejar_brokerage_profile_views.xml',
+        'views/res_config_settings_views.xml',
         'views/ejar_contract_views.xml',
         'views/ejar_sync_log_views.xml',
         # Wizards (must precede ejar_contract_job_views which inherits submit wizard)

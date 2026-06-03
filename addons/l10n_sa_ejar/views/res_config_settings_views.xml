@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_settings_l10n_sa_ejar" model="ir.ui.view">
+        <field name="name">res.config.settings.l10n.sa.ejar</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <div class="app_settings_block" data-string="Ejar ECRS"
+                     string="Ejar / ECRS" data-key="l10n_sa_ejar"
+                     groups="base.group_system">
+                    <h2>Ejar (ECRS) API</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <label for="ejar_simulation_mode"/>
+                                <div class="text-muted">
+                                    When enabled, no HTTP calls are made. Use until NHC provides API credentials.
+                                </div>
+                                <div class="content-group mt8">
+                                    <field name="ejar_simulation_mode"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <label for="ejar_api_gateway"/>
+                                <div class="content-group mt8">
+                                    <field name="ejar_api_gateway"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <label for="ejar_api_url"/>
+                                <div class="text-muted">System-to-system base URL (no trailing slash).</div>
+                                <div class="content-group mt8">
+                                    <field name="ejar_api_url" class="oe_inline" style="width:100%"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <label for="ejar_api_key"/>
+                                <div class="content-group mt8">
+                                    <field name="ejar_api_key" password="True" class="oe_inline" style="width:100%"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <label for="ejar_api_secret"/>
+                                <div class="text-muted">Basic auth via Authentication header (key:secret).</div>
+                                <div class="content-group mt8">
+                                    <field name="ejar_api_secret" password="True" class="oe_inline" style="width:100%"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

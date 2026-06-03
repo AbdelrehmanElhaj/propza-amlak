@@ -1,3 +1,4 @@
+from . import res_config_settings
 from . import sa_region
 from . import property_property
 from . import property_tenancy
