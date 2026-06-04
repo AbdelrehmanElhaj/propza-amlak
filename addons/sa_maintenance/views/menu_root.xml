@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <menuitem id="menu_maintenance_root"
-              name="الصيانة"
-              sequence="40"
+              name="إدارة الصيانة"
+              sequence="30"
               web_icon="sa_maintenance,static/description/icon.png"/>
 </odoo>

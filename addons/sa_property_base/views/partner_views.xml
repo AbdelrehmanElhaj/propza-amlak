@@ -41,27 +41,22 @@
 
     <!-- ────────────── MENUS ────────────── -->
 
-    <menuitem id="menu_pms_parties_root"
-              name="الأطراف"
-              parent="menu_pms_root"
-              sequence="30"/>
-
     <menuitem id="menu_pms_owners"
               name="الملاك"
-              parent="menu_pms_parties_root"
+              parent="menu_pms_root"
               action="action_property_owners"
-              sequence="10"/>
+              sequence="20"/>
 
     <menuitem id="menu_pms_tenants"
               name="المستأجرون"
-              parent="menu_pms_parties_root"
+              parent="menu_pms_root"
               action="action_property_tenants"
-              sequence="20"/>
+              sequence="30"/>
 
     <menuitem id="menu_pms_brokers"
               name="الوسطاء العقاريون"
-              parent="menu_pms_parties_root"
+              parent="menu_pms_root"
               action="action_property_brokers"
-              sequence="30"/>
+              sequence="40"/>
 
 </odoo>

@@ -11,7 +11,7 @@
     <menuitem id="menu_pms_dashboard"
               name="لوحة التحكم"
               action="action_pms_dashboard_client"
-              sequence="10"
+              sequence="5"
               web_icon="sa_dashboard,static/description/icon.png"/>
 
 </odoo>

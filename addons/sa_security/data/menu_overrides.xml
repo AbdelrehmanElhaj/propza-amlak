@@ -11,11 +11,7 @@
             <field name="groups_id" eval="[(6, 0, [ref('group_pms_manager')])]"/>
         </record>
 
-        <!-- الأطراف (إدارة جهات الاتصال): الموظفين فقط (agent+) -->
-        <record id="sa_property_base.menu_pms_parties_root" model="ir.ui.menu">
-            <field name="groups_id" eval="[(6, 0, [ref('group_pms_agent')])]"/>
-        </record>
-
+        <!-- الملاك / المستأجرون / الوسطاء: الموظفين فقط (agent+) -->
         <record id="sa_property_base.menu_pms_owners" model="ir.ui.menu">
             <field name="groups_id" eval="[(6, 0, [ref('group_pms_agent')])]"/>
         </record>
@@ -93,6 +89,12 @@
             <field name="active" eval="False"/>
         </record>
 
+        <!-- الفوترة (Invoicing): تظهر بعد منصة إيجار وقبل حسابي، مُعادة التسمية -->
+        <record id="account.menu_finance" model="ir.ui.menu">
+            <field name="sequence">45</field>
+            <field name="name">المحاسبة المالية</field>
+        </record>
+
         <!-- Job Queue: قائمة تقنية داخلية — مخفية من القوائم الرئيسية -->
         <record id="queue_job.menu_queue_job_root" model="ir.ui.menu">
             <field name="active" eval="False"/>
@@ -110,7 +112,7 @@
              تقييد الـ root menus حسب الأدوار
              ═══════════════════════════════════════════════════════ -->
 
-        <!-- إدارة العقارات: للمدراء + المحاسبين + الموظفين + الملاك
+        <!-- النظام الأساسي: للمدراء + المحاسبين + الموظفين + الملاك
              (الفني لا يحتاجها — له قائمة الصيانة فقط) -->
         <record id="sa_property_base.menu_pms_root" model="ir.ui.menu">
             <field name="groups_id" eval="[(6, 0, [
@@ -124,7 +126,17 @@
 
         <!-- CRM: تقييد الوصول مُعرَّف في sa_crm/views/menu.xml مباشرة -->
 
-        <!-- إيجار: admin + manager + accountant + agent فقط (لا فني ولا مالك) -->
+        <!-- إدارة عقود الإيجار: admin + manager + accountant + agent فقط -->
+        <record id="sa_rental_cycle.menu_rental_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('group_pms_admin'),
+                ref('group_pms_manager'),
+                ref('group_pms_accountant'),
+                ref('group_pms_agent'),
+            ])]"/>
+        </record>
+
+        <!-- منصة إيجار: admin + manager + accountant + agent فقط (لا فني ولا مالك) -->
         <record id="l10n_sa_ejar.menu_ejar_root" model="ir.ui.menu">
             <field name="groups_id" eval="[(6, 0, [
                 ref('group_pms_admin'),

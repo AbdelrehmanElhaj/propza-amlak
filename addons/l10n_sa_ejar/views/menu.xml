@@ -3,8 +3,8 @@
 
     <!-- ── Top-level Ejar menu ───────────────────────────────────── -->
     <menuitem id="menu_ejar_root"
-              name="إيجار"
-              sequence="30"
+              name="منصة إيجار"
+              sequence="40"
               web_icon="l10n_sa_ejar,static/description/icon.png"/>
 
     <!-- ── Contracts ────────────────────────────────────────────── -->

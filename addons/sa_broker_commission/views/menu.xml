@@ -4,9 +4,9 @@
     <!-- قائمة فرعية تحت "إدارة العقارات" -->
     <menuitem id="menu_broker_commission_root"
               name="عمولات الوسطاء"
-              parent="sa_property_base.menu_pms_root"
+              parent="sa_rental_cycle.menu_rental_root"
               action="action_broker_commission"
-              sequence="35"
+              sequence="30"
               groups="sa_security.group_pms_accountant"/>
 
 </odoo>

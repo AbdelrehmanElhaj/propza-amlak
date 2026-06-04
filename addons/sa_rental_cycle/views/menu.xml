@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Merged into إدارة العقارات as a sub-group (sequence 30) -->
+    <!-- ── إدارة عقود الإيجار — standalone root menu ─────────────── -->
+    <menuitem id="menu_rental_root"
+              name="إدارة عقود الإيجار"
+              sequence="20"
+              web_icon="sa_rental_cycle,static/description/icon.png"/>
+
+    <menuitem id="menu_pms_tenancies"
+              name="عقود الإيجار"
+              parent="menu_rental_root"
+              action="sa_property_base.action_property_tenancy"
+              sequence="10"/>
+
     <menuitem id="menu_sa_rental_cycle"
               name="الدفعات"
-              parent="sa_property_base.menu_pms_root"
-              sequence="30"/>
+              parent="menu_rental_root"
+              sequence="20"/>
 
     <menuitem id="menu_sa_all_payments"
               name="جميع الدفعات"
@@ -19,6 +30,5 @@
               action="action_sa_rent_payments_overdue"
               sequence="20"/>
 
-    <!-- عقود إيجار stays under menu_ejar_root (l10n_sa_ejar default) -->
 
 </odoo>

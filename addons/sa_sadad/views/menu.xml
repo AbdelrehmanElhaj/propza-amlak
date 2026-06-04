@@ -3,9 +3,9 @@
 
     <menuitem id="menu_sa_sadad_invoice"
               name="فواتير SADAD"
-              parent="sa_property_base.menu_pms_root"
+              parent="sa_rental_cycle.menu_rental_root"
               action="action_sadad_invoice"
-              sequence="38"
+              sequence="40"
               groups="sa_security.group_pms_accountant"/>
 
 </odoo>

@@ -6,12 +6,6 @@
               action="action_property_property"
               sequence="10"/>
 
-    <menuitem id="menu_pms_tenancies"
-              name="عقود الإيجار"
-              parent="menu_pms_root"
-              action="action_property_tenancy"
-              sequence="20"/>
-
     <menuitem id="menu_pms_config_root"
               name="الإعدادات"
               parent="menu_pms_root"

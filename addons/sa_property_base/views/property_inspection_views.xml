@@ -228,6 +228,6 @@
               name="معاينات العقارات"
               parent="menu_pms_root"
               action="action_property_inspection"
-              sequence="25"/>
+              sequence="50"/>
 
 </odoo>

@@ -2,8 +2,8 @@
 <odoo>
 
     <menuitem id="menu_crm_root"
-              name="CRM العملاء"
-              sequence="25"
+              name="إدارة علاقات العملاء"
+              sequence="15"
               groups="sa_security.group_pms_agent"
               web_icon="sa_crm,static/description/icon.png"/>
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <menuitem id="menu_pms_root"
-              name="إدارة العقارات"
-              sequence="20"
+              name="النظام الأساسي"
+              sequence="10"
               web_icon="sa_property_base,static/description/icon.png"/>
 </odoo>
