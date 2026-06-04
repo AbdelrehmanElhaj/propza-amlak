@@ -37,13 +37,15 @@ Propza replaces generic property management add-ons with a system purpose-built 
 | # | App | Arabic | Notes |
 |---|-----|--------|-------|
 | 1 | لوحة التحكم | Dashboard | Standalone KPI app |
-| 2 | إدارة العقارات | Property Management | Properties, tenancies, payments, commissions, inspections |
-| 3 | CRM العملاء | CRM | Leads, showings, reservations, deals — agents & managers only |
-| 4 | إيجار | Ejar | ECRS contracts, brokerage profiles, sync logs |
-| 5 | الصيانة | Maintenance | Requests, work orders, periodic contracts |
-| 6 | حسابي | My Account | User profile, verifications, documents |
+| 2 | النظام الأساسي | Core System | Properties, owners, tenants, brokers, inspections |
+| 3 | إدارة علاقات العملاء | CRM | Leads, showings, reservations, deals — agents & managers only |
+| 4 | إدارة عقود الإيجار | Rental Contracts | Contracts, payments (all + overdue), commissions, SADAD invoices |
+| 5 | إدارة الصيانة | Maintenance | Requests, work orders, periodic contracts, technicians |
+| 6 | منصة إيجار | Ejar Platform | ECRS contracts, brokerage profiles, sync logs |
+| 7 | المحاسبة المالية | Financial Accounting | Odoo built-in accounting — customers, vendors, journals, reports |
+| 8 | حسابي | My Account | User profile, verifications, documents |
 
-Rent payments (الدفعات) live under **إدارة العقارات** as a sub-group with "جميع الدفعات" and "دفعات متأخرة".
+Owners, tenants, and brokers are direct children of **النظام الأساسي** (no intermediate "Parties" group). Rent payments live under **إدارة عقود الإيجار** alongside commissions and SADAD invoices.
 
 ---
 
@@ -475,7 +477,7 @@ Seeded by `setup-demo.sh`. All content in Arabic, covering realistic Saudi scena
 
 | Role | Email | Password |
 |------|-------|----------|
-| Admin | `admin@propza.sa` | `admin` |
+| Admin | `admin@propza.sa` | `admin@123` |
 | Property Manager | `manager@propza-demo.sa` | `demo` |
 | Accountant | `accountant@propza-demo.sa` | `demo` |
 | Agent | `agent@propza-demo.sa` | `demo` |
