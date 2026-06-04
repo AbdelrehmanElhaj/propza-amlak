@@ -1,6 +1,6 @@
 # Propza — Saudi Property Management System
 
-A Saudi-first property management platform built on **Odoo 17**, covering the full real estate lifecycle: properties, tenancies, rent collection, CRM leads & reservations, maintenance, broker commissions, and deep integration with the **Ejar ECRS** platform — all purpose-built for the Saudi market.
+A Saudi-first property management platform built on **Odoo 17**, covering the full real estate lifecycle: properties, tenancies, rent collection, CRM leads & reservations, maintenance, broker commissions, AI property matching, and deep integration with the **Ejar ECRS** platform — all purpose-built for the Saudi market.
 
 ---
 
@@ -29,7 +29,7 @@ Propza replaces generic property management add-ons with a system purpose-built 
 - **Saudi regulations built in** — Riyadh rent freeze (2025–2030), Ejar ECRS contract registration, NID/Iqama validation, IBAN in SA format, VAT
 - **Async Ejar integration** — non-blocking contract submission via OCA `queue_job`; webhook callbacks with HMAC-SHA256 validation; circuit breaker per company
 - **Role-aware** — 7 RBAC groups with ORM-level record rules; API access also restricted
-- **AI Property Match** — intelligent CRM lead recommendations based on preferred region, budget, type, area, rooms, and tenant preferences
+- **AI Property Match** — scoring engine in `sa_crm_ai_match` ranks properties against lead preferences (type, region, budget, area, rooms, furnishing) and presents the top 8 matches in one click
 - **No vendor lock-in** — thin `sa_property_base` core extended cleanly by all other modules
 
 ### Main Menu
@@ -53,7 +53,7 @@ Rent payments (الدفعات) live under **إدارة العقارات** as a s
 ┌──────────────────────────────────────────────────────────────────┐
 │  sa_dashboard   sa_portal   sa_mobile_tech   sa_notifications    │  ← Presentation
 ├──────────────────────────────────────────────────────────────────┤
-│   sa_crm        sa_broker_commission        sa_sadad             │  ← CRM & Financial
+│  sa_crm  sa_crm_ai_match  sa_broker_commission  sa_sadad          │  ← CRM & Financial
 ├──────────────────────────────────────────────────────────────────┤
 │                     sa_rental_cycle                              │  ← Rental workflow
 ├────────────────────┬─────────────────────────────────────────────┤
@@ -82,6 +82,7 @@ sa_property_base
 ├── sa_dashboard
 └── sa_security
     ├── sa_crm
+    │   └── sa_crm_ai_match
     └── sa_portal
 ```
 
@@ -330,7 +331,8 @@ This module also owns ACL entries and record rules for models defined in `sa_mai
 | Component | Image | Port |
 |-----------|-------|------|
 | PostgreSQL 15 | `postgres:15` | 5432 (internal) |
-| Odoo 17 | `odoo:17.0` | 8069 |
+| Odoo 17 | `odoo:17.0` | 8069 (internal only) |
+| Nginx | `nginx:alpine` | 80 → 443 (HTTPS) |
 
 ### Docker volumes
 
@@ -340,6 +342,32 @@ This module also owns ACL entries and record rules for models defined in `sa_mai
 | `odoo-web-data` | `/var/lib/odoo` | Filestore (attachments, sessions) |
 | `./addons` | `/mnt/extra-addons` | Custom modules |
 | `./config` | `/etc/odoo` | `odoo.conf` |
+| `./config/nginx.conf` | `/etc/nginx/conf.d/default.conf` | Nginx reverse proxy config |
+| `./config/certs` | `/etc/nginx/certs` | TLS certificate and key |
+
+### SSL / HTTPS
+
+Nginx sits in front of Odoo and handles all TLS termination.
+
+- **HTTP (port 80)** → 301 redirect to HTTPS
+- **HTTPS (port 443)** → proxy to Odoo on port 8069 (internal)
+- Odoo's direct port 8069 is no longer exposed to the host
+
+`start.sh` auto-generates a **self-signed certificate** on first run (valid 10 years, SAN includes the server's public IP). Browsers will show a one-time "Not secure" warning — click **Advanced → Proceed**.
+
+```bash
+# Certificate lives at:
+config/certs/nginx.crt
+config/certs/nginx.key
+```
+
+To replace with a real certificate (e.g. from Let's Encrypt or a CA):
+```bash
+# Drop in your cert files — nginx picks them up on restart
+cp fullchain.pem config/certs/nginx.crt
+cp privkey.pem   config/certs/nginx.key
+docker compose restart nginx
+```
 
 ### `odoo.conf` key settings
 
@@ -354,6 +382,7 @@ log_level = info
 workers = 0           # single-process; increase for production
 max_cron_threads = 1
 list_db = False       # hides database manager from login page
+proxy_mode = True     # required when behind nginx — trusts X-Forwarded-* headers
 
 [queue_job]
 channels = root:4,root.ejar:8,root.ejar.contracts:2,root.ejar.polling:10,root.ejar.documents:3
@@ -383,56 +412,64 @@ cd propza-amlak
 bash start.sh
 ```
 
-### 3. Create the database (choose one)
+### 3. Create the database and seed demo data
 
 ```bash
-# Clean setup with demo data — recommended for new deployments
-bash create-demodb.sh --with-demo propza
+# Full setup with demo data — recommended for first run
+bash setup-demo.sh
 
-# Clean setup without demo data
-bash create-demodb.sh propza
+# Custom database name
+bash setup-demo.sh demodb
 
 # Full teardown and rebuild from scratch
-bash create-demodb.sh -f --with-demo propza
+bash setup-demo.sh -f demodb
+
+# Install modules only, skip demo data
+bash setup-demo.sh --no-demo demodb
 ```
 
 ### 4. Open in browser
 
 ```
-http://localhost:8069
-Database: propza
+https://<server-ip>
+Database: demodb
 Admin:    admin@propza.sa  /  admin
-Demo users: (any demo email)  /  demo
+Demo:     (any demo email)  /  demo
 ```
+
+> The browser will warn about the self-signed certificate. Click **Advanced → Proceed** to continue.
 
 ---
 
 ## Demo Database
 
-Loaded by `create-demo-data.sh`. All content in Arabic, covering realistic Saudi scenarios:
+Seeded by `setup-demo.sh`. All content in Arabic, covering realistic Saudi scenarios across Riyadh, Jeddah, and Dammam:
 
 | Category | Count | Details |
 |----------|-------|---------|
 | Brokerage Profile | 1 | Propza, Riyadh, UAT credentials |
-| Owners (ملاك) | 4 | 3 individuals + 1 company |
-| Tenants (مستأجرون) | 10 | Mix of NID, Iqama; 6 verified · 2 pending · 2 draft/rejected |
-| Brokers (وسطاء) | 3 | 2 individuals + 1 company |
-| Technicians (فنيون) | 3 | Plumbing / Electrical+HVAC / Painting+Carpentry |
-| Properties (عقارات) | 12 | 8 residential + 4 commercial; Riyadh, Jeddah, Dammam |
-| Tenancies (عقود إيجار) | 11 | 7 running · 1 confirmed · 3 draft |
-| Rent Payments (دفعات) | 31 | 22 paid · 8 pending · 1 overdue |
-| Inspections (معاينات) | 5 | 3 signed · 1 complete · 1 draft |
-| Maintenance Requests | 10 | new×2 · approved×4 · scheduled×1 · in_progress×1 · done×2 |
-| Work Orders | 4 | 2 scheduled · 2 done |
-| Maintenance Contracts | 2 | HVAC + plumbing (both active) |
-| Broker Commissions | 4 | All confirmed — 172,200 SAR total |
-| **Ejar ECRS Contracts** | **6** | One per state: draft · building · ready · submitted · approved · rejected |
-| Contract Parties | 10 | 5 lessors + 5 tenants; 7 synced · 2 pending · 1 failed |
-| Contract Units | 5 | villa×1 · apartment×3 · office×1; various furnishing states |
-| Sync Logs | 10 | 8 outbound + 2 inbound; 8 success · 2 error |
-| ID Verifications | 10 | 6 verified · 2 submitted · 2 draft/rejected |
-| User Documents | 12 | National IDs, lease contracts, salary letters |
-| System Users | 24 | 12 internal + 12 portal — password: `demo` |
+| Owners (ملاك) | 12 | 6 individuals + 6 companies |
+| Tenants (مستأجرون) | 28 | 25 individuals + 3 companies; mix of NID, Iqama |
+| Brokers (وسطاء) | 6 | 2 companies + 4 individuals |
+| Technicians (فنيون) | 10 | Companies + individuals; plumbing, electrical, HVAC, painting, carpentry |
+| Properties (عقارات) | 32 | Villas, apartments, offices, warehouses, shops, penthouse |
+| Tenancies (عقود إيجار) | 24 | Running · confirmed · draft · expired; monthly/quarterly/semi-annual/annual schedules |
+| Rent Payments (دفعات) | 76 | Paid · pending · overdue; SAR deposits included |
+| Inspections (معاينات) | 11 | Signed · complete · draft |
+| Maintenance Requests | 20 | All states: new · approved · scheduled · in_progress · done |
+| Work Orders | 10 | Scheduled · in_progress · done |
+| Maintenance Contracts | 4 | HVAC, electrical, plumbing, full-service (all active) |
+| Broker Commissions | 9 | Confirmed; percentage and fixed basis |
+| **Ejar ECRS Contracts** | **10** | All states covered: draft · building · ready · submitted · approved · rejected |
+| Contract Parties | 18 | Lessors + tenants; synced · pending · failed |
+| Contract Units | 9 | Villa · apartment · office; various furnishing states |
+| Sync Logs | 10 | Outbound + inbound; success · error |
+| ID Verifications | 19 | Verified · submitted · draft · rejected |
+| User Documents | 24 | National IDs, lease contracts, salary letters, CR certificates |
+| CRM Leads | 20 | Pipeline: new → contact → showing → negotiation → won/lost |
+| CRM Showings | 16 | Field tours linked to leads |
+| CRM Reservations | 6 | Draft · active · expired · converted |
+| System Users | 23 | Internal + portal — password: `demo` |
 
 **Login credentials**
 
@@ -442,8 +479,12 @@ Loaded by `create-demo-data.sh`. All content in Arabic, covering realistic Saudi
 | Property Manager | `manager@propza-demo.sa` | `demo` |
 | Accountant | `accountant@propza-demo.sa` | `demo` |
 | Agent | `agent@propza-demo.sa` | `demo` |
-| Owner (sample) | `m.qahtani@propza-demo.sa` | `demo` |
-| Tenant (sample) | `k.rashidi@propza-demo.sa` | `demo` |
+| Owner (individual) | `m.qahtani@propza-demo.sa` | `demo` |
+| Owner (company) | `info@wahaa-dev.sa` | `demo` |
+| Tenant (individual) | `k.rashidi@propza-demo.sa` | `demo` |
+| Tenant (company) | `info@bustan-rental.sa` | `demo` |
+| Broker | `info@wafir-broker.sa` | `demo` |
+| Technician | `info@hassan-plumbing.sa` | `demo` |
 
 ---
 
@@ -451,40 +492,29 @@ Loaded by `create-demo-data.sh`. All content in Arabic, covering realistic Saudi
 
 | Script | Purpose |
 |--------|---------|
-| `start.sh` | Start containers (`docker compose up -d`) |
+| `start.sh` | Start containers; auto-generates SSL cert on first run |
 | `stop.sh` | Stop containers |
 | `logs.sh` | Tail Odoo container logs |
-| `install-docker.sh` | Install Docker + compose on Ubuntu |
-| `install-addons.sh` | Install or upgrade custom addons on any database |
-| `create-demodb.sh` | Create database, install modules, configure; supports `--fresh` and `--with-demo` |
-| `create-demo-data.sh` | Seed database with full Arabic Saudi demo data |
+| `install-docker.sh` | Install Docker + Compose on Ubuntu |
+| `setup-demo.sh` | All-in-one: create DB, install modules, configure company, seed demo data |
 
-### `create-demodb.sh` flags
+### `setup-demo.sh` flags
 
 | Flag | Effect |
 |------|--------|
-| *(none)* | Create DB + install + configure (skips if DB already exists) |
-| `-u` | Upgrade all modules on existing DB |
-| `-f` / `--fresh` | Drop existing DB, terminate connections, recreate from scratch |
-| `--with-demo` | Also run `create-demo-data.sh` after install |
-| `-f --with-demo` | Full clean teardown + install + demo data in one command |
+| *(none)* | Create DB + install all modules + configure + seed demo data (default DB: `demodb`) |
+| `-f` / `--fresh` | Drop existing DB first, then full setup |
+| `-u` / `--upgrade` | Upgrade modules on existing DB and re-seed data |
+| `--no-demo` | Create DB + install modules only, skip demo data |
 
 ```bash
 # Examples
-bash create-demodb.sh propza                       # new install
-bash create-demodb.sh -u propza                    # upgrade modules
-bash create-demodb.sh -f --with-demo propza        # full reset + demo data
-ODOO_DB=propza bash create-demodb.sh --with-demo  # use env var for DB name
-```
-
-### `install-addons.sh` flags
-
-```bash
-bash install-addons.sh propza              # install all custom addons
-bash install-addons.sh -u propza           # upgrade all custom addons
-bash install-addons.sh --configure propza  # install + configure company (SAR, SA, Arabic)
-bash install-addons.sh --list              # print discovered module names
-bash install-addons.sh --modules sa_property_base,l10n_sa_ejar propza  # specific modules
+bash setup-demo.sh                         # full setup with demo data (DB: demodb)
+bash setup-demo.sh mydb                    # custom database name
+bash setup-demo.sh -f demodb               # drop and rebuild from scratch
+bash setup-demo.sh -u demodb               # upgrade modules + re-seed
+bash setup-demo.sh --no-demo demodb        # install only, no demo data
+ODOO_DB=demodb bash setup-demo.sh          # database name via env var
 ```
 
 ---
@@ -494,18 +524,16 @@ bash install-addons.sh --modules sa_property_base,l10n_sa_ejar propza  # specifi
 ### Upgrading a module after code changes
 
 ```bash
-bash install-addons.sh -u propza
-# or upgrade a specific module:
-COMPOSE=$(bash .compose)
-$COMPOSE run --rm web odoo -d propza -u l10n_sa_ejar --stop-after-init
-$COMPOSE restart web
+bash setup-demo.sh -u demodb
+# or upgrade a specific module directly:
+docker compose run --rm web odoo -d demodb -u l10n_sa_ejar --stop-after-init
+docker compose restart web
 ```
 
 ### Running the Odoo shell
 
 ```bash
-COMPOSE=$(bash .compose)
-$COMPOSE run --rm -T web odoo shell -d propza << 'PYEOF'
+docker compose run --rm -T web odoo shell -d demodb << 'PYEOF'
 # Python code
 company = env['res.company'].search([], limit=1)
 print(company.name, company.currency_id.name)
@@ -523,9 +551,9 @@ docker logs -f odoo17
 ### Clearing stale asset bundles
 
 ```bash
-docker exec odoo17-db psql -U odoo17 -d propza \
+docker exec odoo17-db psql -U odoo17 -d demodb \
   -c "DELETE FROM ir_attachment WHERE res_model='ir.ui.view' AND name LIKE '%.assets%';"
-$(bash .compose) restart web
+docker compose restart web
 ```
 
 ### Production workers
@@ -644,7 +672,7 @@ All partner and property forms enforce:
 ### Repository structure
 
 ```
-proptech-ejar/
+propza-amlak/
 ├── addons/
 │   ├── sa_property_base/
 │   ├── l10n_sa_ejar/
@@ -659,6 +687,7 @@ proptech-ejar/
 │   ├── sa_property/
 │   ├── sa_rental_cycle/
 │   ├── sa_crm/                          ← CRM: leads, reservations, showings, deals
+│   ├── sa_crm_ai_match/                 ← AI property matching for CRM leads
 │   ├── sa_maintenance/                  ← Maintenance: requests, work orders, contracts
 │   ├── sa_mobile_tech/
 │   ├── sa_broker_commission/
@@ -667,12 +696,11 @@ proptech-ejar/
 │   ├── sa_dashboard/
 │   ├── sa_portal/
 │   ├── sa_security/
-│   └── sa_user_profile/
+│   ├── sa_user_profile/
+│   └── queue_job/                       ← OCA: async job queue (Ejar integration)
 ├── config/odoo.conf
 ├── docker-compose.yml
-├── install-addons.sh
-├── create-demodb.sh
-├── create-demo-data.sh
+├── setup-demo.sh                        ← all-in-one: install + configure + demo data
 ├── start.sh  stop.sh  logs.sh
 └── install-docker.sh
 ```
@@ -715,7 +743,7 @@ git push origin feature/my-feature
 ### Server deployment
 
 ```bash
-ssh proptech-amlak "cd ~/propza-amlak && git pull && ODOO_DB=propza bash install-addons.sh propza 2>&1"
+ssh proptech-amlak "cd ~/propza-amlak && git pull && bash setup-demo.sh -u demodb 2>&1"
 ```
 
 **Server:** `13.50.5.37` — `ubuntu@proptech-amlak` (SSH alias)

@@ -7,10 +7,27 @@ LOG_DIR="$ROOT/logs"
 LOG_FILE="$LOG_DIR/odoo.log"
 
 cd "$ROOT"
-mkdir -p "$LOG_DIR" config
+mkdir -p "$LOG_DIR" config config/certs
 # Odoo runs as uid 101 inside the container; allow it to create logs/odoo.log.
 chmod 777 "$LOG_DIR"
 rm -f "$LOG_FILE"
+
+# ── Self-signed SSL certificate ───────────────────────────────────────────────
+CERT_DIR="$ROOT/config/certs"
+if [ ! -f "$CERT_DIR/nginx.crt" ]; then
+    echo "Generating self-signed SSL certificate (10 years)..."
+    PUBLIC_IP="$(curl -sf --max-time 5 ifconfig.me 2>/dev/null || echo '')"
+    SAN="IP:127.0.0.1"
+    [ -n "$PUBLIC_IP" ] && SAN="$SAN,IP:$PUBLIC_IP"
+    openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+        -keyout "$CERT_DIR/nginx.key" \
+        -out    "$CERT_DIR/nginx.crt" \
+        -subj   "/C=SA/ST=Riyadh/L=Riyadh/O=Propza/CN=propza-local" \
+        -addext "subjectAltName=$SAN" \
+        2>/dev/null
+    echo "Certificate: $CERT_DIR/nginx.crt  ($SAN)"
+    echo ""
+fi
 
 echo "=========================================="
 echo "    Starting Odoo 17 (propza-amlak)"
@@ -50,9 +67,10 @@ for _ in $(seq 1 30); do
 done
 
 if docker ps --format '{{.Names}}' | grep -q '^odoo17$'; then
+    PUBLIC_IP="$(curl -sf --max-time 5 ifconfig.me 2>/dev/null || echo 'localhost')"
     echo ""
     echo "Odoo 17 is running."
-    echo "  URL:    http://localhost:8069"
+    echo "  URL:    https://$PUBLIC_IP  (accept the self-signed cert warning)"
     echo "  Logs:   ./logs.sh  (or tail -f logs/odoo.log)"
     echo "  Stop:   ./stop.sh"
     echo ""
