@@ -477,7 +477,7 @@ Seeded by `setup-demo.sh`. All content in Arabic, covering realistic Saudi scena
 
 | Role | Email | Password |
 |------|-------|----------|
-| Admin | `admin@propza.sa` | `admin@123` |
+| Admin | `admin@propza.sa` | `admin` |
 | Property Manager | `manager@propza-demo.sa` | `demo` |
 | Accountant | `accountant@propza-demo.sa` | `demo` |
 | Agent | `agent@propza-demo.sa` | `demo` |
