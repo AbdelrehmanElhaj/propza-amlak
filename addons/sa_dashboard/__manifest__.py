@@ -29,6 +29,7 @@
         'sa_maintenance',
         'sa_security',
         'sa_broker_commission',
+        'sa_crm',
     ],
     'data': [
         'views/dashboard_template.xml',

@@ -4,7 +4,7 @@ import json
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
 
-from odoo import http, _
+from odoo import http
 from odoo.http import request
 
 
@@ -15,6 +15,7 @@ class PmsDashboardController(http.Controller):
         """يعرض لوحة التحكم التفاعلية. record rules تطبق طبيعياً."""
         env = request.env
         today = date.today()
+        month_start = today.replace(day=1)
 
         # ─── KPI cards ────────────────────────────────────────
         Property = env['property.property']
@@ -48,16 +49,15 @@ class PmsDashboardController(http.Controller):
         # ─── Revenue trend (last 12 months) ──────────────────
         months_data = []
         for i in range(11, -1, -1):
-            month_start = (today.replace(day=1) - relativedelta(months=i))
-            next_month = month_start + relativedelta(months=1)
+            m_start = (today.replace(day=1) - relativedelta(months=i))
+            m_end = m_start + relativedelta(months=1)
             month_payments = Payment.search([
                 ('payment_type', '=', 'rent'),
-                ('due_date', '>=', month_start),
-                ('due_date', '<', next_month),
+                ('due_date', '>=', m_start),
+                ('due_date', '<', m_end),
             ])
-            label = month_start.strftime('%Y-%m')
             months_data.append({
-                'month': label,
+                'month': m_start.strftime('%Y-%m'),
                 'due':   sum(month_payments.mapped('amount')),
                 'paid':  sum(month_payments.mapped('amount_paid')),
             })
@@ -110,7 +110,80 @@ class PmsDashboardController(http.Controller):
                 'days_left': days_left,
             })
 
-        # Render
+        # ═══════════════════════════════════════════════════
+        # CRM KPIs
+        # ═══════════════════════════════════════════════════
+        Lead = env['sa.crm.lead']
+
+        open_leads = Lead.search([('state', '=', 'open')])
+        won_this_month = Lead.search([
+            ('state', '=', 'won'),
+            ('date_open', '>=', month_start),
+        ])
+        lost_this_month = Lead.search([
+            ('state', '=', 'lost'),
+            ('date_open', '>=', month_start),
+        ])
+        total_closed_month = len(won_this_month) + len(lost_this_month)
+        conversion_rate = (len(won_this_month) / total_closed_month * 100) if total_closed_month else 0
+
+        # Average days-to-close for won leads in the last 30 days
+        won_recent = Lead.search([
+            ('state', '=', 'won'),
+            ('date_open', '>=', today - timedelta(days=30)),
+        ])
+        if won_recent:
+            avg_days_close = round(
+                sum((today - r.date_open).days for r in won_recent if r.date_open)
+                / len(won_recent)
+            )
+        else:
+            avg_days_close = 0
+
+        crm_kpis = {
+            'open_leads': len(open_leads),
+            'pipeline_value': sum(open_leads.mapped('budget_max')),
+            'won_this_month': len(won_this_month),
+            'conversion_rate': round(conversion_rate, 1),
+            'avg_days_close': avg_days_close,
+        }
+
+        # ─── CRM Pipeline: leads count by stage ──────────────
+        stages = env['sa.crm.stage'].search([], order='sequence asc')
+        leads_by_stage = []
+        for stage in stages:
+            if stage.fold:
+                continue
+            count = Lead.search_count([
+                ('stage_id', '=', stage.id),
+                ('state', '=', 'open'),
+            ])
+            leads_by_stage.append({'stage': stage.name, 'count': count})
+
+        # ─── Top 5 agents by deals won (all time) ────────────
+        won_all = Lead.search([('state', '=', 'won')])
+        agent_wins = {}
+        for lead in won_all:
+            agent = lead.user_id.name or 'غير معروف'
+            agent_wins[agent] = agent_wins.get(agent, 0) + 1
+        top_agents = sorted(agent_wins.items(), key=lambda x: -x[1])[:5]
+
+        # ─── Reservations expiring within 7 days ─────────────
+        expiring_res = env['sa.crm.reservation'].search([
+            ('state', '=', 'active'),
+            ('date_end', '<=', today + timedelta(days=7)),
+            ('date_end', '>=', today),
+        ], order='date_end asc')
+        expiring_res_list = []
+        for res in expiring_res:
+            expiring_res_list.append({
+                'name': res.name,
+                'partner': res.partner_id.name or '',
+                'property': res.property_id.name or '',
+                'date_end': str(res.date_end),
+                'days_left': (res.date_end - today).days,
+            })
+
         return request.render('sa_dashboard.dashboard_view', {
             'kpis': kpis,
             'months_json': json.dumps(months_data),
@@ -119,4 +192,9 @@ class PmsDashboardController(http.Controller):
             'top_overdue': top_overdue_list,
             'expiring_list': expiring_list,
             'today': today,
+            # CRM
+            'crm_kpis': crm_kpis,
+            'leads_by_stage_json': json.dumps(leads_by_stage),
+            'top_agents': top_agents,
+            'expiring_res_list': expiring_res_list,
         })

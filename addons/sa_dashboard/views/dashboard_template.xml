@@ -173,6 +173,117 @@
                         </div>
                     </div>
 
+                    <!-- ═══ CRM KPIs ══════════════════════════════════ -->
+                    <div style="border-top:2px solid #e9ecef;margin:8px 0 20px;padding-top:20px">
+                        <h2 style="color:#1a3a5c;margin:0 0 16px;font-size:18px">🤝 إدارة علاقات العملاء (CRM)</h2>
+                    </div>
+
+                    <div class="kpi-grid" style="margin-bottom:20px">
+                        <div class="kpi-card" style="--accent:#7b1fa2">
+                            <div class="kpi-label">طلبات مفتوحة</div>
+                            <div class="kpi-value"><span t-out="crm_kpis['open_leads']"/></div>
+                            <div class="kpi-sub">في خط سير المبيعات</div>
+                        </div>
+                        <div class="kpi-card" style="--accent:#1565c0">
+                            <div class="kpi-label">قيمة الخط الحالي</div>
+                            <div class="kpi-value" style="font-size:22px">
+                                <span t-out="'%.0f' % crm_kpis['pipeline_value']"/>
+                                <span style="font-size:14px;font-weight:400"> ر.س</span>
+                            </div>
+                            <div class="kpi-sub">مجموع ميزانية الطلبات المفتوحة</div>
+                        </div>
+                        <div class="kpi-card" style="--accent:#2e7d32">
+                            <div class="kpi-label">صفقات فازت هذا الشهر</div>
+                            <div class="kpi-value"><span t-out="crm_kpis['won_this_month']"/></div>
+                            <div class="kpi-sub">
+                                معدل التحويل: <span t-out="crm_kpis['conversion_rate']"/>%
+                            </div>
+                        </div>
+                        <div class="kpi-card" style="--accent:#f57c00">
+                            <div class="kpi-label">متوسط أيام الإغلاق</div>
+                            <div class="kpi-value"><span t-out="crm_kpis['avg_days_close']"/></div>
+                            <div class="kpi-sub">للصفقات المُغلقة (آخر 30 يوم)</div>
+                        </div>
+                    </div>
+
+                    <!-- CRM Pipeline chart + top agents -->
+                    <div class="chart-grid-2" style="margin-bottom:20px">
+                        <div class="chart-card">
+                            <h3>📊 خط السير — الطلبات المفتوحة حسب المرحلة</h3>
+                            <canvas id="pipelineChart"></canvas>
+                        </div>
+                        <div class="list-card">
+                            <h3>🏆 أفضل 5 موظفين (صفقات مُغلقة)</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>الموظف</th>
+                                        <th style="text-align:left">الصفقات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-set="rank" t-value="0"/>
+                                    <t t-foreach="top_agents" t-as="agent">
+                                        <t t-set="rank" t-value="rank + 1"/>
+                                        <tr>
+                                            <td style="color:#6c757d;font-size:12px">
+                                                <t t-if="rank == 1">🥇</t>
+                                                <t t-elif="rank == 2">🥈</t>
+                                                <t t-elif="rank == 3">🥉</t>
+                                                <t t-else=""><span t-out="rank"/></t>
+                                            </td>
+                                            <td><span t-out="agent[0]"/></td>
+                                            <td style="text-align:left">
+                                                <span style="background:#e8f5e9;color:#2e7d32;padding:2px 10px;border-radius:12px;font-weight:600">
+                                                    <span t-out="agent[1]"/>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <tr t-if="not top_agents">
+                                        <td colspan="3" style="text-align:center;color:#6c757d">
+                                            لا توجد صفقات مُغلقة بعد
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Reservations expiring within 7 days -->
+                    <t t-if="expiring_res_list">
+                        <div class="list-card" style="margin-bottom:24px;border-right:4px solid #dc3545">
+                            <h3>🔔 حجوزات تنتهي خلال 7 أيام</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>رقم الحجز</th>
+                                        <th>العميل</th>
+                                        <th>العقار</th>
+                                        <th>تاريخ الانتهاء</th>
+                                        <th>الأيام المتبقية</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="expiring_res_list" t-as="res">
+                                        <tr>
+                                            <td><span t-out="res['name']"/></td>
+                                            <td><span t-out="res['partner']"/></td>
+                                            <td><span t-out="res['property']"/></td>
+                                            <td><span t-out="res['date_end']"/></td>
+                                            <td>
+                                                <span class="badge-danger">
+                                                    <span t-out="res['days_left']"/> يوم
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+
                     <!-- Expiring contracts -->
                     <div class="list-card" style="margin-bottom:24px">
                         <h3>📅 العقود التي تنتهي قريباً (60 يوم)</h3>
@@ -215,6 +326,7 @@
                      t-att-data-months="months_json"
                      t-att-data-occupancy="occupancy_json"
                      t-att-data-maint="maint_by_cat_json"
+                     t-att-data-pipeline="leads_by_stage_json"
                      style="display:none"/>
 
                 <script>
@@ -223,6 +335,7 @@
                         const monthsData = JSON.parse(el.dataset.months);
                         const occupancyData = JSON.parse(el.dataset.occupancy);
                         const maintData = JSON.parse(el.dataset.maint);
+                        const pipelineData = JSON.parse(el.dataset.pipeline);
 
                         // Revenue trend chart
                         new Chart(document.getElementById('revenueChart'), {
@@ -290,6 +403,31 @@
                                 scales: { y: { beginAtZero: true } }
                             }
                         });
+
+                        // CRM pipeline funnel (horizontal bar)
+                        if (pipelineData.length) {
+                            new Chart(document.getElementById('pipelineChart'), {
+                                type: 'bar',
+                                data: {
+                                    labels: pipelineData.map(d => d.stage),
+                                    datasets: [{
+                                        label: 'عدد الطلبات',
+                                        data: pipelineData.map(d => d.count),
+                                        backgroundColor: [
+                                            '#1565c0','#1976d2','#42a5f5',
+                                            '#7b1fa2','#9c27b0','#ce93d8',
+                                        ],
+                                        borderRadius: 4,
+                                    }]
+                                },
+                                options: {
+                                    indexAxis: 'y',
+                                    responsive: true,
+                                    plugins: { legend: { display: false } },
+                                    scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                                }
+                            });
+                        }
                     });
                 </script>
             </body>
