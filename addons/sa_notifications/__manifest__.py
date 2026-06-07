@@ -28,6 +28,7 @@
         'sa_property',
         'sa_rental_cycle',
         'sa_maintenance',
+        'sa_crm',
         'sa_security',
     ],
     'data': [

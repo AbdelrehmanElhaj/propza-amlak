@@ -13,6 +13,7 @@
         'security/sa_crm_security.xml',
         'data/sequence.xml',
         'data/sa_crm_stage_data.xml',
+        'data/ir_cron_data.xml',
         'views/sa_crm_stage_views.xml',
         'views/sa_crm_showing_views.xml',
         'views/sa_crm_reservation_views.xml',

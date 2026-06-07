@@ -1,5 +1,6 @@
 from . import unifonic_service
 from . import notification_helper
+from . import sa_crm_notifications
 from . import sa_rent_payment
 from . import property_tenancy
 from . import sa_maintenance_request
