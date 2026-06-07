@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ─── Action ──────────────────────────────────────────────── -->
+    <record id="action_report_payment_receipt" model="ir.actions.report">
+        <field name="name">إيصال دفع</field>
+        <field name="model">sa.rent.payment</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">sa_rental_cycle.report_payment_receipt</field>
+        <field name="report_file">sa_rental_cycle.report_payment_receipt</field>
+        <field name="print_report_name">'إيصال دفع %s' % (object.name or '')</field>
+        <field name="binding_model_id" ref="sa_rental_cycle.model_sa_rent_payment"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- ─── Template ────────────────────────────────────────────── -->
+    <template id="report_payment_receipt">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page" dir="rtl" style="
+                        direction: rtl;
+                        text-align: right;
+                        font-family: 'Amiri', 'Scheherazade', Arial, sans-serif;
+                        font-size: 13px;
+                        color: #1a1a1a;
+                        line-height: 1.8;
+                        max-width: 600px;
+                        margin: 0 auto;
+                    ">
+
+                        <!-- ══ Title ══════════════════════════════════════ -->
+                        <div style="text-align:center; margin-bottom:24px">
+                            <div style="
+                                font-size:20px;
+                                font-weight:bold;
+                                border-bottom:3px double #2c5f2e;
+                                border-top:3px double #2c5f2e;
+                                padding:10px 0;
+                            ">إيصال دفع</div>
+                            <div style="margin-top:6px; font-size:12px; color:#555">
+                                رقم الإيصال: <strong><span t-field="doc.name"/></strong>
+                            </div>
+                        </div>
+
+                        <!-- ══ Status Badge ════════════════════════════════ -->
+                        <div style="text-align:center; margin-bottom:20px">
+                            <t t-if="doc.state == 'paid'">
+                                <span style="
+                                    background:#2e7d32;
+                                    color:#fff;
+                                    padding:4px 20px;
+                                    border-radius:20px;
+                                    font-weight:bold;
+                                    font-size:14px;
+                                ">مدفوعة ✓</span>
+                            </t>
+                            <t t-elif="doc.state == 'overdue'">
+                                <span style="
+                                    background:#c62828;
+                                    color:#fff;
+                                    padding:4px 20px;
+                                    border-radius:20px;
+                                    font-weight:bold;
+                                    font-size:14px;
+                                ">متأخرة</span>
+                            </t>
+                            <t t-elif="doc.state == 'partial'">
+                                <span style="
+                                    background:#e65100;
+                                    color:#fff;
+                                    padding:4px 20px;
+                                    border-radius:20px;
+                                    font-weight:bold;
+                                    font-size:14px;
+                                ">مدفوعة جزئياً</span>
+                            </t>
+                            <t t-else="">
+                                <span style="
+                                    background:#1565c0;
+                                    color:#fff;
+                                    padding:4px 20px;
+                                    border-radius:20px;
+                                    font-weight:bold;
+                                    font-size:14px;
+                                ">مستحقة</span>
+                            </t>
+                        </div>
+
+                        <!-- ══ Main Details ════════════════════════════════ -->
+                        <div style="
+                            border:1px solid #ddd;
+                            border-radius:6px;
+                            overflow:hidden;
+                            margin-bottom:16px;
+                        ">
+                            <div style="background:#f5f5f5; padding:6px 12px; font-weight:bold; font-size:12px; border-bottom:1px solid #ddd">
+                                تفاصيل الدفعة
+                            </div>
+                            <table style="width:100%; border-collapse:collapse; font-size:13px">
+                                <tr style="border-bottom:1px solid #eee">
+                                    <td style="padding:8px 12px; color:#555; width:35%">المستأجر</td>
+                                    <td style="padding:8px 12px; font-weight:bold">
+                                        <span t-field="doc.tenant_id.name"/>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom:1px solid #eee">
+                                    <td style="padding:8px 12px; color:#555">العقار</td>
+                                    <td style="padding:8px 12px">
+                                        <span t-field="doc.property_id.display_name"/>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom:1px solid #eee">
+                                    <td style="padding:8px 12px; color:#555">رقم العقد</td>
+                                    <td style="padding:8px 12px">
+                                        <span t-field="doc.tenancy_id.name"/>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom:1px solid #eee">
+                                    <td style="padding:8px 12px; color:#555">الفترة</td>
+                                    <td style="padding:8px 12px">
+                                        <span t-field="doc.period_label"/>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom:1px solid #eee">
+                                    <td style="padding:8px 12px; color:#555">نوع الدفعة</td>
+                                    <td style="padding:8px 12px"><span t-field="doc.payment_type"/></td>
+                                </tr>
+                                <tr style="border-bottom:1px solid #eee">
+                                    <td style="padding:8px 12px; color:#555">تاريخ الاستحقاق</td>
+                                    <td style="padding:8px 12px"><span t-field="doc.due_date"/></td>
+                                </tr>
+                                <t t-if="doc.payment_date">
+                                    <tr style="border-bottom:1px solid #eee">
+                                        <td style="padding:8px 12px; color:#555">تاريخ الدفع</td>
+                                        <td style="padding:8px 12px"><span t-field="doc.payment_date"/></td>
+                                    </tr>
+                                </t>
+                                <t t-if="doc.payment_method">
+                                    <tr style="border-bottom:1px solid #eee">
+                                        <td style="padding:8px 12px; color:#555">طريقة الدفع</td>
+                                        <td style="padding:8px 12px"><span t-field="doc.payment_method"/></td>
+                                    </tr>
+                                </t>
+                                <!-- Payment reference numbers -->
+                                <t t-if="doc.sadad_number">
+                                    <tr style="border-bottom:1px solid #eee">
+                                        <td style="padding:8px 12px; color:#555">رقم SADAD</td>
+                                        <td style="padding:8px 12px"><span t-field="doc.sadad_number"/></td>
+                                    </tr>
+                                </t>
+                                <t t-if="doc.cheque_number">
+                                    <tr style="border-bottom:1px solid #eee">
+                                        <td style="padding:8px 12px; color:#555">رقم الشيك</td>
+                                        <td style="padding:8px 12px"><span t-field="doc.cheque_number"/></td>
+                                    </tr>
+                                </t>
+                                <t t-if="doc.bank_ref">
+                                    <tr style="border-bottom:1px solid #eee">
+                                        <td style="padding:8px 12px; color:#555">المرجع البنكي</td>
+                                        <td style="padding:8px 12px"><span t-field="doc.bank_ref"/></td>
+                                    </tr>
+                                </t>
+                            </table>
+                        </div>
+
+                        <!-- ══ Amount Summary ═════════════════════════════ -->
+                        <div style="
+                            border:2px solid #2c5f2e;
+                            border-radius:6px;
+                            overflow:hidden;
+                            margin-bottom:24px;
+                        ">
+                            <div style="background:#2c5f2e; color:#fff; padding:6px 12px; font-weight:bold; font-size:12px">
+                                ملخص المبالغ
+                            </div>
+                            <table style="width:100%; border-collapse:collapse; font-size:13px">
+                                <tr style="border-bottom:1px solid #eee">
+                                    <td style="padding:8px 12px; color:#555">المبلغ المستحق</td>
+                                    <td style="padding:8px 12px; text-align:left; font-weight:bold">
+                                        <span t-field="doc.amount"
+                                              t-options='{"widget":"monetary","display_currency":doc.tenancy_id.currency_id}'/>
+                                    </td>
+                                </tr>
+                                <t t-if="doc.amount_paid">
+                                    <tr style="border-bottom:1px solid #eee">
+                                        <td style="padding:8px 12px; color:#2e7d32">المبلغ المدفوع</td>
+                                        <td style="padding:8px 12px; text-align:left; font-weight:bold; color:#2e7d32">
+                                            <span t-field="doc.amount_paid"
+                                                  t-options='{"widget":"monetary","display_currency":doc.tenancy_id.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:8px 12px; font-weight:bold">الرصيد المتبقي</td>
+                                        <td style="padding:8px 12px; text-align:left; font-weight:bold; font-size:15px; color:#c62828">
+                                            <span t-field="doc.balance"
+                                                  t-options='{"widget":"monetary","display_currency":doc.tenancy_id.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <t t-else="">
+                                    <tr>
+                                        <td style="padding:8px 12px; font-weight:bold">الرصيد المستحق</td>
+                                        <td style="padding:8px 12px; text-align:left; font-weight:bold; font-size:15px; color:#c62828">
+                                            <span t-field="doc.amount"
+                                                  t-options='{"widget":"monetary","display_currency":doc.tenancy_id.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <t t-if="doc.penalty_amount and doc.penalty_amount > 0">
+                                    <tr style="border-top:1px solid #eee; background:#fff3e0">
+                                        <td style="padding:8px 12px; color:#e65100">غرامة التأخير</td>
+                                        <td style="padding:8px 12px; text-align:left; font-weight:bold; color:#e65100">
+                                            <span t-field="doc.penalty_amount"
+                                                  t-options='{"widget":"monetary","display_currency":doc.tenancy_id.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </table>
+                        </div>
+
+                        <!-- ══ Signature ═══════════════════════════════════ -->
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-top:30px">
+                            <div style="text-align:center">
+                                <div style="font-size:12px; color:#555; margin-bottom:30px">المستأجر</div>
+                                <div style="border-top:1px solid #333; padding-top:6px; color:#555; font-size:11px">
+                                    <span t-field="doc.tenant_id.name"/>
+                                </div>
+                            </div>
+                            <div style="text-align:center">
+                                <div style="font-size:12px; color:#555; margin-bottom:30px">مسؤول التحصيل</div>
+                                <div style="border-top:1px solid #333; padding-top:6px; color:#555; font-size:11px">التوقيع وختم الشركة</div>
+                            </div>
+                        </div>
+
+                        <!-- ══ Footer ═════════════════════════════════════ -->
+                        <div style="
+                            margin-top:20px;
+                            padding-top:8px;
+                            border-top:1px solid #ccc;
+                            font-size:10px;
+                            color:#888;
+                            text-align:center;
+                        ">
+                            صدر بتاريخ
+                            <t t-out="context_timestamp(datetime.datetime.now()).strftime('%Y/%m/%d')"/>
+                            — نظام إدارة العقارات Propza
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

@@ -24,6 +24,8 @@
         'wizard/sa_tenancy_renewal_wizard_views.xml',
         'views/menu.xml',
         'report/tenant_statement_report.xml',
+        'report/lease_contract_report.xml',
+        'report/payment_receipt_report.xml',
     ],
     'installable': True,
     'auto_install': False,

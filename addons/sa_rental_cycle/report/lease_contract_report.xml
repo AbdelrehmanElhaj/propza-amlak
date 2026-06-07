@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ─── Action ──────────────────────────────────────────────── -->
+    <record id="action_report_lease_contract" model="ir.actions.report">
+        <field name="name">عقد الإيجار</field>
+        <field name="model">property.tenancy</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">sa_rental_cycle.report_lease_contract</field>
+        <field name="report_file">sa_rental_cycle.report_lease_contract</field>
+        <field name="print_report_name">'عقد إيجار %s' % (object.name or '')</field>
+        <field name="binding_model_id" ref="sa_property_base.model_property_tenancy"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- ─── Template ────────────────────────────────────────────── -->
+    <template id="report_lease_contract">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page" dir="rtl" style="
+                        direction: rtl;
+                        text-align: right;
+                        font-family: 'Amiri', 'Scheherazade', Arial, sans-serif;
+                        font-size: 13px;
+                        color: #1a1a1a;
+                        line-height: 1.8;
+                    ">
+
+                        <!-- ══ Bismillah + Title ═══════════════════════════ -->
+                        <div style="text-align:center; margin-bottom:24px">
+                            <div style="font-size:16px; color:#555; margin-bottom:6px">
+                                بسم الله الرحمن الرحيم
+                            </div>
+                            <div style="
+                                font-size:22px;
+                                font-weight:bold;
+                                border-bottom:3px double #2c5f2e;
+                                border-top:3px double #2c5f2e;
+                                padding:10px 0;
+                                letter-spacing:1px;
+                            ">
+                                عقد إيجار
+                                <t t-if="doc.sa_contract_type == 'commercial'"> تجاري</t>
+                                <t t-else=""> سكني</t>
+                            </div>
+                            <div style="margin-top:8px; font-size:12px; color:#555">
+                                رقم العقد:
+                                <strong><span t-field="doc.name"/></strong>
+                                &amp;nbsp;&amp;nbsp;|&amp;nbsp;&amp;nbsp;
+                                تاريخ الإصدار:
+                                <strong><t t-out="context_timestamp(datetime.datetime.now()).strftime('%Y/%m/%d')"/></strong>
+                            </div>
+                        </div>
+
+                        <!-- ══ Preamble ════════════════════════════════════ -->
+                        <p style="margin-bottom:16px">
+                            تم الاتفاق والتراضي بين الطرفين الآتي ذكرهما على إبرام عقد الإيجار وفق الشروط والأحكام التالية:
+                        </p>
+
+                        <!-- ══ Article 1 – Parties ══════════════════════ -->
+                        <div style="margin-bottom:16px">
+                            <div style="
+                                background:#2c5f2e;
+                                color:#fff;
+                                padding:5px 12px;
+                                font-weight:bold;
+                                font-size:13px;
+                                margin-bottom:8px;
+                            ">المادة الأولى: طرفا العقد</div>
+
+                            <table style="width:100%; border-collapse:collapse; font-size:12.5px">
+                                <tr>
+                                    <td style="width:50%; vertical-align:top; padding:4px 8px">
+                                        <div style="font-weight:bold; border-bottom:1px solid #ccc; margin-bottom:6px; padding-bottom:4px">
+                                            الطرف الأول: المؤجر
+                                        </div>
+                                        <table style="width:100%">
+                                            <tr>
+                                                <td style="color:#555; width:40%">الاسم</td>
+                                                <td><strong><span t-field="doc.owner_partner_id.name"/></strong></td>
+                                            </tr>
+                                            <tr t-if="doc.owner_partner_id.sa_national_id">
+                                                <td style="color:#555">رقم الهوية</td>
+                                                <td><span t-field="doc.owner_partner_id.sa_national_id"/></td>
+                                            </tr>
+                                            <tr t-if="doc.owner_partner_id.sa_iban">
+                                                <td style="color:#555">IBAN</td>
+                                                <td style="font-size:11px"><span t-field="doc.owner_partner_id.sa_iban"/></td>
+                                            </tr>
+                                            <tr t-if="doc.owner_partner_id.mobile or doc.owner_partner_id.phone">
+                                                <td style="color:#555">الهاتف</td>
+                                                <td>
+                                                    <span t-field="doc.owner_partner_id.mobile"/>
+                                                    <t t-if="not doc.owner_partner_id.mobile">
+                                                        <span t-field="doc.owner_partner_id.phone"/>
+                                                    </t>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td style="width:50%; vertical-align:top; padding:4px 8px; border-right:1px solid #ddd">
+                                        <div style="font-weight:bold; border-bottom:1px solid #ccc; margin-bottom:6px; padding-bottom:4px">
+                                            الطرف الثاني: المستأجر
+                                        </div>
+                                        <table style="width:100%">
+                                            <tr>
+                                                <td style="color:#555; width:40%">الاسم</td>
+                                                <td><strong><span t-field="doc.partner_id.name"/></strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="color:#555">نوع الهوية</td>
+                                                <td><span t-field="doc.tenant_id_type"/></td>
+                                            </tr>
+                                            <tr t-if="doc.tenant_national_id">
+                                                <td style="color:#555">رقم الهوية</td>
+                                                <td><span t-field="doc.tenant_national_id"/></td>
+                                            </tr>
+                                            <tr t-if="doc.tenant_id_expiry">
+                                                <td style="color:#555">تاريخ الانتهاء</td>
+                                                <td><span t-field="doc.tenant_id_expiry"/></td>
+                                            </tr>
+                                            <tr t-if="doc.sa_tenant_nationality">
+                                                <td style="color:#555">الجنسية</td>
+                                                <td><span t-field="doc.sa_tenant_nationality.name"/></td>
+                                            </tr>
+                                            <tr t-if="doc.partner_id.mobile or doc.partner_id.phone">
+                                                <td style="color:#555">الهاتف</td>
+                                                <td>
+                                                    <span t-field="doc.partner_id.mobile"/>
+                                                    <t t-if="not doc.partner_id.mobile">
+                                                        <span t-field="doc.partner_id.phone"/>
+                                                    </t>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- ══ Article 2 – Property ═══════════════════════ -->
+                        <div style="margin-bottom:16px">
+                            <div style="
+                                background:#2c5f2e;
+                                color:#fff;
+                                padding:5px 12px;
+                                font-weight:bold;
+                                font-size:13px;
+                                margin-bottom:8px;
+                            ">المادة الثانية: موضوع العقد والوحدة المؤجَّرة</div>
+
+                            <table style="width:100%; border-collapse:collapse; font-size:12.5px">
+                                <tr>
+                                    <td style="width:50%; vertical-align:top; padding:4px 8px">
+                                        <table style="width:100%">
+                                            <tr>
+                                                <td style="color:#555; width:40%">اسم العقار</td>
+                                                <td><strong><span t-field="doc.property_id.name"/></strong></td>
+                                            </tr>
+                                            <tr t-if="doc.property_id.flat_name">
+                                                <td style="color:#555">رقم الوحدة</td>
+                                                <td><span t-field="doc.property_id.flat_name"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="color:#555">النوع</td>
+                                                <td><span t-field="doc.property_id.property_type"/></td>
+                                            </tr>
+                                            <tr t-if="doc.property_id.sa_area_sqm">
+                                                <td style="color:#555">المساحة</td>
+                                                <td>
+                                                    <span t-field="doc.property_id.sa_area_sqm"/> م²
+                                                </td>
+                                            </tr>
+                                            <tr t-if="doc.property_id.sa_floor_number">
+                                                <td style="color:#555">الطابق</td>
+                                                <td><span t-field="doc.property_id.sa_floor_number"/></td>
+                                            </tr>
+                                            <tr t-if="doc.property_id.sa_rooms">
+                                                <td style="color:#555">عدد الغرف</td>
+                                                <td><span t-field="doc.property_id.sa_rooms"/></td>
+                                            </tr>
+                                            <tr t-if="doc.property_id.sa_bathrooms">
+                                                <td style="color:#555">دورات المياه</td>
+                                                <td><span t-field="doc.property_id.sa_bathrooms"/></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td style="width:50%; vertical-align:top; padding:4px 8px; border-right:1px solid #ddd">
+                                        <table style="width:100%">
+                                            <tr t-if="doc.property_id.sa_region_id">
+                                                <td style="color:#555; width:40%">المنطقة</td>
+                                                <td><span t-field="doc.property_id.sa_region_id.name"/></td>
+                                            </tr>
+                                            <tr t-if="doc.property_id.sa_district">
+                                                <td style="color:#555">الحي</td>
+                                                <td><span t-field="doc.property_id.sa_district"/></td>
+                                            </tr>
+                                            <tr t-if="doc.property_id.sa_street">
+                                                <td style="color:#555">الشارع</td>
+                                                <td><span t-field="doc.property_id.sa_street"/></td>
+                                            </tr>
+                                            <tr t-if="doc.property_id.sa_building_no">
+                                                <td style="color:#555">رقم المبنى</td>
+                                                <td><span t-field="doc.property_id.sa_building_no"/></td>
+                                            </tr>
+                                            <tr t-if="doc.property_id.sa_deed_number">
+                                                <td style="color:#555">رقم الصك</td>
+                                                <td><span t-field="doc.property_id.sa_deed_number"/></td>
+                                            </tr>
+                                            <tr t-if="doc.property_id.sa_furnished">
+                                                <td style="color:#555">التأثيث</td>
+                                                <td><span t-field="doc.property_id.sa_furnished"/></td>
+                                            </tr>
+                                            <tr t-if="doc.property_id.sa_parking">
+                                                <td style="color:#555">مواقف سيارات</td>
+                                                <td><span t-field="doc.property_id.sa_parking"/></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <!-- Amenities row -->
+                                <tr>
+                                    <td colspan="2" style="padding:6px 8px 2px">
+                                        <span style="color:#555">المرافق: </span>
+                                        <t t-if="doc.property_id.sa_pool">
+                                            <span class="badge" style="background:#e8f5e9; color:#2e7d32; padding:1px 6px; border-radius:3px; margin-left:4px">مسبح</span>
+                                        </t>
+                                        <t t-if="doc.property_id.sa_garden">
+                                            <span class="badge" style="background:#e8f5e9; color:#2e7d32; padding:1px 6px; border-radius:3px; margin-left:4px">حديقة</span>
+                                        </t>
+                                        <t t-if="doc.property_id.sa_elevator">
+                                            <span class="badge" style="background:#e8f5e9; color:#2e7d32; padding:1px 6px; border-radius:3px; margin-left:4px">مصعد</span>
+                                        </t>
+                                        <t t-if="doc.property_id.sa_majlis">
+                                            <span class="badge" style="background:#e8f5e9; color:#2e7d32; padding:1px 6px; border-radius:3px; margin-left:4px">مجلس</span>
+                                        </t>
+                                        <t t-if="doc.property_id.sa_storage">
+                                            <span class="badge" style="background:#e8f5e9; color:#2e7d32; padding:1px 6px; border-radius:3px; margin-left:4px">مستودع</span>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- ══ Article 3 – Duration ═══════════════════════ -->
+                        <div style="margin-bottom:16px">
+                            <div style="
+                                background:#2c5f2e;
+                                color:#fff;
+                                padding:5px 12px;
+                                font-weight:bold;
+                                font-size:13px;
+                                margin-bottom:8px;
+                            ">المادة الثالثة: مدة العقد</div>
+                            <p style="margin:0; padding:4px 8px">
+                                مدة هذا العقد
+                                <strong><span t-field="doc.duration"/></strong>
+                                <span t-field="doc.interval_type"/>،
+                                تبدأ من تاريخ
+                                <strong><span t-field="doc.start_date"/></strong>
+                                وتنتهي بتاريخ
+                                <strong><span t-field="doc.end_date"/></strong>.
+                                ويعدّ هذا العقد منتهياً تلقائياً بانتهاء مدته ما لم يُجدَّد بموافقة الطرفين كتابياً.
+                            </p>
+                        </div>
+
+                        <!-- ══ Article 4 – Rent & Payment ════════════════ -->
+                        <div style="margin-bottom:16px">
+                            <div style="
+                                background:#2c5f2e;
+                                color:#fff;
+                                padding:5px 12px;
+                                font-weight:bold;
+                                font-size:13px;
+                                margin-bottom:8px;
+                            ">المادة الرابعة: قيمة الإيجار وطريقة السداد</div>
+                            <div style="padding:4px 8px">
+                                <table style="width:100%; border-collapse:collapse; font-size:12.5px">
+                                    <tr>
+                                        <td style="color:#555; width:25%; padding:3px 0">قيمة الإيجار الشهري</td>
+                                        <td style="font-weight:bold">
+                                            <span t-field="doc.rent_amount"
+                                                  t-options='{"widget":"monetary","display_currency":doc.currency_id}'/>
+                                        </td>
+                                        <td style="color:#555; width:25%">دورة السداد</td>
+                                        <td><span t-field="doc.sa_payment_schedule"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color:#555; padding:3px 0">طريقة السداد</td>
+                                        <td><span t-field="doc.payment_method"/></td>
+                                        <td style="color:#555">العملة</td>
+                                        <td><span t-field="doc.currency_id.name"/></td>
+                                    </tr>
+                                </table>
+                                <p style="margin-top:8px; margin-bottom:0; font-size:12px; color:#444">
+                                    يلتزم المستأجر بسداد قيمة الإيجار في المواعيد المحددة وفق جدول الدفعات المرفق بهذا العقد،
+                                    وفي حال التأخر عن السداد يحق للمؤجر المطالبة بالغرامات والتعويضات وفقاً للأنظمة المعمول بها.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- ══ Article 5 – Deposit ═══════════════════════ -->
+                        <t t-if="doc.deposit_amount">
+                            <div style="margin-bottom:16px">
+                                <div style="
+                                    background:#2c5f2e;
+                                    color:#fff;
+                                    padding:5px 12px;
+                                    font-weight:bold;
+                                    font-size:13px;
+                                    margin-bottom:8px;
+                                ">المادة الخامسة: مبلغ التأمين</div>
+                                <p style="margin:0; padding:4px 8px">
+                                    يدفع المستأجر مبلغ تأمين قدره
+                                    <strong>
+                                        <span t-field="doc.deposit_amount"
+                                              t-options='{"widget":"monetary","display_currency":doc.currency_id}'/>
+                                    </strong>،
+                                    يُردّ إليه كاملاً عند إخلاء الوحدة في حالتها الأصلية بعد خصم أي تلفيات موثَّقة.
+                                </p>
+                            </div>
+                        </t>
+
+                        <!-- ══ Article 6 – Landlord Obligations ══════════ -->
+                        <div style="margin-bottom:16px">
+                            <div style="
+                                background:#2c5f2e;
+                                color:#fff;
+                                padding:5px 12px;
+                                font-weight:bold;
+                                font-size:13px;
+                                margin-bottom:8px;
+                            ">المادة السادسة: التزامات المؤجر</div>
+                            <ol style="margin:0; padding-right:20px; font-size:12.5px">
+                                <li>تسليم الوحدة المؤجَّرة للمستأجر في الحالة المتفق عليها وخالية من أي موانع للانتفاع.</li>
+                                <li>صيانة الأجزاء الإنشائية الرئيسية وشبكات الكهرباء والمياه والصرف الصحي الخارجة عن نطاق الاستخدام العادي.</li>
+                                <li>إخطار المستأجر بأي أعمال صيانة مخططة قبل ثلاثة أيام على الأقل.</li>
+                                <li>عدم التدخل في الانتفاع العادي بالوحدة طوال مدة العقد.</li>
+                            </ol>
+                        </div>
+
+                        <!-- ══ Article 7 – Tenant Obligations ════════════ -->
+                        <div style="margin-bottom:16px">
+                            <div style="
+                                background:#2c5f2e;
+                                color:#fff;
+                                padding:5px 12px;
+                                font-weight:bold;
+                                font-size:13px;
+                                margin-bottom:8px;
+                            ">المادة السابعة: التزامات المستأجر</div>
+                            <ol style="margin:0; padding-right:20px; font-size:12.5px">
+                                <li>سداد قيمة الإيجار في مواعيدها المحددة دون تأخير.</li>
+                                <li>استخدام الوحدة في الغرض المخصصة له فقط وعدم تغيير طبيعتها.</li>
+                                <li>المحافظة على الوحدة وإجراء الصيانة الدورية البسيطة على نفقته.</li>
+                                <li>عدم التنازل عن العقد أو التأجير من الباطن دون موافقة خطية من المؤجر.</li>
+                                <li>الامتثال لأنظمة وتعليمات الجهات المختصة فيما يتعلق بالوحدة المؤجَّرة.</li>
+                                <li>إبلاغ المؤجر فوراً عند حدوث أي خلل أو ضرر يمس سلامة الوحدة.</li>
+                            </ol>
+                        </div>
+
+                        <!-- ══ Article 8 – General Provisions ═══════════ -->
+                        <div style="margin-bottom:20px">
+                            <div style="
+                                background:#2c5f2e;
+                                color:#fff;
+                                padding:5px 12px;
+                                font-weight:bold;
+                                font-size:13px;
+                                margin-bottom:8px;
+                            ">المادة الثامنة: أحكام عامة</div>
+                            <ol style="margin:0; padding-right:20px; font-size:12.5px">
+                                <li>يخضع هذا العقد لأحكام نظام الإيجار السعودي ولوائحه التنفيذية.</li>
+                                <li>يُعدّ توثيق هذا العقد في منصة إيجار إلزامياً وفق الأنظمة السارية.</li>
+                                <li>في حال النزاع يُرجع إلى الجهات القضائية المختصة في المملكة العربية السعودية.</li>
+                                <li>أي تعديل على بنود هذا العقد لا يُعتدّ به إلا إذا كان مكتوباً وموقَّعاً من الطرفين.</li>
+                                <li>حرر هذا العقد من نسختين بيد كل طرف نسخة للعمل بموجبها.</li>
+                            </ol>
+                        </div>
+
+                        <!-- ══ Broker (if any) ════════════════════════════ -->
+                        <t t-if="doc.sa_broker_id">
+                            <div style="
+                                border:1px solid #ddd;
+                                border-radius:4px;
+                                padding:8px 12px;
+                                margin-bottom:20px;
+                                font-size:12px;
+                                background:#f9f9f9;
+                            ">
+                                <strong>الوسيط العقاري:</strong>
+                                <span t-field="doc.sa_broker_id.name"/>
+                                <t t-if="doc.sa_broker_license">
+                                    — رقم الترخيص: <span t-field="doc.sa_broker_license"/>
+                                </t>
+                            </div>
+                        </t>
+
+                        <!-- ══ Signatures ═════════════════════════════════ -->
+                        <div style="margin-top:30px">
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:40px">
+                                <div style="text-align:center">
+                                    <div style="font-weight:bold; margin-bottom:4px">الطرف الأول — المؤجر</div>
+                                    <div style="font-size:12px; color:#555; margin-bottom:40px">
+                                        <span t-field="doc.owner_partner_id.name"/>
+                                    </div>
+                                    <div style="border-top:1px solid #333; padding-top:6px; color:#555; font-size:11px">التوقيع وختم</div>
+                                </div>
+                                <div style="text-align:center">
+                                    <div style="font-weight:bold; margin-bottom:4px">الطرف الثاني — المستأجر</div>
+                                    <div style="font-size:12px; color:#555; margin-bottom:40px">
+                                        <span t-field="doc.partner_id.name"/>
+                                    </div>
+                                    <div style="border-top:1px solid #333; padding-top:6px; color:#555; font-size:11px">التوقيع</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ══ Footer note ════════════════════════════════ -->
+                        <div style="margin-top:24px; padding-top:10px; border-top:1px solid #ccc; font-size:10px; color:#888; text-align:center">
+                            صدر بتاريخ
+                            <t t-out="context_timestamp(datetime.datetime.now()).strftime('%Y/%m/%d')"/>
+                            — نظام إدارة العقارات Propza
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>
