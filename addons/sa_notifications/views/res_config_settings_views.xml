@@ -12,6 +12,52 @@
                      groups="base.group_system,sa_security.group_pms_admin">
                     <h2>تنبيهات إدارة العقارات</h2>
 
+                    <!-- ═══ Unifonic WhatsApp / SMS ═══ -->
+                    <h3 class="mt16">WhatsApp &amp; SMS عبر Unifonic</h3>
+                    <div class="row mt8 o_settings_container">
+
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="sa_unifonic_enabled"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="sa_unifonic_enabled"/>
+                                <div class="text-muted">تفعيل إرسال الإشعارات عبر WhatsApp وSMS (Unifonic)</div>
+                                <div class="content-group" invisible="not sa_unifonic_enabled">
+                                    <div class="mt8 row">
+                                        <div class="col-12 col-lg-6">
+                                            <field name="sa_whatsapp_enabled"/> WhatsApp (أولوية)
+                                        </div>
+                                        <div class="col-12 col-lg-6">
+                                            <field name="sa_sms_enabled"/> SMS (fallback)
+                                        </div>
+                                    </div>
+                                    <div class="mt8">
+                                        <label for="sa_unifonic_app_sid" class="o_form_label"/>
+                                        <field name="sa_unifonic_app_sid" class="oe_inline" style="width:280px" password="True"/>
+                                    </div>
+                                    <div class="mt4">
+                                        <label for="sa_unifonic_sender_id" class="o_form_label"/>
+                                        <field name="sa_unifonic_sender_id" class="oe_inline" style="width:160px"/>
+                                    </div>
+                                    <div class="mt4">
+                                        <label for="sa_unifonic_token" class="o_form_label"/>
+                                        <field name="sa_unifonic_token" class="oe_inline" style="width:280px" password="True"/>
+                                    </div>
+                                    <div class="mt4">
+                                        <label for="sa_unifonic_whatsapp_sender" class="o_form_label"/>
+                                        <field name="sa_unifonic_whatsapp_sender" class="oe_inline" style="width:200px"
+                                               placeholder="9665XXXXXXXX"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <hr/>
+
+                    <!-- ═══ Email notification toggles ═══ -->
+                    <h3 class="mt8">إعدادات البريد الإلكتروني</h3>
                     <div class="row mt16 o_settings_container">
 
                         <!-- Payment reminders -->

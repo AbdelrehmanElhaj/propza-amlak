@@ -41,3 +41,8 @@ class SaNotificationsHelper(models.AbstractModel):
             _logger.exception('Failed to send notification %s for record %s: %s',
                               template_xml_id, record_id, e)
             return False
+
+    @api.model
+    def _send_whatsapp_sms(self, phone, message):
+        """يُرسل رسالة WhatsApp أولاً، ثم SMS كـ fallback إذا فشل WA."""
+        return self.env['sa.unifonic.service']._send_whatsapp_sms(phone, message)

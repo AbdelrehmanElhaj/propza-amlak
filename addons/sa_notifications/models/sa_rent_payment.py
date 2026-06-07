@@ -21,23 +21,34 @@ class SaRentPaymentNotifications(models.Model):
             ('due_date', '=', target_date),
             ('payment_type', '=', 'rent'),
         ])
+        unifonic = self.env['sa.unifonic.service']
         sent = 0
         for p in upcoming:
-            if p.tenant_id and p.tenant_id.email:
-                if helper._send_template(
+            if not p.tenant_id:
+                continue
+            if p.tenant_id.email:
+                helper._send_template(
                     'sa_notifications.mail_template_payment_reminder', p.id
-                ):
-                    sent += 1
+                )
+            phone = unifonic._partner_phone(p.tenant_id)
+            if phone:
+                msg = (
+                    f"عزيزنا {p.tenant_id.name}،\n"
+                    f"تذكير: دفعة إيجار بمبلغ {p.amount:,.0f} ريال مستحقة بتاريخ {p.due_date}.\n"
+                    f"يرجى السداد عبر البوابة الإلكترونية أو SADAD."
+                )
+                unifonic._send_whatsapp_sms(phone, msg)
+            sent += 1
         return sent
 
     # ─── Cron 2: تنبيه متأخرات ─────────────────────────────────
     @api.model
     def _cron_send_overdue_alerts(self):
-        helper = self.env['sa.notifications.helper']
+        helper   = self.env['sa.notifications.helper']
+        unifonic = self.env['sa.unifonic.service']
         if not helper._is_enabled('payment_overdue_enabled'):
             return 0
-        # Send only on day 1 + day 7 + day 14 + day 30 of overdue
-        # (avoid spam — significant milestones)
+        # Send only on milestone days to avoid spam
         target_overdue_days = [1, 7, 14, 30]
         sent = 0
         for d in target_overdue_days:
@@ -48,9 +59,19 @@ class SaRentPaymentNotifications(models.Model):
                 ('payment_type', '=', 'rent'),
             ])
             for p in overdue:
-                if p.tenant_id and p.tenant_id.email:
-                    if helper._send_template(
+                if not p.tenant_id:
+                    continue
+                if p.tenant_id.email:
+                    helper._send_template(
                         'sa_notifications.mail_template_payment_overdue', p.id
-                    ):
-                        sent += 1
+                    )
+                phone = unifonic._partner_phone(p.tenant_id)
+                if phone:
+                    msg = (
+                        f"تنبيه عاجل لـ {p.tenant_id.name}:\n"
+                        f"دفعة إيجار متأخرة {d} يوم بمبلغ {p.amount:,.0f} ريال.\n"
+                        f"يرجى التواصل فوراً لتجنب الغرامات."
+                    )
+                    unifonic._send_whatsapp_sms(phone, msg)
+                sent += 1
         return sent

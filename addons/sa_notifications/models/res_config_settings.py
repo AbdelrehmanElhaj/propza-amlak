@@ -51,3 +51,38 @@ class ResConfigSettingsNotifications(models.TransientModel):
         config_parameter='sa_notifications.renewal_proposed_enabled',
         default=True,
     )
+
+    # ─── Unifonic WhatsApp / SMS ──────────────────────────────────────
+    sa_unifonic_enabled = fields.Boolean(
+        string='تفعيل Unifonic (WhatsApp + SMS)',
+        config_parameter='sa_notifications.unifonic_enabled',
+        default=False,
+    )
+    sa_whatsapp_enabled = fields.Boolean(
+        string='إرسال عبر WhatsApp',
+        config_parameter='sa_notifications.whatsapp_enabled',
+        default=True,
+    )
+    sa_sms_enabled = fields.Boolean(
+        string='إرسال عبر SMS (fallback)',
+        config_parameter='sa_notifications.sms_enabled',
+        default=True,
+    )
+    sa_unifonic_app_sid = fields.Char(
+        string='Unifonic App SID (SMS)',
+        config_parameter='sa_notifications.unifonic_app_sid',
+    )
+    sa_unifonic_sender_id = fields.Char(
+        string='SMS Sender ID',
+        config_parameter='sa_notifications.unifonic_sender_id',
+        help='اسم المُرسِل SMS (مثال: Propza) — يجب أن يكون مسجلاً في Unifonic',
+    )
+    sa_unifonic_token = fields.Char(
+        string='Unifonic Bearer Token (WhatsApp)',
+        config_parameter='sa_notifications.unifonic_token',
+    )
+    sa_unifonic_whatsapp_sender = fields.Char(
+        string='WhatsApp Sender Number',
+        config_parameter='sa_notifications.unifonic_whatsapp_sender',
+        help='رقم WhatsApp Business المُسجَّل في Unifonic (مثال: 9665XXXXXXXX)',
+    )

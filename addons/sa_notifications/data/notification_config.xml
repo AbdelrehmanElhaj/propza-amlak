@@ -51,5 +51,41 @@
             <field name="value">True</field>
         </record>
 
+        <!-- ═══ Unifonic WhatsApp / SMS defaults ═══ -->
+        <record id="default_unifonic_enabled" model="ir.config_parameter">
+            <field name="key">sa_notifications.unifonic_enabled</field>
+            <field name="value">False</field>
+        </record>
+
+        <record id="default_whatsapp_enabled" model="ir.config_parameter">
+            <field name="key">sa_notifications.whatsapp_enabled</field>
+            <field name="value">True</field>
+        </record>
+
+        <record id="default_sms_enabled" model="ir.config_parameter">
+            <field name="key">sa_notifications.sms_enabled</field>
+            <field name="value">True</field>
+        </record>
+
+        <record id="default_unifonic_app_sid" model="ir.config_parameter">
+            <field name="key">sa_notifications.unifonic_app_sid</field>
+            <field name="value"></field>
+        </record>
+
+        <record id="default_unifonic_sender_id" model="ir.config_parameter">
+            <field name="key">sa_notifications.unifonic_sender_id</field>
+            <field name="value">Propza</field>
+        </record>
+
+        <record id="default_unifonic_token" model="ir.config_parameter">
+            <field name="key">sa_notifications.unifonic_token</field>
+            <field name="value"></field>
+        </record>
+
+        <record id="default_unifonic_whatsapp_sender" model="ir.config_parameter">
+            <field name="key">sa_notifications.unifonic_whatsapp_sender</field>
+            <field name="value"></field>
+        </record>
+
     </data>
 </odoo>
