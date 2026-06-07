@@ -2,7 +2,7 @@
 <odoo>
 
     <!-- ═══════════════════════════════════════════════════════════
-         Portal home: add 4 tiles for tenant
+         Portal home: add 4 tiles for tenant (with counter badges)
          ═══════════════════════════════════════════════════════════ -->
     <template id="portal_my_home_tenant_tiles"
               name="بطاقات المستأجر"
@@ -14,24 +14,28 @@
                     <t t-set="title">عقد الإيجار</t>
                     <t t-set="url">/my/contracts</t>
                     <t t-set="text">عقد الإيجار الخاص بي ومعلومات العقار</t>
+                    <t t-set="placeholder_count">sa_contracts_count</t>
                     <t t-set="config_card" t-value="True"/>
                 </t>
                 <t t-call="portal.portal_docs_entry">
                     <t t-set="title">الدفعات</t>
                     <t t-set="url">/my/payments</t>
-                    <t t-set="text">جدول الدفعات والكشف المالي</t>
+                    <t t-set="text">دفعات مستحقة ومتأخرة</t>
+                    <t t-set="placeholder_count">sa_payments_count</t>
                     <t t-set="config_card" t-value="True"/>
                 </t>
                 <t t-call="portal.portal_docs_entry">
                     <t t-set="title">طلبات الصيانة</t>
                     <t t-set="url">/my/maintenance</t>
                     <t t-set="text">طلب صيانة جديد ومتابعة الطلبات الحالية</t>
+                    <t t-set="placeholder_count">sa_maintenance_count</t>
                     <t t-set="config_card" t-value="True"/>
                 </t>
                 <t t-call="portal.portal_docs_entry">
                     <t t-set="title">المعاينات</t>
                     <t t-set="url">/my/inspections</t>
                     <t t-set="text">تقارير معاينة العقار (الاستلام/التسليم)</t>
+                    <t t-set="placeholder_count">sa_inspections_count</t>
                     <t t-set="config_card" t-value="True"/>
                 </t>
             </t>
@@ -86,6 +90,7 @@
                                     <th>تاريخ النهاية</th>
                                     <th>قيمة الإيجار</th>
                                     <th>الحالة</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -107,6 +112,10 @@
                                             <span t-esc="dict(t._fields['state'].selection).get(t.state)"/>
                                         </span>
                                     </td>
+                                    <td>
+                                        <a t-attf-href="/my/contracts/#{t.id}"
+                                           class="btn btn-sm btn-outline-primary">تفاصيل</a>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -116,12 +125,26 @@
         </t>
     </template>
 
-    <!-- /my/contracts/<id> — detail -->
+    <!-- /my/contracts/<id> — detail with PDF download buttons -->
     <template id="portal_my_contract_detail" name="تفاصيل العقد">
         <t t-call="portal.portal_layout">
             <t t-set="page_name" t-value="'contract'"/>
             <div dir="rtl" style="direction:rtl;text-align:right">
-                <h3>تفاصيل عقد الإيجار</h3>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">تفاصيل عقد الإيجار</h3>
+                    <!-- PDF download actions -->
+                    <div class="d-flex gap-2">
+                        <a t-attf-href="/report/pdf/sa_rental_cycle.report_lease_contract/#{tenancy.id}"
+                           target="_blank" class="btn btn-sm btn-primary">
+                            <i class="fa fa-file-pdf-o me-1"/> تحميل العقد PDF
+                        </a>
+                        <a t-attf-href="/report/pdf/sa_rental_cycle.report_tenant_statement/#{tenancy.id}"
+                           target="_blank" class="btn btn-sm btn-outline-secondary">
+                            <i class="fa fa-file-text-o me-1"/> كشف الحساب PDF
+                        </a>
+                    </div>
+                </div>
+
                 <div class="card mb-3">
                     <div class="card-body">
                         <div class="row">
@@ -135,7 +158,14 @@
                                 <p><strong>قيمة الإيجار الشهري:</strong> <span t-field="tenancy.rent_amount"/> ر.س</p>
                                 <p><strong>الضمان:</strong> <span t-field="tenancy.deposit_amount"/> ر.س</p>
                                 <p><strong>طريقة الدفع:</strong> <span t-field="tenancy.payment_method"/></p>
-                                <p><strong>الحالة:</strong> <span t-field="tenancy.state"/></p>
+                                <p><strong>الحالة:</strong>
+                                    <span class="badge bg-success ms-1" t-if="tenancy.state == 'running'">ساري</span>
+                                    <span class="badge bg-secondary ms-1" t-if="tenancy.state == 'closed'">منتهي</span>
+                                    <span class="badge bg-warning ms-1" t-if="tenancy.state == 'confirm'">مؤكد</span>
+                                    <span class="badge bg-light ms-1" t-if="tenancy.state in ('draft','cancelled')">
+                                        <span t-field="tenancy.state"/>
+                                    </span>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -152,20 +182,27 @@
                                 <th>المدفوع</th>
                                 <th>الرصيد</th>
                                 <th>الحالة</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr t-foreach="tenancy.sa_payment_ids" t-as="p">
+                            <tr t-foreach="tenancy.sa_payment_ids.sorted(key=lambda p: p.due_date or '')" t-as="p">
                                 <td><span t-field="p.period_label"/></td>
                                 <td><span t-field="p.due_date"/></td>
-                                <td><span t-field="p.amount"/></td>
-                                <td><span t-field="p.amount_paid"/></td>
-                                <td><span t-field="p.balance"/></td>
+                                <td><span t-field="p.amount"/> ر.س</td>
+                                <td><span t-field="p.amount_paid"/> ر.س</td>
+                                <td><span t-field="p.balance"/> ر.س</td>
                                 <td>
                                     <span class="badge bg-success" t-if="p.state == 'paid'">مدفوعة</span>
                                     <span class="badge bg-danger" t-if="p.state == 'overdue'">متأخرة</span>
                                     <span class="badge bg-warning" t-if="p.state == 'partial'">جزئية</span>
                                     <span class="badge bg-light" t-if="p.state == 'pending'">معلَّقة</span>
+                                </td>
+                                <td>
+                                    <a t-if="p.state in ('paid','partial')"
+                                       t-attf-href="/report/pdf/sa_rental_cycle.report_payment_receipt/#{p.id}"
+                                       target="_blank"
+                                       class="btn btn-sm btn-outline-primary">إيصال</a>
                                 </td>
                             </tr>
                         </tbody>
@@ -176,7 +213,7 @@
     </template>
 
     <!-- ═══════════════════════════════════════════════════════════
-         /my/payments
+         /my/payments — list with per-row receipt download
          ═══════════════════════════════════════════════════════════ -->
     <template id="portal_my_payments" name="دفعاتي">
         <t t-call="portal.portal_layout">
@@ -187,7 +224,7 @@
                     <div class="col-md-3">
                         <div class="card text-center">
                             <div class="card-body">
-                                <small>إجمالي المستحق</small>
+                                <small class="text-muted">إجمالي المستحق</small>
                                 <h4><span t-out="'%.2f' % total_due"/> ر.س</h4>
                             </div>
                         </div>
@@ -195,7 +232,7 @@
                     <div class="col-md-3">
                         <div class="card text-center">
                             <div class="card-body">
-                                <small>إجمالي المدفوع</small>
+                                <small class="text-muted">إجمالي المدفوع</small>
                                 <h4 class="text-success"><span t-out="'%.2f' % total_paid"/> ر.س</h4>
                             </div>
                         </div>
@@ -203,7 +240,7 @@
                     <div class="col-md-3">
                         <div class="card text-center">
                             <div class="card-body">
-                                <small>الرصيد المتبقي</small>
+                                <small class="text-muted">الرصيد المتبقي</small>
                                 <h4 class="text-danger"><span t-out="'%.2f' % total_balance"/> ر.س</h4>
                             </div>
                         </div>
@@ -211,7 +248,7 @@
                     <div class="col-md-3">
                         <div class="card text-center">
                             <div class="card-body">
-                                <small>متأخرات</small>
+                                <small class="text-muted">متأخرات</small>
                                 <h4 class="text-warning"><span t-out="overdue_count"/></h4>
                             </div>
                         </div>
@@ -229,26 +266,122 @@
                                 <th>المدفوع</th>
                                 <th>الرصيد</th>
                                 <th>الحالة</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr t-foreach="payments" t-as="p">
-                                <td><span t-field="p.period_label"/></td>
+                                <td>
+                                    <a t-attf-href="/my/payments/#{p.id}">
+                                        <span t-field="p.period_label"/>
+                                    </a>
+                                </td>
                                 <td><span t-field="p.due_date"/></td>
                                 <td><span t-field="p.payment_type"/></td>
-                                <td><span t-field="p.amount"/></td>
-                                <td><span t-field="p.amount_paid"/></td>
-                                <td><span t-field="p.balance"/></td>
+                                <td><span t-field="p.amount"/> ر.س</td>
+                                <td><span t-field="p.amount_paid"/> ر.س</td>
+                                <td><span t-field="p.balance"/> ر.س</td>
                                 <td>
                                     <span class="badge bg-success" t-if="p.state == 'paid'">مدفوعة</span>
                                     <span class="badge bg-danger" t-if="p.state == 'overdue'">متأخرة</span>
                                     <span class="badge bg-warning" t-if="p.state == 'partial'">جزئية</span>
                                     <span class="badge bg-light" t-if="p.state == 'pending'">معلَّقة</span>
                                 </td>
+                                <td>
+                                    <a t-if="p.state in ('paid','partial')"
+                                       t-attf-href="/report/pdf/sa_rental_cycle.report_payment_receipt/#{p.id}"
+                                       target="_blank"
+                                       class="btn btn-sm btn-outline-primary">إيصال PDF</a>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- /my/payments/<id> — payment detail with PDF receipt -->
+    <template id="portal_my_payment_detail" name="تفاصيل الدفعة">
+        <t t-call="portal.portal_layout">
+            <t t-set="page_name" t-value="'payments'"/>
+            <div dir="rtl" style="direction:rtl;text-align:right">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">تفاصيل الدفعة — <span t-field="payment.name"/></h3>
+                    <a t-if="payment.state in ('paid','partial')"
+                       t-attf-href="/report/pdf/sa_rental_cycle.report_payment_receipt/#{payment.id}"
+                       target="_blank" class="btn btn-primary btn-sm">
+                        <i class="fa fa-file-pdf-o me-1"/> تحميل الإيصال PDF
+                    </a>
+                </div>
+
+                <!-- Status badge -->
+                <div class="mb-3">
+                    <span class="badge bg-success fs-6" t-if="payment.state == 'paid'">مدفوعة ✓</span>
+                    <span class="badge bg-danger fs-6" t-if="payment.state == 'overdue'">متأخرة</span>
+                    <span class="badge bg-warning fs-6" t-if="payment.state == 'partial'">مدفوعة جزئياً</span>
+                    <span class="badge bg-secondary fs-6" t-if="payment.state == 'pending'">معلَّقة</span>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header">بيانات الدفعة</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>العقار:</strong> <span t-field="payment.property_id.display_name"/></p>
+                                <p><strong>رقم العقد:</strong> <span t-field="payment.tenancy_id.name"/></p>
+                                <p><strong>الفترة:</strong> <span t-field="payment.period_label"/></p>
+                                <p><strong>نوع الدفعة:</strong> <span t-field="payment.payment_type"/></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>تاريخ الاستحقاق:</strong> <span t-field="payment.due_date"/></p>
+                                <t t-if="payment.payment_date">
+                                    <p><strong>تاريخ الدفع:</strong> <span t-field="payment.payment_date"/></p>
+                                </t>
+                                <t t-if="payment.payment_method">
+                                    <p><strong>طريقة الدفع:</strong> <span t-field="payment.payment_method"/></p>
+                                </t>
+                                <t t-if="payment.sadad_number">
+                                    <p><strong>رقم SADAD:</strong> <span t-field="payment.sadad_number"/></p>
+                                </t>
+                                <t t-if="payment.cheque_number">
+                                    <p><strong>رقم الشيك:</strong> <span t-field="payment.cheque_number"/></p>
+                                </t>
+                                <t t-if="payment.bank_ref">
+                                    <p><strong>المرجع البنكي:</strong> <span t-field="payment.bank_ref"/></p>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Amount summary -->
+                <div class="card mb-3">
+                    <div class="card-header">ملخص المبالغ</div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <small class="text-muted d-block">المبلغ المستحق</small>
+                                <h4><span t-field="payment.amount"/> ر.س</h4>
+                            </div>
+                            <div class="col-md-4">
+                                <small class="text-muted d-block">المبلغ المدفوع</small>
+                                <h4 class="text-success"><span t-field="payment.amount_paid"/> ر.س</h4>
+                            </div>
+                            <div class="col-md-4">
+                                <small class="text-muted d-block">الرصيد المتبقي</small>
+                                <h4 class="text-danger"><span t-field="payment.balance"/> ر.س</h4>
+                            </div>
+                        </div>
+                        <t t-if="payment.penalty_amount and payment.penalty_amount > 0">
+                            <div class="alert alert-warning mt-2 mb-0 text-center">
+                                غرامة تأخير: <strong><span t-field="payment.penalty_amount"/> ر.س</strong>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <a href="/my/payments" class="btn btn-secondary">عودة للدفعات</a>
             </div>
         </t>
     </template>
@@ -262,7 +395,6 @@
             <div dir="rtl" style="direction:rtl;text-align:right">
                 <h3>طلبات الصيانة</h3>
 
-                <!-- Error / success alerts -->
                 <t t-set="error" t-value="request.params.get('error')"/>
                 <t t-set="success" t-value="request.params.get('success')"/>
                 <div class="alert alert-warning" t-if="error == 'no_tenancy'">
@@ -275,7 +407,6 @@
                     تم إنشاء طلب الصيانة بنجاح
                 </div>
 
-                <!-- New request form -->
                 <t t-if="tenancy">
                     <div class="card mb-4">
                         <div class="card-header">طلب صيانة جديد</div>
@@ -312,7 +443,6 @@
                     </div>
                 </t>
 
-                <!-- Existing requests -->
                 <h4>طلباتي السابقة</h4>
                 <t t-if="not requests">
                     <div class="alert alert-info">لا توجد طلبات سابقة</div>
@@ -365,7 +495,12 @@
                         <p><strong>التاريخ:</strong> <span t-field="request.request_date"/></p>
                         <p><strong>الفئة:</strong> <span t-field="request.category"/></p>
                         <p><strong>الأولوية:</strong> <span t-field="request.priority"/></p>
-                        <p><strong>الحالة:</strong> <span t-field="request.state"/></p>
+                        <p><strong>الحالة:</strong>
+                            <span class="badge bg-success ms-1" t-if="request.state == 'done'">منجزة</span>
+                            <span class="badge bg-info ms-1" t-if="request.state in ('approved','scheduled','in_progress')">جارية</span>
+                            <span class="badge bg-light ms-1" t-if="request.state == 'new'">جديدة</span>
+                            <span class="badge bg-secondary ms-1" t-if="request.state == 'cancelled'">ملغاة</span>
+                        </p>
                         <p><strong>الوصف:</strong></p>
                         <pre style="white-space:pre-wrap;font-family:inherit"><span t-field="request.description"/></pre>
                         <t t-if="request.scheduled_date">

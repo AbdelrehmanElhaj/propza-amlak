@@ -7,9 +7,30 @@ from odoo.addons.portal.controllers.portal import CustomerPortal
 class TenantPortal(CustomerPortal):
     """بوابة المستأجر — تعتمد على record rules من sa_security لتقييد الرؤية."""
 
-    # ─── Add counters to portal home ─────────────────────────────
+    # ─── Portal home: counter badges ─────────────────────────────
     def _prepare_home_portal_values(self, counters):
-        return super()._prepare_home_portal_values(counters)
+        values = super()._prepare_home_portal_values(counters)
+        partner = request.env.user.partner_id
+
+        if 'sa_contracts_count' in counters:
+            values['sa_contracts_count'] = request.env['property.tenancy'].search_count(
+                [('partner_id', '=', partner.id)]
+            )
+        if 'sa_payments_count' in counters:
+            values['sa_payments_count'] = request.env['sa.rent.payment'].search_count(
+                [('tenancy_id.partner_id', '=', partner.id),
+                 ('state', 'in', ['pending', 'overdue', 'partial'])]
+            )
+        if 'sa_maintenance_count' in counters:
+            values['sa_maintenance_count'] = request.env['sa.maintenance.request'].search_count(
+                [('partner_id', '=', partner.id),
+                 ('state', 'not in', ['done', 'cancelled'])]
+            )
+        if 'sa_inspections_count' in counters:
+            values['sa_inspections_count'] = request.env['sa.property.inspection'].search_count(
+                [('tenant_partner_id', '=', partner.id)]
+            )
+        return values
 
     # ═══════════════════════════════════════════════════════════
     #  /my/contracts — Tenancies (lease contracts)
@@ -39,7 +60,7 @@ class TenantPortal(CustomerPortal):
         )
 
     # ═══════════════════════════════════════════════════════════
-    #  /my/payments — Rent payments
+    #  /my/payments — Rent payments list + detail
     # ═══════════════════════════════════════════════════════════
     @http.route(['/my/payments'], type='http', auth='user', website=True)
     def portal_my_payments(self, **kw):
@@ -49,7 +70,6 @@ class TenantPortal(CustomerPortal):
             [('tenancy_id.partner_id', '=', partner.id)],
             order='due_date desc',
         )
-        # Stats for header
         total_due = sum(payments.mapped('amount'))
         total_paid = sum(payments.mapped('amount_paid'))
         total_balance = total_due - total_paid
@@ -67,6 +87,18 @@ class TenantPortal(CustomerPortal):
             },
         )
 
+    @http.route(['/my/payments/<int:payment_id>'],
+                type='http', auth='user', website=True)
+    def portal_my_payment_detail(self, payment_id, **kw):
+        partner = request.env.user.partner_id
+        payment = request.env['sa.rent.payment'].browse(payment_id).exists()
+        if not payment or payment.tenancy_id.partner_id.id != partner.id:
+            return request.redirect('/my/payments')
+        return request.render(
+            'sa_portal.portal_my_payment_detail',
+            {'payment': payment, 'page_name': 'payments'},
+        )
+
     # ═══════════════════════════════════════════════════════════
     #  /my/maintenance — Maintenance requests + new request form
     # ═══════════════════════════════════════════════════════════
@@ -78,7 +110,6 @@ class TenantPortal(CustomerPortal):
             [('partner_id', '=', partner.id)],
             order='request_date desc',
         )
-        # Get tenant's active tenancy (for default property)
         tenancy = request.env['property.tenancy'].search(
             [('partner_id', '=', partner.id), ('state', '=', 'running')],
             limit=1,
@@ -120,10 +151,9 @@ class TenantPortal(CustomerPortal):
             'priority':     priority,
             'description':  description,
             'state':        'new',
-            'cost_bearer':  'owner',  # default; manager will adjust
+            'cost_bearer':  'owner',
             'request_date': odoo_fields.Date.context_today(request.env.user),
         })
-        # Notification to managers (via mail_thread)
         try:
             new_req.message_post(
                 body=_('طلب صيانة جديد من المستأجر %s عبر البوابة') % partner.name,
