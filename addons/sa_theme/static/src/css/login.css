@@ -1,0 +1,375 @@
+/* ================================================================
+   SA Theme — Login Landing Page
+   Split-screen: brand panel (L) + login form (R)
+   Full RTL support · Arabic-first typography
+   ================================================================ */
+
+/* ---------- Page reset ---------------------------------------- */
+body.sa-login-body {
+    margin: 0;
+    padding: 0;
+    background: #0a2342 !important;
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, 'Arabic Typesetting', Arial, sans-serif;
+}
+
+body.sa-login-body #wrapwrap {
+    height: 100vh;
+    overflow: hidden;
+}
+
+body.sa-login-body #wrapwrap main {
+    height: 100vh;
+    padding: 0 !important;
+    margin: 0;
+    overflow: hidden;
+}
+
+/* ---------- Outer wrapper ------------------------------------- */
+.sa-login-page {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    direction: rtl; /* brand panel on right, login panel on left */
+}
+
+/* ================================================================
+   Brand Panel — right side in RTL
+   ================================================================ */
+.sa-brand-panel {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(160deg, #0a2342 0%, #0f3460 45%, #16213e 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Decorative geometric circles */
+.sa-geo {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(201, 162, 39, 0.12);
+    pointer-events: none;
+}
+.sa-geo-1 {
+    width: 480px;
+    height: 480px;
+    top: -120px;
+    right: -120px;
+    border-width: 2px;
+    border-color: rgba(201, 162, 39, 0.08);
+}
+.sa-geo-2 {
+    width: 300px;
+    height: 300px;
+    bottom: -80px;
+    left: -60px;
+    border-color: rgba(255, 255, 255, 0.05);
+}
+.sa-geo-3 {
+    width: 180px;
+    height: 180px;
+    top: 50%;
+    left: 40px;
+    transform: translateY(-50%);
+    border-color: rgba(201, 162, 39, 0.1);
+}
+
+/* subtle diagonal grid overlay */
+.sa-brand-panel::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        repeating-linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.018) 0px,
+            rgba(255, 255, 255, 0.018) 1px,
+            transparent 1px,
+            transparent 48px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            rgba(255, 255, 255, 0.018) 0px,
+            rgba(255, 255, 255, 0.018) 1px,
+            transparent 1px,
+            transparent 48px
+        );
+    pointer-events: none;
+}
+
+/* Brand content block */
+.sa-brand-content {
+    position: relative;
+    z-index: 1;
+    padding: 3rem 3.5rem;
+    text-align: right;
+    color: #fff;
+    max-width: 540px;
+    width: 100%;
+}
+
+.sa-brand-logo img {
+    max-height: 70px;
+    max-width: 200px;
+    filter: brightness(0) invert(1);
+    margin-bottom: 2rem;
+    display: block;
+}
+
+.sa-brand-title {
+    font-size: clamp(2rem, 3.5vw, 2.75rem);
+    font-weight: 800;
+    color: #c9a227;
+    margin: 0 0 0.4rem 0;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+}
+
+.sa-brand-subtitle {
+    font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+    color: rgba(255, 255, 255, 0.75);
+    margin: 0 0 2.25rem 0;
+    line-height: 1.6;
+}
+
+/* Features list */
+.sa-features-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2.5rem 0;
+}
+
+.sa-features-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+    color: rgba(255, 255, 255, 0.88);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    line-height: 1.4;
+}
+
+.sa-features-list li:last-child {
+    border-bottom: none;
+}
+
+.sa-feat-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    width: 1.6rem;
+    text-align: center;
+}
+
+.sa-brand-footer {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.38);
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ================================================================
+   Login Panel — left side in RTL
+   ================================================================ */
+.sa-login-panel {
+    width: 440px;
+    min-width: 380px;
+    flex-shrink: 0;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Gold separator touching the brand panel */
+    border-right: 4px solid #c9a227;
+    box-shadow: -8px 0 40px rgba(0, 0, 0, 0.35);
+    overflow-y: auto;
+}
+
+.sa-login-inner {
+    width: 100%;
+    padding: 3rem 2.75rem;
+    direction: rtl;
+    text-align: right;
+}
+
+/* Header */
+.sa-login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.sa-login-logo-img {
+    max-height: 64px;
+    max-width: 180px;
+    margin-bottom: 1.25rem;
+    display: inline-block;
+}
+
+.sa-login-title {
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: #0a2342;
+    margin: 0 0 0.25rem 0;
+}
+
+.sa-login-subtitle {
+    font-size: 0.88rem;
+    color: #6c757d;
+    margin: 0 0 1.75rem 0;
+}
+
+/* ── Form overrides ─────────────────────────────────────────── */
+.sa-login-inner .oe_login_form {
+    direction: rtl;
+}
+
+.sa-login-inner .form-label {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #1a2e44;
+    display: block;
+    margin-bottom: 0.4rem;
+}
+
+.sa-login-inner .form-control {
+    border: 1.5px solid #dde3ea;
+    border-radius: 10px;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.925rem;
+    width: 100%;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #f8fafc;
+    color: #1a2e44;
+    /* inputs stay LTR — email & password are always LTR data */
+}
+
+.sa-login-inner .form-control:focus {
+    outline: none;
+    border-color: #c9a227;
+    box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.15);
+    background: #fff;
+}
+
+/* Submit button */
+.sa-login-inner .btn-primary {
+    background: linear-gradient(135deg, #0a2342 0%, #1a4a6b 100%);
+    border: none;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    width: 100%;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    margin-top: 0.5rem;
+}
+
+.sa-login-inner .btn-primary:hover {
+    background: linear-gradient(135deg, #1a4a6b 0%, #2a6a9b 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(10, 35, 66, 0.35);
+}
+
+.sa-login-inner .btn-primary:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* Alerts */
+.sa-login-inner .alert {
+    border-radius: 10px;
+    font-size: 0.88rem;
+    text-align: right;
+    direction: rtl;
+    margin-top: 0.75rem;
+}
+
+.sa-login-inner .alert-danger {
+    background: #fff4f4;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+.sa-login-inner .alert-success {
+    background: #f0faf4;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+/* Margin tweaks */
+.sa-login-inner .mb-3 {
+    margin-bottom: 1.1rem !important;
+}
+
+/* Field DB selector (multi-DB envs) */
+.sa-login-inner .input-group .btn-secondary {
+    border-radius: 0 10px 10px 0;
+    border: 1.5px solid #dde3ea;
+    border-right: none;
+    background: #eef1f5;
+    color: #495057;
+}
+
+/* DB manager link */
+.sa-login-footer-note {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #eef1f5;
+}
+
+.sa-db-link {
+    font-size: 0.8rem;
+    color: #9aa5b4;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.sa-db-link:hover {
+    color: #0a2342;
+}
+
+/* ================================================================
+   Responsive — collapse brand panel on narrow screens
+   ================================================================ */
+@media (max-width: 900px) {
+    .sa-login-page {
+        flex-direction: column;
+        direction: rtl;
+    }
+
+    .sa-brand-panel {
+        display: none;
+    }
+
+    .sa-login-panel {
+        width: 100%;
+        min-width: unset;
+        border-right: none;
+        border-top: 4px solid #c9a227;
+        box-shadow: none;
+    }
+
+    body.sa-login-body,
+    body.sa-login-body #wrapwrap,
+    body.sa-login-body #wrapwrap main {
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .sa-login-inner {
+        padding: 2.5rem 1.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .sa-login-inner {
+        padding: 2rem 1.25rem;
+    }
+}
