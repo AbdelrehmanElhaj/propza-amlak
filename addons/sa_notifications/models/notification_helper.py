@@ -44,5 +44,5 @@ class SaNotificationsHelper(models.AbstractModel):
 
     @api.model
     def _send_whatsapp_sms(self, phone, message):
-        """يُرسل رسالة WhatsApp أولاً، ثم SMS كـ fallback إذا فشل WA."""
-        return self.env['sa.unifonic.service']._send_whatsapp_sms(phone, message)
+        """يُرسل رسالة عبر المزوّد المُختار (Unifonic أو UltraMsg أو معطّل)."""
+        return self.env['sa.messaging.gateway']._send_whatsapp_sms(phone, message)

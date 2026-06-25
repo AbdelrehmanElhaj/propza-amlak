@@ -15,6 +15,7 @@ A Saudi-first property management platform built on **Odoo 17**, covering the fu
 - [Scripts Reference](#scripts-reference)
 - [Configuration](#configuration)
 - [Ejar ECRS Integration](#ejar-ecrs-integration)
+- [Messaging Gateway](#messaging-gateway)
 - [Roles & Permissions](#roles--permissions)
 - [Saudi Compliance](#saudi-compliance)
 - [Development Guide](#development-guide)
@@ -28,6 +29,7 @@ Propza replaces generic property management add-ons with a system purpose-built 
 - **Arabic-first** — all UI labels, templates, and data in Arabic; locale `ar_001`, timezone `Asia/Riyadh`, currency SAR
 - **Saudi regulations built in** — Riyadh rent freeze (2025–2030), Ejar ECRS contract registration, NID/Iqama validation, IBAN in SA format, VAT
 - **Async Ejar integration** — non-blocking contract submission via OCA `queue_job`; webhook callbacks with HMAC-SHA256 validation; circuit breaker per company
+- **Multi-provider messaging** — WhatsApp + SMS notifications via **Unifonic** or **UltraMsg**, switchable from Settings with no code changes
 - **Role-aware** — 7 RBAC groups with ORM-level record rules; API access also restricted
 - **AI Property Match** — scoring engine in `sa_crm_ai_match` ranks properties against lead preferences (type, region, budget, area, rooms, furnishing) and presents the top 8 matches in one click
 - **No vendor lock-in** — thin `sa_property_base` core extended cleanly by all other modules
@@ -191,7 +193,6 @@ Adds intelligent property recommendation directly to the CRM lead form.
 - Selects the top 8 matching properties and opens them in a tree/form view
 - Provides an Arabic action button for CRM agents to generate recommendations immediately
 
-
 **Lead lifecycle (enforced by button visibility)**
 
 ```
@@ -273,9 +274,46 @@ Links broker partners to tenancy contracts and manages commission payment flow.
 
 ---
 
-### `sa_notifications` — Automated Arabic Alerts
+### `sa_notifications` — Multi-Provider Messaging & Alerts
 
-Seven email templates with configurable cron triggers: rent reminders, overdue alerts, contract expiry warnings, maintenance confirmations, technician assignments.
+Automated Arabic notifications across email, WhatsApp, and SMS. Supports **multiple messaging providers** switchable from Settings without code changes.
+
+**7 automated notification triggers:**
+
+| Trigger | Recipients | Channel |
+|---------|-----------|---------|
+| Rent payment reminder (N days before due) | Tenant | Email + WhatsApp/SMS |
+| Overdue payment alert (days 1, 7, 14, 30) | Tenant | Email + WhatsApp/SMS |
+| Contract expiry warning (N days before end) | Tenant + Owner | Email + WhatsApp/SMS |
+| Lease renewal proposed | Owner | Email + WhatsApp/SMS |
+| Maintenance request received | Tenant | Email + WhatsApp/SMS |
+| Maintenance work order assigned | Technician | Email + WhatsApp/SMS |
+| Maintenance completed | Tenant | Email + WhatsApp/SMS |
+
+**3 daily cron jobs:** payment reminders · overdue alerts · contract expiry checks
+
+**Messaging providers:**
+
+| Provider | WhatsApp | SMS | Configuration |
+|----------|----------|-----|---------------|
+| **Unifonic** | ✅ | ✅ (fallback) | App SID + Bearer Token + Sender ID |
+| **UltraMsg** | ✅ | ❌ (WA only) | Instance ID + Token |
+| **Disabled** | — | — | No credentials needed |
+
+**Key models:**
+- `sa.messaging.gateway` — central provider router; reads `messaging_provider` setting and dispatches to the correct service; contains shared phone normalization for Saudi numbers (`9665XXXXXXXX`)
+- `sa.unifonic.service` — Unifonic REST/CPaaS API integration (inherits gateway)
+- `sa.ultramsg.service` — UltraMsg REST API integration (inherits gateway)
+- `sa.notifications.helper` — cron and trigger helper; delegates all WhatsApp/SMS calls through the gateway
+
+**Phone normalization** — `_normalize_phone()` converts any Saudi format to E.164:
+```
++966-5-XXXX-XXXX  →  9665XXXXXXXX
+05XXXXXXXX        →  9665XXXXXXXX
+9665XXXXXXXX      →  9665XXXXXXXX  (no-op)
+```
+
+**Configuring the provider** — Settings → إعدادات تنبيهات PMS → بوابة WhatsApp والرسائل النصية
 
 ---
 
@@ -528,18 +566,14 @@ ODOO_DB=demodb bash setup-demo.sh          # database name via env var
 ```bash
 bash setup-demo.sh -u demodb
 # or upgrade a specific module directly:
-docker compose run --rm web odoo -d demodb -u l10n_sa_ejar --stop-after-init
-docker compose restart web
+docker exec odoo17 odoo -d demodb -u sa_notifications --stop-after-init
+docker restart odoo17
 ```
 
 ### Running the Odoo shell
 
 ```bash
-docker compose run --rm -T web odoo shell -d demodb << 'PYEOF'
-# Python code
-company = env['res.company'].search([], limit=1)
-print(company.name, company.currency_id.name)
-PYEOF
+docker exec -it odoo17 odoo shell -d demodb
 ```
 
 ### Watching logs
@@ -555,7 +589,7 @@ docker logs -f odoo17
 ```bash
 docker exec odoo17-db psql -U odoo17 -d demodb \
   -c "DELETE FROM ir_attachment WHERE res_model='ir.ui.view' AND name LIKE '%.assets%';"
-docker compose restart web
+docker restart odoo17
 ```
 
 ### Production workers
@@ -622,6 +656,77 @@ https://your-odoo.com/ejar/webhook
 | `vat_number` | Exactly 15 digits |
 | `national_address_code` | 4 letters + 4 digits (e.g., `RIYD0001`) |
 | `brokerage_fee` | ≤ 2.5% of annual rent |
+
+---
+
+## Messaging Gateway
+
+The `sa_notifications` module provides a **multi-provider messaging gateway** (`sa.messaging.gateway`) that routes WhatsApp and SMS notifications to the configured provider without touching trigger code.
+
+### Provider selection
+
+Configure at: **Settings → إعدادات تنبيهات PMS → بوابة WhatsApp والرسائل النصية**
+
+| Provider | `messaging_provider` value | WhatsApp | SMS |
+|----------|---------------------------|----------|-----|
+| Unifonic | `unifonic` | ✅ | ✅ (fallback) |
+| UltraMsg | `ultramsg` | ✅ | ❌ |
+| Disabled | `disabled` | — | — |
+
+### Unifonic setup
+
+```
+Settings → PMS Notifications → Provider: Unifonic
+
+Required credentials:
+  sa_notifications.unifonic_app_sid          ← SMS App SID
+  sa_notifications.unifonic_sender_id        ← SMS Sender ID (e.g. "Propza")
+  sa_notifications.unifonic_token            ← WhatsApp Bearer Token
+  sa_notifications.unifonic_whatsapp_sender  ← WhatsApp Business Number (9665XXXXXXXX)
+```
+
+API endpoints used:
+```
+SMS:       POST https://api.unifonic.com/rest/Messages/Send
+WhatsApp:  POST https://messaging.unifonic.com/v2/messages
+```
+
+### UltraMsg setup
+
+```
+Settings → PMS Notifications → Provider: UltraMsg
+
+Required credentials:
+  sa_notifications.ultramsg_instance_id  ← e.g. "instance123456"
+  sa_notifications.ultramsg_token        ← API Token from ultramsg.com dashboard
+```
+
+API endpoint used:
+```
+POST https://api.ultramsg.com/{instance_id}/messages/chat
+Content-Type: application/x-www-form-urlencoded
+Body: token={token}&to=+9665XXXXXXXX&body={message}
+```
+
+### Gateway routing logic
+
+```python
+# sa.messaging.gateway._get_provider()
+provider = cfg('messaging_provider')   # 'unifonic' | 'ultramsg' | 'disabled'
+# Backward compat: if unset, falls back to legacy unifonic_enabled flag
+
+# sa.messaging.gateway._send_whatsapp_sms()
+if provider == 'unifonic':
+    try WA → fallback to SMS
+elif provider == 'ultramsg':
+    WA only (no SMS)
+else:
+    debug log, return False
+```
+
+### Backward compatibility
+
+Existing installations that use `unifonic_enabled=True` continue to work without any change — the gateway detects the legacy flag and routes to Unifonic automatically. No database migration needed.
 
 ---
 
@@ -694,6 +799,10 @@ propza-amlak/
 │   ├── sa_mobile_tech/
 │   ├── sa_broker_commission/
 │   ├── sa_notifications/
+│   │   └── models/
+│   │       ├── messaging_gateway.py     ← multi-provider router (sa.messaging.gateway)
+│   │       ├── unifonic_service.py      ← Unifonic SMS + WA (inherits gateway)
+│   │       └── ultramsg_service.py      ← UltraMsg WA-only (inherits gateway)
 │   ├── sa_sadad/
 │   ├── sa_dashboard/
 │   ├── sa_portal/
@@ -702,10 +811,20 @@ propza-amlak/
 │   └── queue_job/                       ← OCA: async job queue (Ejar integration)
 ├── config/odoo.conf
 ├── docker-compose.yml
+├── docs/USER_MANUAL.md
 ├── setup-demo.sh                        ← all-in-one: install + configure + demo data
 ├── start.sh  stop.sh  logs.sh
 └── install-docker.sh
 ```
+
+### Adding a new messaging provider
+
+1. Create `addons/sa_notifications/models/my_provider_service.py` — AbstractModel inheriting `sa.messaging.gateway`
+2. Implement `_my_provider_send_whatsapp(phone, message)` (and optionally `_send_sms`)
+3. Add a branch in `messaging_gateway._send_whatsapp_sms()` for the new provider name
+4. Add credentials fields to `res_config_settings.py` and the settings view
+5. Add `'my_provider'` to the `sa_messaging_provider` selection list
+6. Import the new file in `models/__init__.py` after `messaging_gateway`
 
 ### XML load order rule
 
@@ -759,4 +878,4 @@ ssh proptech-amlak "cd ~/propza-amlak && git pull && bash setup-demo.sh -u demod
 | Email | a.elhaj@proptech.sa |
 | LinkedIn | [abdelrehman-elhaj](https://www.linkedin.com/in/abdelrehman-elhaj-972a49257/) |
 
-*Odoo 17 · PostgreSQL 15 · Docker · OCA queue_job*
+*Odoo 17 · PostgreSQL 15 · Docker · OCA queue_job · Unifonic · UltraMsg*

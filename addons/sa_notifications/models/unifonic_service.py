@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-"""خدمة Unifonic لإرسال الرسائل عبر WhatsApp وSMS مع fallback تلقائي."""
-import re
+"""خدمة Unifonic: إرسال SMS وWhatsApp — منطق التوجيه في sa.messaging.gateway."""
 import logging
 import requests
 from odoo import models, api
@@ -13,40 +12,12 @@ REQUEST_TIMEOUT  = 10
 
 
 class UnifoniService(models.AbstractModel):
-    _name = 'sa.unifonic.service'
+    _name        = 'sa.unifonic.service'
     _description = 'Unifonic SMS/WhatsApp gateway'
+    _inherit     = 'sa.messaging.gateway'
 
-    # ─── Phone normalisation ─────────────────────────────────────────
-    @api.model
-    def _normalize_phone(self, phone):
-        """Return E.164 digits (no +) for Saudi numbers, e.g. 9665XXXXXXXX."""
-        if not phone:
-            return None
-        digits = re.sub(r'\D', '', phone)
-        if digits.startswith('00'):
-            digits = digits[2:]
-        if digits.startswith('0') and len(digits) == 10:
-            # 05XXXXXXXX → 9665XXXXXXXX
-            digits = '966' + digits[1:]
-        if not digits.startswith('966'):
-            digits = '966' + digits
-        # Saudi mobile: 9665XXXXXXXX (12 digits)
-        if not (11 <= len(digits) <= 13):
-            return None
-        return digits
-
-    # ─── Config helpers ──────────────────────────────────────────────
-    @api.model
-    def _cfg(self, key):
-        return self.env['ir.config_parameter'].sudo().get_param(
-            'sa_notifications.%s' % key, default=''
-        )
-
-    @api.model
-    def _cfg_bool(self, key, default='False'):
-        return self.env['ir.config_parameter'].sudo().get_param(
-            'sa_notifications.%s' % key, default=default
-        ).lower() in ('true', '1', 'yes')
+    # _normalize_phone, _cfg, _cfg_bool, _partner_phone, _send_whatsapp_sms
+    # كلها موروثة من sa.messaging.gateway
 
     # ─── SMS via Unifonic REST ───────────────────────────────────────
     @api.model
@@ -104,29 +75,9 @@ class UnifoniService(models.AbstractModel):
             if resp.status_code in (200, 201):
                 _logger.info('sa_unifonic: WhatsApp sent → %s', number)
                 return True
-            _logger.warning('sa_unifonic: WA failed (%s): %s', resp.status_code, resp.text[:200])
+            _logger.warning('sa_unifonic: WA failed (%s): %s',
+                            resp.status_code, resp.text[:200])
             return False
         except Exception:
             _logger.exception('sa_unifonic: WA exception for %s', number)
             return False
-
-    # ─── Combined: WhatsApp-first, SMS fallback ──────────────────────
-    @api.model
-    def _send_whatsapp_sms(self, phone, message):
-        """Try WhatsApp first; fall back to SMS if WA fails or is disabled.
-        Returns True if at least one channel delivered the message."""
-        if not self._cfg_bool('unifonic_enabled'):
-            return False
-        wa_on  = self._cfg_bool('whatsapp_enabled', default='True')
-        sms_on = self._cfg_bool('sms_enabled', default='True')
-        if wa_on and self._unifonic_send_whatsapp(phone, message):
-            return True
-        if sms_on:
-            return self._unifonic_send_sms(phone, message)
-        return False
-
-    # ─── Convenience: resolve best phone from a res.partner ──────────
-    @api.model
-    def _partner_phone(self, partner):
-        """Return mobile, then phone from a res.partner record."""
-        return partner and (partner.mobile or partner.phone) or None

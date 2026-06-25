@@ -87,5 +87,21 @@
             <field name="value"></field>
         </record>
 
+        <!-- ═══ Multi-provider gateway defaults ═══ -->
+        <record id="default_messaging_provider" model="ir.config_parameter">
+            <field name="key">sa_notifications.messaging_provider</field>
+            <field name="value">disabled</field>
+        </record>
+
+        <record id="default_ultramsg_instance_id" model="ir.config_parameter">
+            <field name="key">sa_notifications.ultramsg_instance_id</field>
+            <field name="value"></field>
+        </record>
+
+        <record id="default_ultramsg_token" model="ir.config_parameter">
+            <field name="key">sa_notifications.ultramsg_token</field>
+            <field name="value"></field>
+        </record>
+
     </data>
 </odoo>

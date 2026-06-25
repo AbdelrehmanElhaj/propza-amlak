@@ -4,7 +4,7 @@
     'name_en': 'Saudi PMS Notifications',
     'version': '17.0.1.0.0',
     'category': 'Real Estate',
-    'summary': 'تنبيهات بريد إلكتروني + WhatsApp + SMS عبر Unifonic',
+    'summary': 'تنبيهات بريد إلكتروني + WhatsApp + SMS عبر Unifonic أو UltraMsg',
     'description': """
         Saudi PMS Notifications
         =======================

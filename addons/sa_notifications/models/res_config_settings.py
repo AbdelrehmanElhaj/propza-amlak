@@ -86,3 +86,26 @@ class ResConfigSettingsNotifications(models.TransientModel):
         config_parameter='sa_notifications.unifonic_whatsapp_sender',
         help='رقم WhatsApp Business المُسجَّل في Unifonic (مثال: 9665XXXXXXXX)',
     )
+
+    # ─── Multi-provider gateway selector ─────────────────────────────
+    sa_messaging_provider = fields.Selection(
+        selection=[
+            ('disabled', 'معطّل'),
+            ('unifonic', 'Unifonic (WhatsApp + SMS)'),
+            ('ultramsg', 'UltraMsg (WhatsApp فقط)'),
+        ],
+        string='مزوّد الرسائل',
+        config_parameter='sa_notifications.messaging_provider',
+        default='disabled',
+    )
+
+    # ─── UltraMsg credentials ─────────────────────────────────────────
+    sa_ultramsg_instance_id = fields.Char(
+        string='UltraMsg Instance ID',
+        config_parameter='sa_notifications.ultramsg_instance_id',
+        help='مثال: instance123456 — تجده في لوحة تحكم UltraMsg',
+    )
+    sa_ultramsg_token = fields.Char(
+        string='UltraMsg Token',
+        config_parameter='sa_notifications.ultramsg_token',
+    )
