@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="sa_call_center.CallCenterSoftphone">
+        <div t-if="state.visible" class="o_call_center_softphone"
+             style="position:fixed;bottom:20px;left:20px;z-index:1050;background:white;
+                    border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.2);padding:16px;
+                    min-width:260px;direction:rtl;text-align:right;font-family:inherit;">
+            <div style="font-weight:700;margin-bottom:8px;">
+                <t t-if="state.status === 'incoming'">مكالمة واردة</t>
+                <t t-if="state.status === 'dialing'">جاري الاتصال...</t>
+                <t t-if="state.status === 'connected'">مكالمة جارية</t>
+            </div>
+            <div style="color:#6c757d;margin-bottom:12px;" t-esc="state.fromNumber"/>
+            <div t-if="state.status === 'incoming'" style="display:flex;gap:8px;">
+                <button class="btn btn-success" t-on-click="onAccept">رد</button>
+                <button class="btn btn-danger" t-on-click="onReject">رفض</button>
+            </div>
+            <div t-if="state.status === 'dialing' || state.status === 'connected'">
+                <button class="btn btn-danger" t-on-click="onHangup">إنهاء المكالمة</button>
+            </div>
+        </div>
+    </t>
+
+</templates>

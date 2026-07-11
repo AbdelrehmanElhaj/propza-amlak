@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="dashboard_view">
+        <html dir="rtl" lang="ar">
+            <head>
+                <meta charset="utf-8"/>
+                <title>لوحة تحكم — مركز الاتصال</title>
+                <link rel="stylesheet" href="/web/static/lib/bootstrap/dist/css/bootstrap.css"/>
+                <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+                <style>
+                    body {
+                        background: #f5f7fa;
+                        font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+                        direction: rtl;
+                        text-align: right;
+                        margin: 0;
+                        padding: 20px;
+                    }
+                    .header {
+                        max-width: 1400px;
+                        margin: 0 auto 20px;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    }
+                    .header h1 { margin: 0; color: #1a3a5c; }
+                    .header .date { color: #6c757d; font-size: 14px; }
+
+                    .container-main { max-width: 1400px; margin: 0 auto; }
+
+                    .kpi-grid {
+                        display: grid;
+                        grid-template-columns: repeat(5, 1fr);
+                        gap: 16px;
+                        margin-bottom: 24px;
+                    }
+                    .kpi-card {
+                        background: white;
+                        padding: 20px;
+                        border-radius: 12px;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    .kpi-card::before {
+                        content: '';
+                        position: absolute;
+                        top: 0; right: 0;
+                        width: 4px; height: 100%;
+                        background: var(--accent);
+                    }
+                    .kpi-label { font-size: 13px; color: #6c757d; margin-bottom: 8px; }
+                    .kpi-value { font-size: 28px; font-weight: 700; color: #1a3a5c; }
+
+                    .chart-grid {
+                        display: grid;
+                        grid-template-columns: 2fr 1fr;
+                        gap: 16px;
+                        margin-bottom: 24px;
+                    }
+                    .chart-card {
+                        background: white;
+                        padding: 20px;
+                        border-radius: 12px;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                    }
+                    .chart-card h3 { margin: 0 0 16px; color: #1a3a5c; font-size: 16px; }
+                    .chart-card canvas { max-height: 300px; }
+
+                    .list-card { background: white; padding: 20px; border-radius: 12px;
+                                 box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+                    .list-card h3 { margin: 0 0 16px; color: #1a3a5c; font-size: 16px; }
+                    .list-card table { width: 100%; border-collapse: collapse; }
+                    .list-card td, .list-card th { padding: 8px 4px; border-bottom: 1px solid #eee; text-align: right; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>لوحة تحكم مركز الاتصال</h1>
+                    <div class="date"><t t-esc="today"/></div>
+                </div>
+
+                <div class="container-main">
+                    <div class="kpi-grid">
+                        <div class="kpi-card" style="--accent:#4c6ef5">
+                            <div class="kpi-label">إجمالي المكالمات (7 أيام)</div>
+                            <div class="kpi-value"><t t-esc="kpis['total_calls']"/></div>
+                        </div>
+                        <div class="kpi-card" style="--accent:#2f9e44">
+                            <div class="kpi-label">مكالمات تم الرد عليها</div>
+                            <div class="kpi-value"><t t-esc="kpis['answered_calls']"/></div>
+                        </div>
+                        <div class="kpi-card" style="--accent:#e03131">
+                            <div class="kpi-label">مكالمات فائتة</div>
+                            <div class="kpi-value"><t t-esc="kpis['missed_calls']"/></div>
+                            <div class="kpi-label">(<t t-esc="kpis['missed_rate']"/>%)</div>
+                        </div>
+                        <div class="kpi-card" style="--accent:#f08c00">
+                            <div class="kpi-label">متوسط الانتظار (ثانية)</div>
+                            <div class="kpi-value"><t t-esc="kpis['avg_wait']"/></div>
+                        </div>
+                        <div class="kpi-card" style="--accent:#7048e8">
+                            <div class="kpi-label">متوسط مدة المكالمة (ثانية)</div>
+                            <div class="kpi-value"><t t-esc="kpis['avg_talk']"/></div>
+                        </div>
+                    </div>
+
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <h3>حجم المكالمات — آخر 7 أيام</h3>
+                            <canvas id="daysChart"/>
+                        </div>
+                        <div class="chart-card">
+                            <h3>توزيع الحالات</h3>
+                            <canvas id="stateChart"/>
+                        </div>
+                    </div>
+
+                    <div class="list-card">
+                        <h3>لوحة صدارة الموظفين (مكالمات مُجابة، آخر 7 أيام)</h3>
+                        <table>
+                            <thead>
+                                <tr><th>الموظف</th><th>عدد المكالمات</th></tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="top_agents" t-as="agent">
+                                    <tr>
+                                        <td><t t-esc="agent[0]"/></td>
+                                        <td><t t-esc="agent[1]"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="dashboard-data"
+                     t-att-data-days="days_json"
+                     t-att-data-by-state="by_state_json"
+                     style="display:none"/>
+
+                <script>
+                    (function () {
+                        var el = document.getElementById('dashboard-data');
+                        var days = JSON.parse(el.dataset.days);
+                        var byState = JSON.parse(el.dataset.byState);
+
+                        new Chart(document.getElementById('daysChart'), {
+                            type: 'bar',
+                            data: {
+                                labels: days.map(function (d) { return d.day; }),
+                                datasets: [{
+                                    label: 'عدد المكالمات',
+                                    data: days.map(function (d) { return d.count; }),
+                                    backgroundColor: '#4c6ef5',
+                                }],
+                            },
+                            options: { responsive: true, maintainAspectRatio: false },
+                        });
+
+                        new Chart(document.getElementById('stateChart'), {
+                            type: 'doughnut',
+                            data: {
+                                labels: Object.keys(byState),
+                                datasets: [{
+                                    data: Object.values(byState),
+                                    backgroundColor: ['#2f9e44', '#4c6ef5', '#e03131', '#f08c00', '#7048e8'],
+                                }],
+                            },
+                            options: { responsive: true, maintainAspectRatio: false },
+                        });
+                    })();
+                </script>
+            </body>
+        </html>
+    </template>
+
+</odoo>

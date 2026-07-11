@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_users_form_call_center" model="ir.ui.view">
+        <field name="name">res.users.form.call.center</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="مركز الاتصال" name="sa_call_center">
+                    <group>
+                        <field name="is_call_center_agent"/>
+                        <group invisible="not is_call_center_agent">
+                            <field name="sip_extension"/>
+                            <field name="call_center_status"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

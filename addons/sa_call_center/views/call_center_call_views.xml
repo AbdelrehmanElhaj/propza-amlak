@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_call_center_call_tree" model="ir.ui.view">
+        <field name="name">sa.call.center.call.tree</field>
+        <field name="model">sa.call.center.call</field>
+        <field name="arch" type="xml">
+            <tree decoration-danger="state=='missed'" decoration-muted="state=='ended'">
+                <field name="name"/>
+                <field name="start_datetime"/>
+                <field name="direction"/>
+                <field name="from_number"/>
+                <field name="partner_id"/>
+                <field name="agent_id"/>
+                <field name="queue_id"/>
+                <field name="wait_duration"/>
+                <field name="talk_duration"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_call_center_call_form" model="ir.ui.view">
+        <field name="name">sa.call.center.call.form</field>
+        <field name="model">sa.call.center.call</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="ringing,answered,ended"/>
+                </header>
+                <sheet>
+                    <field name="ticket_id" invisible="1"/>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_create_ticket" type="object"
+                                class="oe_stat_button" icon="fa-ticket"
+                                invisible="ticket_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">إنشاء تذكرة</span>
+                            </div>
+                        </button>
+                        <button name="action_create_ticket" type="object"
+                                class="oe_stat_button" icon="fa-ticket"
+                                invisible="not ticket_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">فتح التذكرة</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="direction"/>
+                            <field name="from_number"/>
+                            <field name="to_number"/>
+                            <field name="partner_id"/>
+                            <field name="call_uid"/>
+                        </group>
+                        <group>
+                            <field name="agent_id"/>
+                            <field name="queue_id"/>
+                            <field name="start_datetime"/>
+                            <field name="answer_datetime"/>
+                            <field name="end_datetime"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="wait_duration"/>
+                            <field name="talk_duration"/>
+                        </group>
+                        <group>
+                            <field name="recording_url" widget="url"/>
+                            <field name="related_record_ref"/>
+                        </group>
+                    </group>
+                    <field name="notes" placeholder="ملاحظات الموظف أثناء/بعد المكالمة..."/>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_call_center_call" model="ir.actions.act_window">
+        <field name="name">المكالمات</field>
+        <field name="res_model">sa.call.center.call</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">لا توجد مكالمات بعد</p>
+            <p>تُنشأ سجلات المكالمات تلقائياً عبر webhook نظام الاتصالات.</p>
+        </field>
+    </record>
+
+</odoo>

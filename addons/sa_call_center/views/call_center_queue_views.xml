@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_call_center_queue_tree" model="ir.ui.view">
+        <field name="name">sa.call.center.queue.tree</field>
+        <field name="model">sa.call.center.queue</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="member_ids" widget="many2many_tags"/>
+                <field name="call_count"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_call_center_queue_form" model="ir.ui.view">
+        <field name="name">sa.call.center.queue.form</field>
+        <field name="model">sa.call.center.queue</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_calls" type="object"
+                                class="oe_stat_button" icon="fa-phone">
+                            <field name="call_count" widget="statinfo" string="مكالمات"/>
+                        </button>
+                    </div>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="sequence"/>
+                        <field name="active"/>
+                        <field name="member_ids" widget="many2many_tags"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_call_center_queue" model="ir.actions.act_window">
+        <field name="name">قوائم الانتظار</field>
+        <field name="res_model">sa.call.center.queue</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">إضافة قائمة انتظار جديدة</p>
+            <p>تُستخدم لمطابقة وتجميع تقارير المكالمات — التوجيه الفعلي يقع على نظام الاتصالات.</p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_settings_call_center" model="ir.ui.view">
+        <field name="name">res.config.settings.call.center</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <div class="app_settings_block" data-string="مركز الاتصال"
+                     string="Call Center" data-key="sa_call_center"
+                     groups="base.group_system,sa_security.group_pms_admin">
+                    <h2>مركز الاتصال</h2>
+
+                    <h3 class="mt16">مزوّد الاتصالات</h3>
+                    <div class="row mt8 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label for="sa_telephony_provider" class="o_form_label"/>
+                                <div class="text-muted">اختر نظام PBX/الاتصالات المتكامل</div>
+                                <div class="mt8">
+                                    <field name="sa_telephony_provider" class="oe_inline" style="width:240px"/>
+                                </div>
+
+                                <div class="content-group mt8" invisible="sa_telephony_provider != 'asterisk'">
+                                    <div class="mt4">
+                                        <label for="sa_asterisk_ari_host" class="o_form_label"/>
+                                        <field name="sa_asterisk_ari_host" class="oe_inline" style="width:220px"/>
+                                    </div>
+                                    <div class="mt4">
+                                        <label for="sa_asterisk_ari_port" class="o_form_label"/>
+                                        <field name="sa_asterisk_ari_port" class="oe_inline" style="width:100px"/>
+                                    </div>
+                                    <div class="mt4">
+                                        <label for="sa_asterisk_ari_user" class="o_form_label"/>
+                                        <field name="sa_asterisk_ari_user" class="oe_inline" style="width:220px"/>
+                                    </div>
+                                    <div class="mt4">
+                                        <label for="sa_asterisk_ari_password" class="o_form_label"/>
+                                        <field name="sa_asterisk_ari_password" class="oe_inline" style="width:220px" password="True"/>
+                                    </div>
+                                </div>
+
+                                <div class="content-group mt8" invisible="sa_telephony_provider != 'twilio'">
+                                    <div class="mt4">
+                                        <label for="sa_twilio_account_sid" class="o_form_label"/>
+                                        <field name="sa_twilio_account_sid" class="oe_inline" style="width:280px"/>
+                                    </div>
+                                    <div class="mt4">
+                                        <label for="sa_twilio_auth_token" class="o_form_label"/>
+                                        <field name="sa_twilio_auth_token" class="oe_inline" style="width:280px" password="True"/>
+                                    </div>
+                                    <div class="mt4">
+                                        <label for="sa_twilio_phone_number" class="o_form_label"/>
+                                        <field name="sa_twilio_phone_number" class="oe_inline" style="width:200px" placeholder="+19999999999"/>
+                                    </div>
+                                    <div class="mt4">
+                                        <label for="sa_twilio_forward_number" class="o_form_label"/>
+                                        <div class="text-muted">كل مكالمة واردة على رقم Twilio تُحوَّل فوراً لهذا الرقم</div>
+                                        <field name="sa_twilio_forward_number" class="oe_inline" style="width:200px" placeholder="+9665XXXXXXXX"/>
+                                    </div>
+                                    <div class="mt4">
+                                        <label for="sa_twilio_public_base_url" class="o_form_label"/>
+                                        <div class="text-muted">الرابط العام لهذا الـ Odoo كما يراه Twilio — يُستخدم للتحقق من توقيع الطلبات</div>
+                                        <field name="sa_twilio_public_base_url" class="oe_inline" style="width:320px" placeholder="https://amlak.hdrelhaj.com"/>
+                                    </div>
+                                    <div class="mt4">
+                                        <label for="sa_twilio_api_key_sid" class="o_form_label"/>
+                                        <div class="text-muted">مختلف عن Account SID — لتفعيل الرد على المكالمات من داخل المتصفح (Console → Account → API keys &amp; tokens)</div>
+                                        <field name="sa_twilio_api_key_sid" class="oe_inline" style="width:280px"/>
+                                    </div>
+                                    <div class="mt4">
+                                        <label for="sa_twilio_api_key_secret" class="o_form_label"/>
+                                        <field name="sa_twilio_api_key_secret" class="oe_inline" style="width:280px" password="True"/>
+                                    </div>
+                                    <div class="mt4">
+                                        <label for="sa_twilio_twiml_app_sid" class="o_form_label"/>
+                                        <div class="text-muted">لتفعيل الاتصال الصادر من السمّاعة — TwiML App برابط Voice Request URL يشير إلى /callcenter/webhook/twilio/outbound-voice</div>
+                                        <field name="sa_twilio_twiml_app_sid" class="oe_inline" style="width:280px"/>
+                                    </div>
+                                </div>
+
+                                <div class="mt8">
+                                    <label for="sa_call_center_webhook_token" class="o_form_label"/>
+                                    <div class="text-muted">القيمة المرسلة في ترويسة X-CallCenter-Token من نظام الاتصالات</div>
+                                    <field name="sa_call_center_webhook_token" class="oe_inline" style="width:280px" password="True"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

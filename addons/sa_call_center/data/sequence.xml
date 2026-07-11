@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="seq_call_center_call" model="ir.sequence">
+        <field name="name">مكالمة مركز الاتصال</field>
+        <field name="code">sa.call.center.call</field>
+        <field name="prefix">CALL/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="seq_call_center_ticket" model="ir.sequence">
+        <field name="name">تذكرة مركز الاتصال</field>
+        <field name="code">sa.call.center.ticket</field>
+        <field name="prefix">TCK/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+</odoo>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_sa_crm_lead_form_call_center" model="ir.ui.view">
+        <field name="name">sa.crm.lead.form.call.center</field>
+        <field name="model">sa.crm.lead</field>
+        <field name="inherit_id" ref="sa_crm.view_sa_crm_lead_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='phone']" position="attributes">
+                <attribute name="widget">sa_call_center_phone</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sa_call_center_call_agent,sa.call.center.call agent,model_sa_call_center_call,sa_security.group_pms_agent,1,1,1,0
+access_sa_call_center_call_manager,sa.call.center.call manager,model_sa_call_center_call,sa_security.group_pms_manager,1,1,1,1
+access_sa_call_center_ticket_agent,sa.call.center.ticket agent,model_sa_call_center_ticket,sa_security.group_pms_agent,1,1,1,0
+access_sa_call_center_ticket_manager,sa.call.center.ticket manager,model_sa_call_center_ticket,sa_security.group_pms_manager,1,1,1,1
+access_sa_call_center_queue_agent,sa.call.center.queue agent,model_sa_call_center_queue,sa_security.group_pms_agent,1,0,0,0
+access_sa_call_center_queue_manager,sa.call.center.queue manager,model_sa_call_center_queue,sa_security.group_pms_manager,1,1,1,1
