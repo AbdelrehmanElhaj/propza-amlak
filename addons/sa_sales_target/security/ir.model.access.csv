@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sa_sales_team_agent,sa.sales.team agent,model_sa_sales_team,sa_security.group_pms_agent,1,0,0,0
+access_sa_sales_team_manager,sa.sales.team manager,model_sa_sales_team,sa_security.group_pms_manager,1,1,1,1
+access_sa_sales_target_agent,sa.sales.target agent,model_sa_sales_target,sa_security.group_pms_agent,1,0,0,0
+access_sa_sales_target_manager,sa.sales.target manager,model_sa_sales_target,sa_security.group_pms_manager,1,1,1,1

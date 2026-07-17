@@ -3,6 +3,10 @@ import datetime
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
+# Fixed, deterministic bigint used as the pg_advisory_xact_lock key to
+# serialize load-based lead-rotation assignment across concurrent creates.
+LEAD_ROTATION_LOCK_ID = 987654321
+
 
 class SaCrmLead(models.Model):
     _name = 'sa.crm.lead'
@@ -108,14 +112,14 @@ class SaCrmLead(models.Model):
         ('open', 'مفتوح'),
         ('won',  'فاز'),
         ('lost', 'خسر'),
-    ], string='الحالة', default='open', tracking=True, copy=False)
+    ], string='الحالة', default='open', tracking=True, copy=False, index=True)
 
     lost_reason = fields.Char(string='سبب الخسارة')
 
     # ─── Assignment ────────────────────────────────────────────
     user_id = fields.Many2one(
         'res.users', string='الموظف المسؤول',
-        default=lambda s: s.env.user, tracking=True,
+        tracking=True, index=True,
     )
     source = fields.Selection([
         ('walkin',   'زيارة مباشرة'),
@@ -270,6 +274,38 @@ class SaCrmLead(models.Model):
             domain.append(('sa_furnished', '=', self.furnished_pref))
         return domain
 
+    # ─── Load-based rotation ───────────────────────────────────
+    def _get_least_loaded_agent(self):
+        self.env.cr.execute("SELECT pg_advisory_xact_lock(%s)", (LEAD_ROTATION_LOCK_ID,))
+        manager_group = self.env.ref('sa_security.group_pms_manager', raise_if_not_found=False)
+        agent_group = self.env.ref('sa_security.group_pms_agent', raise_if_not_found=False)
+        if not agent_group:
+            return self.env['res.users']
+        domain = [
+            ('sa_lead_rotation_eligible', '=', True),
+            ('groups_id', 'in', [agent_group.id]),
+            ('active', '=', True),
+        ]
+        if manager_group:
+            domain.append(('groups_id', 'not in', [manager_group.id]))
+        agents = self.env['res.users'].sudo().search(domain)
+        if not agents:
+            return self.env['res.users']
+        self.env.cr.execute("""
+            SELECT user_id, COUNT(*) FROM sa_crm_lead
+            WHERE user_id = ANY(%s) AND state = 'open'
+            GROUP BY user_id
+        """, (agents.ids,))
+        counts = dict(self.env.cr.fetchall())
+        return min(agents, key=lambda a: counts.get(a.id, 0))
+
+    def _cron_auto_assign_unassigned_leads(self):
+        unassigned = self.search([('user_id', '=', False), ('state', '=', 'open')])
+        for lead in unassigned:
+            agent = lead._get_least_loaded_agent()
+            if agent:
+                lead.user_id = agent.id
+
     # ─── Sequencing ────────────────────────────────────────────
     @api.model_create_multi
     def create(self, vals_list):
@@ -278,6 +314,10 @@ class SaCrmLead(models.Model):
                 vals['name'] = self.env['ir.sequence'].next_by_code(
                     'sa.crm.lead'
                 ) or _('جديد')
+            if not vals.get('user_id'):
+                agent = self._get_least_loaded_agent()
+                if agent:
+                    vals['user_id'] = agent.id
         return super().create(vals_list)
 
     # ─── Actions ───────────────────────────────────────────────

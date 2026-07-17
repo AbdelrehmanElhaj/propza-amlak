@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Client action: embeds /callcenter/analytics inside Odoo webclient (iframe) -->
+    <record id="action_call_center_analytics_dashboard" model="ir.actions.client">
+        <field name="name">تحليلات التواصل مع العملاء</field>
+        <field name="tag">call_center_analytics_dashboard_action</field>
+    </record>
+
+    <menuitem id="menu_call_center_analytics_dashboard"
+              name="تحليلات التواصل مع العملاء"
+              parent="sa_call_center.menu_call_center_root"
+              action="action_call_center_analytics_dashboard"
+              groups="sa_security.group_pms_manager"
+              sequence="27"/>
+
+    <menuitem id="menu_call_center_analytics_pivot"
+              name="تقرير المكالمات المحوري"
+              parent="sa_call_center.menu_call_center_root"
+              action="action_call_center_call_analytics"
+              groups="sa_security.group_pms_manager"
+              sequence="28"/>
+
+</odoo>

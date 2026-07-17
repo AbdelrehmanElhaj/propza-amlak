@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_sa_project"
+              name="المشاريع العقارية"
+              parent="sa_property_base.menu_pms_root"
+              action="action_sa_project"
+              groups="sa_security.group_pms_agent"
+              sequence="15"/>
+</odoo>

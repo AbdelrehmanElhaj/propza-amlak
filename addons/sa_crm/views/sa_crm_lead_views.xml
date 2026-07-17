@@ -316,7 +316,7 @@
         <field name="res_model">sa.crm.lead</field>
         <field name="view_mode">kanban,tree,form</field>
         <field name="search_view_id" ref="view_sa_crm_lead_search"/>
-        <field name="context">{'search_default_open': 1}</field>
+        <field name="context">{'search_default_open': 1, 'default_user_id': uid}</field>
     </record>
 
 </odoo>

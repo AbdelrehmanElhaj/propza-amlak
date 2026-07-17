@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- قائمة "أهداف المبيعات" — تحت قائمة "عمولات الوسطاء" الموجودة في
+         sa_broker_commission. مقصورة على مدير العقارات: تحديد الأهداف
+         عمل إداري، بينما يرى الموظف إنجازه عبر ir.rule إن أُتيحت له
+         قائمة تقنية لاحقاً (مثلاً من لوحة تحكم sa_dashboard). -->
+    <menuitem id="menu_sales_target_root"
+              name="أهداف المبيعات"
+              parent="sa_broker_commission.menu_broker_commission_root"
+              sequence="40"
+              groups="sa_security.group_pms_manager"/>
+
+    <menuitem id="menu_sales_team"
+              name="فرق المبيعات"
+              parent="menu_sales_target_root"
+              action="action_sales_team"
+              sequence="10"/>
+
+    <menuitem id="menu_sales_target"
+              name="الأهداف"
+              parent="menu_sales_target_root"
+              action="action_sales_target"
+              sequence="20"/>
+
+</odoo>

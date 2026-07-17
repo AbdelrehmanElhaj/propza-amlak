@@ -184,6 +184,49 @@ class PmsDashboardController(http.Controller):
                 'days_left': (res.date_end - today).days,
             })
 
+        # ═══════════════════════════════════════════════════
+        # Team KPIs (targets / achievement / commission revenue)
+        # ═══════════════════════════════════════════════════
+        Target = env['sa.sales.target']
+        CommissionLine = env['sa.broker.commission.line']
+
+        active_targets = Target.search([
+            ('date_from', '<=', today), ('date_to', '>=', today),
+        ])
+        agent_kpi_rows = [{
+            'name': t.user_id.name or '',
+            'target': t.target_amount,
+            'achieved': t.achieved_amount,
+            'pct': t.achievement_pct,
+        } for t in active_targets.filtered(lambda t: t.scope == 'user').sorted(
+            key=lambda t: -t.achievement_pct
+        )]
+        team_kpi_rows = [{
+            'name': t.team_id.name or '',
+            'target': t.target_amount,
+            'achieved': t.achieved_amount,
+            'pct': t.achievement_pct,
+        } for t in active_targets.filtered(lambda t: t.scope == 'team').sorted(
+            key=lambda t: -t.achievement_pct
+        )]
+
+        total_target = sum(active_targets.mapped('target_amount'))
+        total_achieved = sum(active_targets.mapped('achieved_amount'))
+        overall_pct = round(total_achieved / total_target * 100, 1) if total_target else 0.0
+
+        month_paid_lines = CommissionLine.search([
+            ('state', '=', 'paid'),
+            ('due_date', '>=', month_start),
+        ])
+        team_kpis = {
+            'total_target': total_target,
+            'total_achieved': total_achieved,
+            'overall_pct': overall_pct,
+            'month_commission_revenue': sum(month_paid_lines.mapped('amount')),
+            'agents_on_target': len([r for r in agent_kpi_rows if r['pct'] >= 100]),
+            'agents_total': len(agent_kpi_rows),
+        }
+
         return request.render('sa_dashboard.dashboard_view', {
             'kpis': kpis,
             'months_json': json.dumps(months_data),
@@ -197,4 +240,9 @@ class PmsDashboardController(http.Controller):
             'leads_by_stage_json': json.dumps(leads_by_stage),
             'top_agents': top_agents,
             'expiring_res_list': expiring_res_list,
+            # Team KPIs
+            'team_kpis': team_kpis,
+            'agent_kpi_rows': agent_kpi_rows,
+            'team_kpi_rows': team_kpi_rows,
+            'team_kpis_chart_json': json.dumps(agent_kpi_rows),
         })

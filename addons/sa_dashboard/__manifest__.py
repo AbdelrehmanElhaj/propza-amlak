@@ -30,6 +30,7 @@
         'sa_security',
         'sa_broker_commission',
         'sa_crm',
+        'sa_sales_target',
     ],
     'data': [
         'views/dashboard_template.xml',

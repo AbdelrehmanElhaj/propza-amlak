@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sa_project_agent,sa.project agent,model_sa_project,sa_security.group_pms_agent,1,1,1,0
+access_sa_project_manager,sa.project manager,model_sa_project,sa_security.group_pms_manager,1,1,1,1
+access_sa_project_image_agent,sa.project.image agent,model_sa_project_image,sa_security.group_pms_agent,1,1,1,0
+access_sa_project_image_manager,sa.project.image manager,model_sa_project_image,sa_security.group_pms_manager,1,1,1,1

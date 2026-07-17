@@ -83,6 +83,7 @@
                     .list-card th { font-size: 12px; color: #6c757d; font-weight: 500; }
                     .badge-warn { background: #fff3cd; color: #856404; padding: 2px 8px; border-radius: 4px; }
                     .badge-danger { background: #f8d7da; color: #721c24; padding: 2px 8px; border-radius: 4px; }
+                    .badge-success { background: #d4edda; color: #155724; padding: 2px 8px; border-radius: 4px; }
                 </style>
             </head>
             <body>
@@ -251,6 +252,128 @@
                         </div>
                     </div>
 
+                    <!-- ═══ Team KPIs ══════════════════════════════════ -->
+                    <div style="border-top:2px solid #e9ecef;margin:8px 0 20px;padding-top:20px">
+                        <h2 style="color:#1a3a5c;margin:0 0 16px;font-size:18px">🎯 أهداف الفريق (Team KPIs)</h2>
+                    </div>
+
+                    <div class="kpi-grid" style="margin-bottom:20px">
+                        <div class="kpi-card" style="--accent:#00695c">
+                            <div class="kpi-label">الهدف الإجمالي (الفترات النشطة)</div>
+                            <div class="kpi-value" style="font-size:22px">
+                                <span t-out="'%.0f' % team_kpis['total_target']"/>
+                                <span style="font-size:14px;font-weight:400"> ر.س</span>
+                            </div>
+                            <div class="kpi-sub">مجموع أهداف الأفراد والفرق النشطة حالياً</div>
+                        </div>
+                        <div class="kpi-card" style="--accent:#2e7d32">
+                            <div class="kpi-label">عمولات محقَّقة (الموظفون)</div>
+                            <div class="kpi-value" style="font-size:22px">
+                                <span t-out="'%.0f' % team_kpis['total_achieved']"/>
+                                <span style="font-size:14px;font-weight:400"> ر.س</span>
+                            </div>
+                            <div class="kpi-sub">
+                                عمولات هذا الشهر (مدفوعة): <span t-out="'%.0f' % team_kpis['month_commission_revenue']"/> ر.س
+                            </div>
+                        </div>
+                        <div class="kpi-card" style="--accent:#1565c0">
+                            <div class="kpi-label">نسبة الإنجاز الإجمالية</div>
+                            <div class="kpi-value"><span t-out="team_kpis['overall_pct']"/>%</div>
+                            <div class="kpi-sub">إجمالي المحقَّق ÷ إجمالي الهدف</div>
+                        </div>
+                        <div class="kpi-card" style="--accent:#f57c00">
+                            <div class="kpi-label">موظفون حققوا الهدف</div>
+                            <div class="kpi-value">
+                                <span t-out="team_kpis['agents_on_target']"/> / <span t-out="team_kpis['agents_total']"/>
+                            </div>
+                            <div class="kpi-sub">نسبة الإنجاز ≥ 100%</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-grid-2" style="margin-bottom:20px">
+                        <div class="chart-card">
+                            <h3>📊 الهدف مقابل المحقَّق لكل موظف</h3>
+                            <canvas id="teamKpiChart"></canvas>
+                        </div>
+                        <div class="list-card">
+                            <h3>👥 إنجاز الفرق</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>الفريق</th>
+                                        <th style="text-align:left">الهدف</th>
+                                        <th style="text-align:left">المحقَّق</th>
+                                        <th style="text-align:left">النسبة</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="team_kpi_rows" t-as="row">
+                                        <tr>
+                                            <td><span t-out="row['name']"/></td>
+                                            <td style="text-align:left"><span t-out="'%.0f' % row['target']"/></td>
+                                            <td style="text-align:left"><span t-out="'%.0f' % row['achieved']"/></td>
+                                            <td style="text-align:left">
+                                                <t t-if="row['pct'] &gt;= 100">
+                                                    <span class="badge-success"><span t-out="row['pct']"/>%</span>
+                                                </t>
+                                                <t t-elif="row['pct'] &gt;= 70">
+                                                    <span class="badge-warn"><span t-out="row['pct']"/>%</span>
+                                                </t>
+                                                <t t-else="">
+                                                    <span class="badge-danger"><span t-out="row['pct']"/>%</span>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <tr t-if="not team_kpi_rows">
+                                        <td colspan="4" style="text-align:center;color:#6c757d">
+                                            لا توجد أهداف فرق نشطة حالياً
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="list-card" style="margin-bottom:24px">
+                        <h3>🧑‍💼 إنجاز الأفراد</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>الموظف</th>
+                                    <th style="text-align:left">الهدف</th>
+                                    <th style="text-align:left">المحقَّق</th>
+                                    <th style="text-align:left">النسبة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="agent_kpi_rows" t-as="row">
+                                    <tr>
+                                        <td><span t-out="row['name']"/></td>
+                                        <td style="text-align:left"><span t-out="'%.0f' % row['target']"/></td>
+                                        <td style="text-align:left"><span t-out="'%.0f' % row['achieved']"/></td>
+                                        <td style="text-align:left">
+                                            <t t-if="row['pct'] &gt;= 100">
+                                                <span class="badge-success"><span t-out="row['pct']"/>%</span>
+                                            </t>
+                                            <t t-elif="row['pct'] &gt;= 70">
+                                                <span class="badge-warn"><span t-out="row['pct']"/>%</span>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="badge-danger"><span t-out="row['pct']"/>%</span>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <tr t-if="not agent_kpi_rows">
+                                    <td colspan="4" style="text-align:center;color:#6c757d">
+                                        لا توجد أهداف أفراد نشطة حالياً
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                     <!-- Reservations expiring within 7 days -->
                     <t t-if="expiring_res_list">
                         <div class="list-card" style="margin-bottom:24px;border-right:4px solid #dc3545">
@@ -327,6 +450,7 @@
                      t-att-data-occupancy="occupancy_json"
                      t-att-data-maint="maint_by_cat_json"
                      t-att-data-pipeline="leads_by_stage_json"
+                     t-att-data-team-kpis="team_kpis_chart_json"
                      style="display:none"/>
 
                 <script>
@@ -336,6 +460,7 @@
                         const occupancyData = JSON.parse(el.dataset.occupancy);
                         const maintData = JSON.parse(el.dataset.maint);
                         const pipelineData = JSON.parse(el.dataset.pipeline);
+                        const teamKpiData = JSON.parse(el.dataset.teamKpis);
 
                         // Revenue trend chart
                         new Chart(document.getElementById('revenueChart'), {
@@ -425,6 +550,33 @@
                                     responsive: true,
                                     plugins: { legend: { display: false } },
                                     scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                                }
+                            });
+                        }
+
+                        // Team KPIs: target vs achieved per agent
+                        if (teamKpiData.length) {
+                            new Chart(document.getElementById('teamKpiChart'), {
+                                type: 'bar',
+                                data: {
+                                    labels: teamKpiData.map(d => d.name),
+                                    datasets: [
+                                        {
+                                            label: 'الهدف',
+                                            data: teamKpiData.map(d => d.target),
+                                            backgroundColor: '#90a4ae',
+                                        },
+                                        {
+                                            label: 'المحقَّق',
+                                            data: teamKpiData.map(d => d.achieved),
+                                            backgroundColor: '#00695c',
+                                        }
+                                    ]
+                                },
+                                options: {
+                                    responsive: true,
+                                    plugins: { legend: { position: 'bottom' } },
+                                    scales: { y: { beginAtZero: true } }
                                 }
                             });
                         }

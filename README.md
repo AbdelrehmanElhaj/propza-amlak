@@ -17,6 +17,7 @@ A Saudi-first property management platform built on **Odoo 17**, covering the fu
 - [Ejar ECRS Integration](#ejar-ecrs-integration)
 - [Messaging Gateway](#messaging-gateway)
 - [Call Center Integration](#call-center-integration)
+- [Sales Targets & Team KPIs](#sales-targets--team-kpis)
 - [Roles & Permissions](#roles--permissions)
 - [Saudi Compliance](#saudi-compliance)
 - [Development Guide](#development-guide)
@@ -32,6 +33,10 @@ Propza replaces generic property management add-ons with a system purpose-built 
 - **Async Ejar integration** — non-blocking contract submission via OCA `queue_job`; webhook callbacks with HMAC-SHA256 validation; circuit breaker per company
 - **Multi-provider messaging** — WhatsApp + SMS notifications via **Unifonic** or **UltraMsg**, switchable from Settings with no code changes
 - **Smart call center** — inbound & outbound calls via **Twilio**, answered/placed directly in the browser (WebRTC softphone + click-to-dial), auto-linked to the matching customer
+- **Customer call analytics** — unique vs. repeated calls and total talk time per customer, aggregated per agent/period on a manager dashboard
+- **Sales targets & Team KPIs** — individual and team monthly/quarterly/yearly targets measured against actual paid broker commissions, with achievement % surfaced on the main dashboard
+- **Real-estate projects** — group multiple units under a development (`sa.project`) with an uploadable photo/floor-plan/site-plan/brochure gallery
+- **Automatic lead rotation** — new CRM leads auto-assign to the salesperson with the fewest open leads, with a per-user opt-out and a manual-override path
 - **Role-aware** — 7 RBAC groups with ORM-level record rules; API access also restricted
 - **AI Property Match** — scoring engine in `sa_crm_ai_match` ranks properties against lead preferences (type, region, budget, area, rooms, furnishing) and presents the top 8 matches in one click
 - **No vendor lock-in** — thin `sa_property_base` core extended cleanly by all other modules
@@ -41,11 +46,11 @@ Propza replaces generic property management add-ons with a system purpose-built 
 | # | App | Arabic | Notes |
 |---|-----|--------|-------|
 | 1 | لوحة التحكم | Dashboard | Standalone KPI app |
-| 2 | النظام الأساسي | Core System | Properties, owners, tenants, brokers, inspections |
-| 3 | إدارة علاقات العملاء | CRM | Leads, showings, reservations, deals — agents & managers only |
-| 4 | إدارة عقود الإيجار | Rental Contracts | Contracts, payments (all + overdue), commissions, SADAD invoices |
+| 2 | النظام الأساسي | Core System | Properties, owners, tenants, brokers, inspections, **real-estate projects & media galleries** |
+| 3 | إدارة علاقات العملاء | CRM | Leads (**auto-assigned by workload**), showings, reservations, deals — agents & managers only |
+| 4 | إدارة عقود الإيجار | Rental Contracts | Contracts, payments (all + overdue), commissions, SADAD invoices, **sales targets & teams** |
 | 5 | إدارة الصيانة | Maintenance | Requests, work orders, periodic contracts, technicians |
-| 6 | مركز الاتصال | Call Center | Calls, tickets, dashboard — call center agents & managers only |
+| 6 | مركز الاتصال | Call Center | Calls, tickets, dashboard, **customer call analytics** — call center agents & managers only |
 | 7 | منصة إيجار | Ejar Platform | ECRS contracts, brokerage profiles, sync logs |
 | 8 | المحاسبة المالية | Financial Accounting | Odoo built-in accounting — customers, vendors, journals, reports |
 | 9 | حسابي | My Account | User profile, verifications, documents |
@@ -61,11 +66,11 @@ Owners, tenants, and brokers are direct children of **النظام الأساس�
 │  sa_dashboard   sa_portal   sa_mobile_tech   sa_notifications    │  ← Presentation
 ├──────────────────────────────────────────────────────────────────┤
 │  sa_crm  sa_crm_ai_match  sa_broker_commission  sa_sadad          │  ← CRM & Financial
-│                     sa_call_center                                │
+│      sa_call_center   sa_call_center_analytics   sa_sales_target  │
 ├──────────────────────────────────────────────────────────────────┤
 │                     sa_rental_cycle                              │  ← Rental workflow
 ├────────────────────┬─────────────────────────────────────────────┤
-│     sa_property    │            sa_maintenance                   │  ← Domain models
+│ sa_property  sa_property_projects │      sa_maintenance           │  ← Domain models
 ├────────────────────┴─────────────────────────────────────────────┤
 │          l10n_sa_ejar        sa_security    sa_user_profile      │  ← Localisation & RBAC
 ├──────────────────────────────────────────────────────────────────┤
@@ -79,16 +84,19 @@ Owners, tenants, and brokers are direct children of **النظام الأساس�
 ```
 sa_property_base
 ├── l10n_sa_ejar          (+ queue_job)
-│   └── sa_property
-│       └── sa_rental_cycle
-│           ├── sa_broker_commission
-│           ├── sa_notifications
-│           │   └── sa_call_center     (+ sa_crm, sa_maintenance, sa_security)
-│           └── sa_sadad
+│   ├── sa_property
+│   │   └── sa_rental_cycle
+│   │       ├── sa_broker_commission
+│   │       │   └── sa_sales_target    (+ sa_crm, sa_security, mail)
+│   │       ├── sa_notifications
+│   │       │   └── sa_call_center     (+ sa_crm, sa_maintenance, sa_security)
+│   │       │       └── sa_call_center_analytics
+│   │       └── sa_sadad
+│   └── sa_property_projects           (+ sa_security)
 ├── sa_maintenance
 │   └── sa_mobile_tech
 ├── sa_user_profile
-├── sa_dashboard
+├── sa_dashboard                       (+ sa_sales_target, sa_broker_commission, sa_crm)
 └── sa_security
     ├── sa_crm
     │   └── sa_crm_ai_match
@@ -164,6 +172,25 @@ Extends base models with full Saudi-specific views.
 
 ---
 
+### `sa_property_projects` — Real-Estate Projects & Media Galleries
+
+Groups multiple `property.property` units under a real-estate development, with an uploadable photo/floor-plan gallery.
+
+**Models**
+
+| Model | Purpose |
+|-------|---------|
+| `sa.project` | A development/project (name, developer, region/city, status) grouping multiple units |
+| `sa.project.image` | Gallery item — photo, floor plan, site plan, or brochure |
+
+`property.property` gains a `project_id` Many2one (the unit is the "many" side, per the standard Odoo FK-ownership idiom); `sa.project.unit_ids` is the inverse `One2many`, so grouping/filtering by project works natively in every existing `property.property` list/kanban view.
+
+**Gallery model** — generalizes the existing single-image-per-inspection-line pattern (`sa.property.inspection`) into a real kanban gallery: `media_type` (`photo` / `floor_plan` / `site_plan` / `brochure`), `Binary(attachment=True)` file storage, computed `mimetype`/`is_image`. Validation: 10 MB max file size; `floor_plan`/`site_plan`/`brochure` accept PDF or image; `photo` must be an actual image file. The project form embeds the gallery as a kanban grouped by `media_type`.
+
+**Access:** `group_pms_agent` and above (read/write/create, no delete); `group_pms_manager` has full CRUD.
+
+---
+
 ### `sa_rental_cycle` — Complete Rental Workflow
 
 End-to-end rental operations: payment schedules, wizards, owner dashboard, compliance reports.
@@ -188,6 +215,8 @@ Customer relationship management module covering the full pre-tenancy sales cycl
 | `sa.crm.reservation` | Property reservation linked to a lead |
 | `sa.crm.showing` | Field showing (جولة ميدانية) scheduled for a lead |
 | `sa.crm.stage` | Configurable kanban pipeline stages |
+
+**Automatic lead rotation (load-based)** — a new lead created without an explicit `user_id` (e.g. from a portal/website/API source) is auto-assigned to whichever eligible salesperson currently has the fewest open (`state='open'`) leads, computed via a single grouped SQL query and serialized with `pg_advisory_xact_lock` to avoid double-assignment on concurrent creates. Eligibility is a real, enforced check — `res.users.sa_lead_rotation_eligible` (default `True`) is read directly inside the assignment query, unlike `sa_call_center`'s `is_call_center_agent`/`call_center_status`, which exist but aren't consulted by call routing today. Manual UI-driven creation still defaults to the current user (`context={'default_user_id': uid}` on the lead action) and always wins over auto-assignment. A 15-minute fallback cron (`_cron_auto_assign_unassigned_leads`) re-assigns any lead somehow left without a `user_id`.
 
 ### `sa_crm_ai_match` — AI Property Match for CRM
 
@@ -277,6 +306,25 @@ Links broker partners to tenancy contracts and manages commission payment flow.
 
 **Financial flow:** Confirm → payment schedule → create vendor bill → post → register payment
 
+`sa_sales_target` (below) adds a `salesperson_user_id` field to `sa.broker.commission`, bridging the commission's broker contact (`res.partner`) to an actual login (`res.users`) for KPI attribution.
+
+---
+
+### `sa_sales_target` — Sales Targets & Team KPIs
+
+Individual and team performance targets measured against actual paid commissions. See [Sales Targets & Team KPIs](#sales-targets--team-kpis) below for the full picture.
+
+**Models**
+
+| Model | Purpose |
+|-------|---------|
+| `sa.sales.team` | Lightweight custom sales-team grouping (name, manager, members) — deliberately not Odoo core `crm.team`/`sales_team`, since `sa_crm` doesn't depend on core CRM |
+| `sa.sales.target` | A target: scope (individual/team), period (month/quarter/year with explicit `date_from`/`date_to`), target amount, computed achieved amount & achievement % |
+
+**Achievement basis:** sum of `sa.broker.commission.line.amount` where `state='paid'` and `due_date` falls inside the target's period, attributed via `commission_id.salesperson_user_id` — deliberately *not* pipeline/won-lead value, to keep "achievement" tied to money actually collected.
+
+**Access:** agents see only their own or their team's targets (read-only, via `ir.rule`); only `group_pms_manager` can create/edit targets and teams.
+
 ---
 
 ### `sa_notifications` — Multi-Provider Messaging & Alerts
@@ -332,7 +380,7 @@ Simulates the Saudi SADAD payment network for development and demo. Webhook endp
 
 ### `sa_dashboard` — KPI Dashboard
 
-Single-page dashboard: KPI cards (properties, active tenancies, monthly revenue, arrears), 12-month revenue trend, occupancy donut, maintenance cost chart, overdue tenant list. All data respects record rules.
+Single-page dashboard: KPI cards (properties, active tenancies, monthly revenue, arrears), 12-month revenue trend, occupancy donut, maintenance cost chart, overdue tenant list, CRM pipeline funnel + agent leaderboard, and a **Team KPIs** section (targets vs. achieved commissions per agent/team, overall achievement %, target-vs-achieved bar chart — sourced from `sa_sales_target`). All data respects record rules.
 
 ---
 
@@ -375,6 +423,17 @@ Inbound and outbound calls linked to customers, CRM leads, maintenance requests,
 - "Create ticket" shortcut from any call record; "Calls" stat button on the partner form
 
 **Current state:** inbound and outbound calling both work end-to-end against real Twilio infrastructure. Queue-based routing (rings every agent today, ignoring `sa.call.center.queue` membership) and CRM/Helpdesk screen-pop are deliberately deferred.
+
+---
+
+### `sa_call_center_analytics` — Customer Call Analytics
+
+Per-customer communication analytics on top of `sa_call_center`'s call log, built entirely with `read_group` aggregation (never per-record Python loops on the webhook/call-creation path).
+
+- **Definitions:** a "contact" call is one in state `answered`/`ended` (missed/voicemail/ringing don't count as reaching the customer). **Unique customers** = distinct `partner_id` count in the selected domain. **Repeated calls** = total contact calls − unique customers. **Total talk time** = `SUM(talk_duration)`.
+- Smart-button fields on `res.partner` (`sa_call_talk_duration_total`, `sa_call_repeat_count`, first/last contact dates) and read-only related fields on `sa.crm.lead`.
+- Manager-only `/callcenter/analytics` dashboard (date range + agent filter) plus a native pivot/graph view (`agent_id` × month, sum of `talk_duration`/`wait_duration`).
+- **Known gap, not fixed here:** `sa.call.center.call` still has no `ir.rule` — the new manager menu is UI-level only (`groups=`), not row-level security.
 
 ---
 
@@ -799,19 +858,58 @@ Without this, Access Tokens only grant `incoming` and outbound `Device.connect()
 
 The `sa_call_center_phone` field widget (`static/src/js/call_center_phone_field.js`) is opt-in — applied explicitly via view inheritance (`res.partner` phone/mobile, `sa.crm.lead` phone) rather than overriding Odoo's core `phone` widget everywhere. It only intercepts the click (and dials via the softphone) when the agent's Twilio Device is actually registered (`softphone_state.js`); otherwise it falls back to the native `tel:` link, so non-agents keep normal phone-link behavior.
 
+### Call analytics
+
+`sa_call_center_analytics` adds unique/repeated-call counts and total talk time per customer on top of the call log above — see its entry under [Module Reference](#module-reference) for the exact definitions and endpoints.
+
+---
+
+## Sales Targets & Team KPIs
+
+`sa_sales_target` lets managers set individual and team performance targets and see live achievement on the main dashboard.
+
+### Setting up teams and targets
+
+**المسار / Path:** إدارة عقود الإيجار ← أهداف المبيعات (منظم تحت قائمة عمولات الوسطاء) — `group_pms_manager` only.
+
+1. **فرق المبيعات (Sales Teams)** — create a team: name, manager, and members (`res.users`).
+2. **الأهداف (Targets)** — create a target:
+   - **النطاق (Scope):** `فردي` (individual `res.users`) or `فريق` (a `sa.sales.team`)
+   - **الفترة (Period):** month / quarter / year — picking a `period_type` and `date_from` auto-suggests `date_to` (still editable)
+   - **المبلغ المستهدف (Target amount)** in SAR
+3. Save. **المحقَّق (Achieved)** and **نسبة الإنجاز (Achievement %)** are computed live — no further action needed.
+
+### How achievement is computed
+
+```
+achieved_amount = SUM(sa.broker.commission.line.amount)
+                   WHERE state = 'paid'
+                   AND due_date BETWEEN target.date_from AND target.date_to
+                   AND commission_id.salesperson_user_id IN <target's user(s)>
+
+achievement_pct = achieved_amount / target_amount * 100
+```
+
+`sa.broker.commission.salesperson_user_id` is suggested automatically from `broker_partner_id.user_ids` when a commission record is saved, but stays editable — a broker contact with no login (a pure external partner) leaves this blank, and that commission is simply excluded from any individual/team KPI (it still counts toward the broker's own partner-level stats in `sa_broker_commission`).
+
+### Where it shows up
+
+- **Backend menu** (managers only) — full CRUD on teams and targets, with tree-view color coding (green ≥ 100%, yellow 70–99%, red < 70%).
+- **Main dashboard** (`/pms/dashboard`) — a "🎯 أهداف الفريق" section: total target vs. total achieved for all currently-active periods, overall achievement %, a target-vs-achieved bar chart per agent, and per-agent/per-team tables. Visible to everyone who can see the dashboard; agents only see meaningful figures for periods a manager has actually created targets for.
+
 ---
 
 ## Roles & Permissions
 
-| Role | Backend | Properties | Tenancies | Payments | CRM | Maintenance | Call Center | Ejar | Settings |
-|------|---------|------------|-----------|----------|-----|-------------|-------------|------|----------|
-| Admin | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ |
-| Manager | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ❌ |
-| Accountant | ✅ | Read | ✅ All | ✅ All | ❌ UI | Read | ❌ | Read | ❌ |
-| Agent | ✅ | Read+Create | Read+Create | Read | ✅ Full | Read+Create | ✅ if flagged as call center agent | Read | ❌ |
-| Owner | ✅ Own | Own only | Own only | Own only | ❌ | Own only | ❌ | ❌ | ❌ |
-| Technician | ✅ (maint.) | ❌ | ❌ | ❌ | ❌ | Assigned only | ❌ | ❌ | ❌ |
-| Tenant | Portal only | ❌ | Own only | Own only | ❌ | Own only | ❌ | ❌ | ❌ |
+| Role | Backend | Properties | Tenancies | Payments | CRM | Maintenance | Call Center | Sales Targets | Ejar | Settings |
+|------|---------|------------|-----------|----------|-----|-------------|-------------|---------------|------|----------|
+| Admin | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ |
+| Manager | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All (set targets) | ✅ All | ❌ |
+| Accountant | ✅ | Read | ✅ All | ✅ All | ❌ UI | Read | ❌ | ❌ | Read | ❌ |
+| Agent | ✅ | Read+Create | Read+Create | Read | ✅ Full | Read+Create | ✅ if flagged as call center agent | Read own/team only | Read | ❌ |
+| Owner | ✅ Own | Own only | Own only | Own only | ❌ | Own only | ❌ | ❌ | ❌ | ❌ |
+| Technician | ✅ (maint.) | ❌ | ❌ | ❌ | ❌ | Assigned only | ❌ | ❌ | ❌ | ❌ |
+| Tenant | Portal only | ❌ | Own only | Own only | ❌ | Own only | ❌ | ❌ | ❌ | ❌ |
 
 Record rules are enforced at the ORM level — not just the UI — so API access is also restricted.
 
@@ -863,19 +961,21 @@ propza-amlak/
 │   │   │   └── ejar_brokerage_profile.py
 │   │   └── controllers/                 ← webhook endpoint
 │   ├── sa_property/
+│   ├── sa_property_projects/            ← sa.project + gallery (photos/floor plans)
 │   ├── sa_rental_cycle/
-│   ├── sa_crm/                          ← CRM: leads, reservations, showings, deals
+│   ├── sa_crm/                          ← CRM: leads (load-based auto-rotation), reservations, showings, deals
 │   ├── sa_crm_ai_match/                 ← AI property matching for CRM leads
 │   ├── sa_maintenance/                  ← Maintenance: requests, work orders, contracts
 │   ├── sa_mobile_tech/
 │   ├── sa_broker_commission/
+│   ├── sa_sales_target/                 ← sales targets/teams, achievement vs. paid commissions
 │   ├── sa_notifications/
 │   │   └── models/
 │   │       ├── messaging_gateway.py     ← multi-provider router (sa.messaging.gateway)
 │   │       ├── unifonic_service.py      ← Unifonic SMS + WA (inherits gateway)
 │   │       └── ultramsg_service.py      ← UltraMsg WA-only (inherits gateway)
 │   ├── sa_sadad/
-│   ├── sa_dashboard/
+│   ├── sa_dashboard/                    ← KPIs incl. Team KPIs (from sa_sales_target)
 │   ├── sa_portal/
 │   ├── sa_call_center/                  ← Twilio Voice: inbound/outbound calls, tickets
 │   │   ├── controllers/                 ← generic + Twilio-specific webhooks, Access Token endpoint
@@ -884,6 +984,7 @@ propza-amlak/
 │   │   │   ├── telephony_twilio_service.py  ← live Twilio adapter (inherits gateway)
 │   │   │   └── telephony_asterisk_service.py ← secondary/reference adapter
 │   │   └── static/src/js/               ← browser softphone + click-to-dial widget
+│   ├── sa_call_center_analytics/        ← per-customer unique/repeated calls, talk time
 │   ├── sa_security/
 │   ├── sa_user_profile/
 │   └── queue_job/                       ← OCA: async job queue (Ejar integration)

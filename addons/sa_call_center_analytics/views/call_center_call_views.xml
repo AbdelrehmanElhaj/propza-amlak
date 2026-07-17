@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_call_center_call_pivot_analytics" model="ir.ui.view">
+        <field name="name">sa.call.center.call.pivot.analytics</field>
+        <field name="model">sa.call.center.call</field>
+        <field name="arch" type="xml">
+            <pivot string="تحليلات المكالمات">
+                <field name="agent_id" type="row"/>
+                <field name="start_datetime" interval="month" type="col"/>
+                <field name="talk_duration" type="measure"/>
+                <field name="wait_duration" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_call_center_call_graph_analytics" model="ir.ui.view">
+        <field name="name">sa.call.center.call.graph.analytics</field>
+        <field name="model">sa.call.center.call</field>
+        <field name="arch" type="xml">
+            <graph string="تحليلات المكالمات" type="bar">
+                <field name="agent_id"/>
+                <field name="talk_duration" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- إجراء جديد منفصل (لا يعدّل action_call_center_call الأصلي الخاص بالموظفين) -->
+    <record id="action_call_center_call_analytics" model="ir.actions.act_window">
+        <field name="name">تحليلات المكالمات</field>
+        <field name="res_model">sa.call.center.call</field>
+        <field name="view_mode">pivot,graph</field>
+    </record>
+
+</odoo>

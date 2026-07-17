@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="analytics_dashboard_view">
+        <html dir="rtl" lang="ar">
+            <head>
+                <meta charset="utf-8"/>
+                <title>تحليلات التواصل مع العملاء — مركز الاتصال</title>
+                <link rel="stylesheet" href="/web/static/lib/bootstrap/dist/css/bootstrap.css"/>
+                <style>
+                    body {
+                        background: #f5f7fa;
+                        font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+                        direction: rtl;
+                        text-align: right;
+                        margin: 0;
+                        padding: 20px;
+                    }
+                    .header {
+                        max-width: 1400px;
+                        margin: 0 auto 20px;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        flex-wrap: wrap;
+                        gap: 12px;
+                    }
+                    .header h1 { margin: 0; color: #1a3a5c; }
+
+                    .container-main { max-width: 1400px; margin: 0 auto; }
+
+                    .filter-card {
+                        background: white;
+                        padding: 16px 20px;
+                        border-radius: 12px;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                        margin-bottom: 24px;
+                        display: flex;
+                        gap: 16px;
+                        align-items: flex-end;
+                        flex-wrap: wrap;
+                    }
+                    .filter-card label {
+                        display: block;
+                        font-size: 12px;
+                        color: #6c757d;
+                        margin-bottom: 4px;
+                    }
+                    .filter-card select, .filter-card input {
+                        padding: 6px 8px;
+                        border: 1px solid #dee2e6;
+                        border-radius: 6px;
+                        min-width: 160px;
+                    }
+                    .filter-card button {
+                        background: #4c6ef5;
+                        color: white;
+                        border: none;
+                        padding: 8px 20px;
+                        border-radius: 6px;
+                        cursor: pointer;
+                    }
+
+                    .kpi-grid {
+                        display: grid;
+                        grid-template-columns: repeat(3, 1fr);
+                        gap: 16px;
+                        margin-bottom: 24px;
+                    }
+                    .kpi-card {
+                        background: white;
+                        padding: 20px;
+                        border-radius: 12px;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    .kpi-card::before {
+                        content: '';
+                        position: absolute;
+                        top: 0; right: 0;
+                        width: 4px; height: 100%;
+                        background: var(--accent);
+                    }
+                    .kpi-label { font-size: 13px; color: #6c757d; margin-bottom: 8px; }
+                    .kpi-value { font-size: 28px; font-weight: 700; color: #1a3a5c; }
+
+                    .list-card { background: white; padding: 20px; border-radius: 12px;
+                                 box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+                    .list-card h3 { margin: 0 0 16px; color: #1a3a5c; font-size: 16px; }
+                    .list-card table { width: 100%; border-collapse: collapse; }
+                    .list-card td, .list-card th { padding: 8px 4px; border-bottom: 1px solid #eee; text-align: right; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>تحليلات التواصل مع العملاء</h1>
+                    <div class="date"><t t-esc="date_from"/> — <t t-esc="date_to"/></div>
+                </div>
+
+                <div class="container-main">
+                    <form class="filter-card" method="get" action="/callcenter/analytics">
+                        <div>
+                            <label>من تاريخ</label>
+                            <input type="date" name="date_from" t-att-value="date_from"/>
+                        </div>
+                        <div>
+                            <label>إلى تاريخ</label>
+                            <input type="date" name="date_to" t-att-value="date_to"/>
+                        </div>
+                        <div>
+                            <label>الموظف</label>
+                            <select name="agent_id">
+                                <option value="">كل الموظفين</option>
+                                <t t-foreach="agent_choices" t-as="choice">
+                                    <option t-att-value="choice[0]"
+                                            t-att-selected="'selected' if agent_id == choice[0] else None">
+                                        <t t-esc="choice[1]"/>
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                        <button type="submit">تطبيق</button>
+                    </form>
+
+                    <div class="kpi-grid">
+                        <div class="kpi-card" style="--accent:#4c6ef5">
+                            <div class="kpi-label">عملاء فريدون</div>
+                            <div class="kpi-value"><t t-esc="stats['unique_customers']"/></div>
+                        </div>
+                        <div class="kpi-card" style="--accent:#f08c00">
+                            <div class="kpi-label">مكالمات مكررة</div>
+                            <div class="kpi-value"><t t-esc="stats['repeated_calls']"/></div>
+                        </div>
+                        <div class="kpi-card" style="--accent:#2f9e44">
+                            <div class="kpi-label">إجمالي وقت التحدث (س:د:ث)</div>
+                            <div class="kpi-value"><t t-esc="total_talk_duration_hms"/></div>
+                        </div>
+                    </div>
+
+                    <div class="list-card">
+                        <h3>تفصيل حسب الموظف</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>الموظف</th>
+                                    <th>عملاء فريدون</th>
+                                    <th>إجمالي المكالمات</th>
+                                    <th>إجمالي وقت التحدث (ثانية)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="agent_breakdown" t-as="row">
+                                    <tr>
+                                        <td><t t-esc="row['agent_name']"/></td>
+                                        <td><t t-esc="row['unique_customers']"/></td>
+                                        <td><t t-esc="row['total_calls']"/></td>
+                                        <td><t t-esc="row['total_talk_duration']"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </body>
+        </html>
+    </template>
+
+</odoo>

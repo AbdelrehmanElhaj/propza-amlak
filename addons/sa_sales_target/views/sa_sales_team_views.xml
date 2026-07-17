@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ─── List ──────────────────────────────────────────────── -->
+    <record id="view_sales_team_tree" model="ir.ui.view">
+        <field name="name">sa.sales.team.list</field>
+        <field name="model">sa.sales.team</field>
+        <field name="arch" type="xml">
+            <tree string="فرق المبيعات">
+                <field name="name"/>
+                <field name="manager_id"/>
+                <field name="member_count"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ─── Form ──────────────────────────────────────────────── -->
+    <record id="view_sales_team_form" model="ir.ui.view">
+        <field name="name">sa.sales.team.form</field>
+        <field name="model">sa.sales.team</field>
+        <field name="arch" type="xml">
+            <form string="فريق مبيعات">
+                <sheet>
+                    <widget name="web_ribbon" title="مؤرشف" bg_color="text-bg-danger"
+                            invisible="active"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="اسم الفريق"/></h1>
+                    </div>
+                    <group>
+                        <group string="بيانات الفريق">
+                            <field name="manager_id"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="member_ids" widget="many2many_tags"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ─── Action ────────────────────────────────────────────── -->
+    <record id="action_sales_team" model="ir.actions.act_window">
+        <field name="name">فرق المبيعات</field>
+        <field name="res_model">sa.sales.team</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">إنشاء فريق مبيعات جديد</p>
+            <p>حدّد مدير الفريق وأعضاءه، ثم اربط به أهداف المبيعات الجماعية.</p>
+        </field>
+    </record>
+
+</odoo>

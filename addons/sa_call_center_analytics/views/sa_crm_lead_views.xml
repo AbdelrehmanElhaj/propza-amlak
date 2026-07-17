@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_sa_crm_lead_form_call_center_analytics" model="ir.ui.view">
+        <field name="name">sa.crm.lead.form.call.center.analytics</field>
+        <field name="model">sa.crm.lead</field>
+        <field name="inherit_id" ref="sa_crm.view_sa_crm_lead_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']/parent::group" position="after">
+                <group string="تحليلات التواصل">
+                    <field name="sa_call_talk_duration_total" readonly="1"/>
+                    <field name="sa_call_repeat_count" readonly="1"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

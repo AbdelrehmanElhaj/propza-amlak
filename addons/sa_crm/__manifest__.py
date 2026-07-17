@@ -18,6 +18,7 @@
         'views/sa_crm_showing_views.xml',
         'views/sa_crm_reservation_views.xml',
         'views/sa_crm_lead_views.xml',
+        'views/res_users_views.xml',
         'views/menu.xml',
     ],
     'installable': True,
